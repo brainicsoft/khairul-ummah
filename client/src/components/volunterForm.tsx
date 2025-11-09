@@ -75,7 +75,7 @@ export function VolunterForm() {
     <div className="bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
         {/* Green Header */}
-        <div className="bg-green-600 text-white rounded-t-lg p-8 mb-0">
+        <div className="bg-primary text-white rounded-t-lg p-8 mb-0">
           <h2 className="text-2xl font-bold mb-2">স্বেচ্ছাসেবক আবেদন</h2>
           <p className="text-green-100 text-sm leading-relaxed">
             দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন। আপনার প্রদত্ত তথ্য সম্পূর্ণ গোপনীয় থাকবে এবং শুধুমাত্র আমাদের স্বেচ্ছাসেবক কর্মসূচির জন্য ব্যবহৃত হবে।
@@ -217,7 +217,7 @@ export function VolunterForm() {
                 </svg>
               </div>
               <div>
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
                   <Upload className="w-4 h-4" />
                   <span className="text-sm font-medium">ছবি আপলোড করুন</span>
                   <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
@@ -260,7 +260,7 @@ export function VolunterForm() {
             </div>
           )}
 
-          <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 text-base">
+          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-base">
             আবেদন করুন →
           </Button>
         </form>
