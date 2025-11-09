@@ -110,8 +110,6 @@ export default function DonateTypePage() {
 
   return (
     <>
-      <Header />
-
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-16 md:py-24">
         <div className="absolute inset-0 opacity-20">
@@ -374,8 +372,6 @@ export default function DonateTypePage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </>
   )
 }

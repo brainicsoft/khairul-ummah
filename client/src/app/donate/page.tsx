@@ -1,6 +1,4 @@
 "use client"
-import { Header } from "../../components/header"
-import { Footer } from "../../components/footer"
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
@@ -63,8 +61,6 @@ export default function DonationTypesPage() {
 
   return (
     <>
-      <Header />
-
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-16 md:py-24">
         <div className="absolute inset-0 opacity-20">
@@ -93,16 +89,18 @@ export default function DonationTypesPage() {
             {donationTypes.map((type) => (
               <Link key={type.id} href={`/donate/${type.id}`} className="group">
                 <div
-                  className={`bg-gradient-to-br ${type.color} rounded-xl p-8 text-white h-full transform transition hover:scale-105 hover:shadow-2xl cursor-pointer`}
+                  className={`bg-gradient-to-br ${type.color} rounded-xl p-8 text-white h-full transform transition hover:scale-105 hover:shadow-2xl cursor-pointer flex flex-col`}
                 >
+                  {/* Top content */}
                   <div className="flex items-start justify-between mb-6">
                     <div className="text-5xl">{type.icon}</div>
                     <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-2" />
                   </div>
 
                   <h3 className="text-2xl font-bold mb-3">{type.title}</h3>
-                  <p className="text-white/90 leading-relaxed">{type.desc}</p>
+                  <p className="text-white/90 leading-relaxed flex-grow">{type.desc}</p>
 
+                  {/* Button always at bottom */}
                   <button className="mt-6 bg-white text-primary font-semibold px-6 py-2 rounded-lg hover:bg-white/90 transition w-full">
                     এখনই দান করুন
                   </button>
@@ -110,6 +108,7 @@ export default function DonationTypesPage() {
               </Link>
             ))}
           </div>
+
 
           {/* Info Section */}
           <div className="bg-card rounded-xl border border-border p-8 md:p-12">
@@ -147,8 +146,6 @@ export default function DonationTypesPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </>
   )
 }
