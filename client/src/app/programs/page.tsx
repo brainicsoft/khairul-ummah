@@ -1,6 +1,6 @@
-import { Header } from "../../components/header"
-import { Footer } from "../../components/footer"
-import { ProgramsGrid } from "../../components/programs-grid"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { ProgramsGrid } from "@/components/programs-grid"
 
 export default function ProgramsPage() {
   return (
