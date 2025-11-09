@@ -2,7 +2,7 @@
 module.exports = {
   apps: [
     {
-      name: "Brainicmart server",
+      name: "Khairul ummah Client",
       script: "pnpm",
       args: "start",
       instances: 1,
