@@ -1,5 +1,5 @@
-import { Header } from "../../components/header"
-import { Footer } from "../../components/footer"
+import { Header } from "../../src/components/header"
+import { Footer } from "../../src/components/footer"
 import Image from "next/image"
 import floodrelief from "../../assets/activities/flood-relief.jpg"
 import helthActivityimg from "../../assets/activities/helthmeet.jpg"

@@ -1,5 +1,5 @@
 "use client"
-import { VolunterForm } from "../../components/volunterForm"
+import { VolunterForm } from "../../src/components/volunterForm"
 
 export default function VolunteerPage() {
 

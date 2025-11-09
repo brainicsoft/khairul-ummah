@@ -3,8 +3,8 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import { Header } from "../components/header"
-import { Footer } from "../components/footer"
+import { Header } from "../src/components/header"
+import { Footer } from "../src/components/footer"
 import icon from "../assets/logo/Round Shape Logo.jpg"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -12,7 +12,6 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "খাইরুল উম্মাহ ফাউন্ডেশন - সমাজ সেবা ও উন্নয়ন",
   description: "খাইরুল উম্মাহ ফাউন্ডেশন - সমাজের উন্নয়ন এবং দুর্বল মানুষের সেবায় নিয়োজিত।",
-  generator: "v0.app",
 }
 
 export default function RootLayout({
