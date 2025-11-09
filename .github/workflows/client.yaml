@@ -1,4 +1,4 @@
-name: Brainicmart Client  CI/CD Pipeline
+name: khairul ummah Client  CI/CD Pipeline
 on:
   push:
     branches:
@@ -26,7 +26,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm i  -g pnpm 
-          cd frontend && pnpm i 
+          cd client && pnpm i 
           pnpm build
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
@@ -36,8 +36,8 @@ jobs:
           key: ${{ secrets.SSH }}
           port: 22
           overwrite: true
-          source: frontend/.next,frontend/public,frontend/.gitignore,frontend/components.json,frontend/eslint.config.mjs,frontend/next.config.mjs,frontend/package.json,frontend/pnpm-lock.yaml,frontend/pm2.config.js,frontend/postcss.config.mjs,frontend/tailwind.config.ts,frontend/tsconfig.json,frontend/README.md
-          target: "/var/www/brainicmart"
+          source: client/.next,client/public,client/.gitignore,client/components.json,client/eslint.config.mjs,client/next.config.mjs,client/package.json,client/pnpm-lock.yaml,client/pm2.config.js,client/postcss.config.mjs,client/tailwind.config.ts,client/tsconfig.json,client/README.md
+          target: "/var/www/khairulummah"
 
 
       - name: Run scripts on server
@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH }}
           script: |
-            cd /var/www/brainicmart/frontend
+            cd /var/www/khairulummah/client
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
