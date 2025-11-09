@@ -3,9 +3,9 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import { Header } from "../src/components/header"
-import { Footer } from "../src/components/footer"
 import icon from "../assets/logo/Round Shape Logo.jpg"
+import { Header } from "@/components/header"
+import { Footer } from "react-day-picker"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 

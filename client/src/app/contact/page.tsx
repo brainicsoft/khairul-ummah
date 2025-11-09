@@ -1,6 +1,6 @@
-import { Header } from "../../src/components/header"
-import { Footer } from "../../src/components/footer"
-import { ContactContent } from "../../src/components/contact-content"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { ContactContent } from "@/components/contact-content"
 
 export default function ContactPage() {
   return (
