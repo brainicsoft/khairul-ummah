@@ -3,8 +3,9 @@
 import { Facebook, Instagram, Linkedin } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import logo from "../assets/logo/logo.png"
+import logo from "../assets/logo/footerlogo.jpg"
 import { FaYoutube } from "react-icons/fa"
+import paymentimg from "../assets/sslpayment.png"
 
 export function Footer() {
   return (
@@ -13,7 +14,7 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             {/* <h3 className="font-bold text-lg mb-4">খাইরুল উম্মাহ ফাউন্ডেশন</h3> */}
-            <Image className="h-[80px] w-[250px] bg-white" src={logo} alt="Logo" width={300} height={80} />
+            <Image className="h-20 w-[280px]" src={logo} alt="Logo" width={300} height={100} />
             <p className="opacity-80 text-sm mt-2">সমাজের উন্নয়ন এবং মানুষের সেবায় নিয়োজিত একটি দাতব্য সংস্থা।</p>
             <div className="flex gap-4 mt-4">
               <Link href="https://www.facebook.com/khairulummahfoundations?_rdc=1&_rdr#" target="_blank" rel="noopener noreferrer">
@@ -85,6 +86,7 @@ export function Footer() {
               <li>📧 khairulummahfoundation.com</li>
               <li>📍 ময়মনসিংহ, বাংলাদেশ</li>
             </ul>
+            <Image className="w-full" src={paymentimg} alt="facebook" width={50} height={50} />
           </div>
         </div>
 
