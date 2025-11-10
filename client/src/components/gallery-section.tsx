@@ -5,6 +5,7 @@ import gellery3 from "../assets/gellery/gellery3.jpg"
 import gellery4 from "../assets/gellery/gellery4.jpg"
 import gellery5 from "../assets/gellery/gellery5.jpg"
 import gellery7 from "../assets/gellery//gellery7.jpg"
+import Link from "next/link"
 
 
 const galleries = [
@@ -44,11 +45,13 @@ export function GallerySection() {
           ))}
         </div>
 
-        <div className="text-center">
-          <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
-            আরও দেখুন
-          </button>
-        </div>
+        <Link href="/gellery">
+          <div className="text-center">
+            <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
+              আরও দেখুন
+            </button>
+          </div>
+        </Link>
       </div>
     </section>
   )
