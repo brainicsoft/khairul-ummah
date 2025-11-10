@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
@@ -9,7 +9,8 @@ import logo from "../assets/logo/logo.png"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [hoverDropdown, setHoverDropdown] = useState<string | null>(null)
+  const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
 
   const navLinks = [
@@ -45,9 +46,16 @@ export function Header() {
     { href: "/about/committee", label: "পরিচালনা পরিষদ" },
   ]
 
+  // Close dropdown and mobile menu when route changes
+  useEffect(() => {
+    setHoverDropdown(null)
+    setClickDropdown(null)
+    setIsMenuOpen(false)
+  }, [pathname])
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
-      <div className="container mx-auto px-1 sm:px-2 py-2 sm:py-3 flex justify-between items-center">
+      <div className="container mx-auto px-1 sm:px-2 py-2 sm:py-3 flex  justify-between items-center">
         {/* Logo */}
         <Link href="/">
           <Image
@@ -61,91 +69,89 @@ export function Header() {
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden lg:flex gap-3 xl:gap-5 items-center relative">
-          {navLinks.map((link) => {
-            const hasDropdown = !!link.dropdown;
+        <div className="flex justify-between items-center">
+          <nav className="hidden lg:flex gap-0.5 xl:gap-2 items-center relative flex-wrap justify-center">
+            {navLinks.map((link) => {
+              const hasDropdown = !!link.dropdown
+              const isOpen = hoverDropdown === link.dropdown || clickDropdown === link.dropdown
 
-            return hasDropdown ? (
-              <div
-                key={link.href}
-                className="relative"
-                onMouseEnter={() => {
-                  // Hover only open if not manually clicked
-                  if (openDropdown !== link.dropdown) {
-                    setOpenDropdown(link.dropdown);
-                  }
-                }}
-                onMouseLeave={() => {
-                  // Hover close only if not manually clicked
-                  // এখানে আমরা check করব, যদি click দিয়ে open না হয় তাহলে close হবে
-                  // যদি openDropdown === link.dropdown তাহলে click দিয়ে open করা হয়েছে, তাই leave ignore
-                  // মানে hover এর জন্য কিছু করতে হবে না
-                }}
-              >
-                <div className="flex items-center gap-1">
-                  {/* Main link */}
-                  <Link
-                    href={link.href}
-                    className="font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap"
-                    onClick={(e) => e.preventDefault()} // prevent default
-                  >
-                    {link.label}
-                  </Link>
-
-                  {/* Dropdown toggle */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      // Toggle dropdown on click
-                      setOpenDropdown(openDropdown === link.dropdown ? null : link.dropdown!);
-                    }}
-                  >
-                    <ChevronDown
-                      className={`w-4 h-4 transition ${openDropdown === link.dropdown ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                </div>
-
-                {/* Dropdown menu */}
+              return hasDropdown ? (
                 <div
-                  className={`absolute left-0 mt-2 w-52 bg-white border border-gray-200 shadow-lg rounded-lg transition-all duration-200 ease-in-out transform 
-          ${openDropdown === link.dropdown ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                  key={link.href}
+                  className="relative"
+                  onMouseEnter={() => {
+                    if (clickDropdown !== link.dropdown) {
+                      setHoverDropdown(link.dropdown)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (clickDropdown !== link.dropdown) {
+                      setHoverDropdown(null)
+                    }
+                  }}
                 >
-                  {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
+                  <div className="flex items-center gap-1 ">
+                    {/* Main link navigates normally */}
                     <Link
-                      key={item.href}
-                      href={item.href}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white transition whitespace-nowrap"
+                      href={link.href}
+                      className="font-semibold text-[15px] text-inherit px-2 py-1 hover:text-primary transition whitespace-nowrap "
                     >
-                      {item.label}
+                      {link.label}
                     </Link>
-                  ))}
+
+                    {/* Dropdown toggle button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setClickDropdown(clickDropdown === link.dropdown ? null : link.dropdown!)
+                      }}
+                    >
+                      <ChevronDown
+                        className={`w-4 h-4 transition ${isOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Dropdown menu */}
+                  <div
+                    className={`absolute left-0 mt-2 w-52 bg-white border border-gray-200 shadow-lg rounded-lg transition-all duration-200 ease-in-out transform 
+                  ${isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                  >
+                    {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white transition whitespace-nowrap"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap ${pathname === link.href ? "text-primary" : ""
-                  }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`font-semibold text-[15px] text-inherit px-2 py-1 hover:text-primary transition whitespace-nowrap ${pathname === link.href ? "text-primary" : ""
+                    }`}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
 
 
-
+          </nav>
           <Link href="/donate">
-            <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2">
+            <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
               দান করুন
             </button>
           </Link>
-        </nav>
+        </div>
 
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-2">
-          <Link href="/donate" className="hidden sm:block">
+          <Link href="/donate" className="">
             <button className="bg-primary text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-primary/90 transition text-xs sm:text-sm font-semibold">
               দান করুন
             </button>
@@ -166,28 +172,26 @@ export function Header() {
         <nav className="lg:hidden border-t border-border bg-white p-3 sm:p-4 flex flex-col gap-2 max-h-[calc(100vh-80px)] overflow-y-auto">
           {navLinks.map((link) => {
             const hasDropdown = !!link.dropdown
+            const isOpen = clickDropdown === link.dropdown
 
             return hasDropdown ? (
               <div key={link.href}>
                 <div className="flex">
                   <Link
                     href={link.href}
-
                     className="flex justify-between items-center w-full font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition"
                   >
                     {link.label}
-
                   </Link>
                   <ChevronDown
                     onClick={() =>
-                      setOpenDropdown(openDropdown === link.dropdown ? null : link.dropdown!)
+                      setClickDropdown(isOpen ? null : link.dropdown!)
                     }
-                    className={`w-4 h-4 transition ${openDropdown === link.dropdown ? "rotate-180" : ""
-                      }`}
+                    className={`w-4 h-4 transition ${isOpen ? "rotate-180" : ""}`}
                   />
                 </div>
 
-                {openDropdown === link.dropdown && (
+                {isOpen && (
                   <div className="ml-4 mt-1 flex flex-col gap-2 bg-gray-50 rounded-lg p-2">
                     {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
                       <Link
@@ -205,8 +209,7 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition block ${pathname === link.href ? "bg-primary/10 text-primary" : ""
-                  }`}
+                className={`font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition block ${pathname === link.href ? "bg-primary/10 text-primary" : ""}`}
               >
                 {link.label}
               </Link>
