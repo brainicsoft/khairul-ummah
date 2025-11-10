@@ -19,10 +19,10 @@ export function Header() {
     { href: "/activities", label: "আমাদের কার্যক্রম" },
     { href: "/about", label: "আমাদের সম্পর্কে", dropdown: "about" },
     { href: "/running-project", label: "চলমান প্রজেক্ট" },
-    { href: "/life-time-donator", label: "আজীবন দাতা সদস্য" },
+    { href: "/#", label: "আজীবন দাতা সদস্য" },
     { href: "/contact", label: "যোগাযোগ" },
     {
-      href: "https://docs.google.com/forms/d/e/1FAIpQLSdt1tAN1HTu2Gr3DJBqcWj6lv6XzZ5XJDxWkuA4YqoYWY3wqQ/viewform",
+      href: "/volunteer",
       label: "স্বেচ্ছাসেবক নিবন্ধন",
     },
     { href: "/gellery", label: "গ্যালারি" },
