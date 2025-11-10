@@ -63,15 +63,31 @@ export function Header() {
         {/* Desktop Menu */}
         <nav className="hidden lg:flex gap-3 xl:gap-5 items-center relative">
           {navLinks.map((link) => {
-            const hasDropdown = !!link.dropdown
+            const hasDropdown = !!link.dropdown;
 
             return hasDropdown ? (
-              <div key={link.href} className="relative">
+              <div
+                key={link.href}
+                className="relative"
+                onMouseEnter={() => {
+                  // Hover only open if not manually clicked
+                  if (openDropdown !== link.dropdown) {
+                    setOpenDropdown(link.dropdown);
+                  }
+                }}
+                onMouseLeave={() => {
+                  // Hover close only if not manually clicked
+                  // এখানে আমরা check করব, যদি click দিয়ে open না হয় তাহলে close হবে
+                  // যদি openDropdown === link.dropdown তাহলে click দিয়ে open করা হয়েছে, তাই leave ignore
+                  // মানে hover এর জন্য কিছু করতে হবে না
+                }}
+              >
                 <div className="flex items-center gap-1">
                   {/* Main link */}
                   <Link
                     href={link.href}
                     className="font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap"
+                    onClick={(e) => e.preventDefault()} // prevent default
                   >
                     {link.label}
                   </Link>
@@ -79,8 +95,9 @@ export function Header() {
                   {/* Dropdown toggle */}
                   <button
                     onClick={(e) => {
-                      e.preventDefault() // prevent default for link click
-                      setOpenDropdown(openDropdown === link.dropdown ? null : link.dropdown!)
+                      e.preventDefault();
+                      // Toggle dropdown on click
+                      setOpenDropdown(openDropdown === link.dropdown ? null : link.dropdown!);
                     }}
                   >
                     <ChevronDown
@@ -114,8 +131,9 @@ export function Header() {
               >
                 {link.label}
               </Link>
-            )
+            );
           })}
+
 
 
           <Link href="/donate">
