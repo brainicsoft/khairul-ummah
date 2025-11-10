@@ -5,7 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import icon from "../assets/logo/Round Shape Logo.jpg"
 import { Header } from "@/components/header"
-import { Footer } from "react-day-picker"
+import { Footer } from "@/components/footer"
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
