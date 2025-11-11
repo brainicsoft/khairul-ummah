@@ -3,6 +3,8 @@ import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { DONATION_TYPES } from "@/data/donationData"
+import Image, { StaticImageData } from "next/image"
+import DonationType from "@/assets/donateTypeImg/donate.jpg"
 type DonationType = {
   id: number
   slug: string
@@ -10,7 +12,7 @@ type DonationType = {
   desc: string
   benefits: string[]
   videoUrl: string
-  icon: string
+  image: string | StaticImageData
   color: string
   category: "regular" | "special" | "donor-type"
 }
@@ -59,21 +61,27 @@ export default function DonationTypesPage() {
             {donationTypes.map((type) => (
               <Link key={type.id} href={`/donate/${type.slug}`} className="group">
                 <div
-                  className={`bg-gradient-to-br bg-primary rounded-xl p-8 text-white h-full transform transition hover:scale-105 hover:shadow-2xl cursor-pointer flex flex-col`}
+                  className={`rounded-xl  h-full transform transition  hover:shadow-sm cursor-pointer border flex flex-col`}
                 >
                   {/* Top content */}
                   <div className="flex items-start justify-between mb-6">
-                    <div className="text-5xl">{type.icon}</div>
-                    <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1" />
+                    <Image
+                      className="w-full h-[250px] rounded-t-sm"
+                      src={type.image} alt={type.title} width={500} height={300}
+                    />
+                    {/* <div className="text-5xl">{type.icon}</div> */}
+                    <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1 text-black" />
                   </div>
 
-                  <h3 className="text-2xl font-bold mb-3">{type.title}</h3>
-                  <p className="text-white/90 leading-relaxed flex-grow">{type.desc}</p>
+                  <div className="px-6 pb-6">
+                    <h3 className="text-2xl font-bold mb-3">{type.title}</h3>
+                    <p className=" leading-relaxed flex-grow">{type.desc}</p>
 
-                  {/* Button always at bottom */}
-                  <button className="mt-6 bg-white text-primary font-semibold px-6 py-2 rounded-lg hover:bg-white/90 transition w-full">
-                    এখনই দান করুন
-                  </button>
+                    {/* Button always at bottom */}
+                    <button className="mt-6 text-xl bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition w-full">
+                      দান করুন
+                    </button>
+                  </div>
                 </div>
               </Link>
             ))}
