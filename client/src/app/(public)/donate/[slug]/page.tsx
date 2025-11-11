@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { useParams } from "next/navigation"
 import {DONATION_TYPES} from "@/data/donationData"
+import { StaticImageData } from "next/image"
 
 export type DonationType = {
   id: number
@@ -13,7 +14,7 @@ export type DonationType = {
   desc: string
   benefits: string[]
   videoUrl: string
-  icon: string
+  image: string| StaticImageData
   color: string
   category: "regular" | "special" | "donor-type"
 }
@@ -93,7 +94,7 @@ export default function DonateTypePage() {
         </div>
 
         <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="text-5xl mb-4">{data.icon}</div>
+          {/* <div className="text-5xl mb-4">{data.icon}</div> */}
           <h1 className="text-4xl md:text-5xl font-bold text-balance">{data.title}</h1>
           <p className="mt-4 text-lg opacity-90 max-w-2xl mx-auto">{data.desc}</p>
         </div>
