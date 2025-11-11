@@ -1,13 +1,27 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist, Geist_Mono, Hind_Siliguri } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
-import icon from "../assets/logo/Round Shape Logo.jpg"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+import icon from "@/assets/logo/logo-round.jpg"
+
+// Configure Hind Siliguri with all weights and subsets
+const hindSiliguri = Hind_Siliguri({
+  subsets: ["bengali", "latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-hind-siliguri",
+  display: "swap",
+})
+
+const geist = Geist({ 
+  subsets: ["latin"],
+  variable: "--font-geist",
+})
+
+const geistMono = Geist_Mono({ 
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+})
 
 export const metadata: Metadata = {
   title: "খাইরুল উম্মাহ ফাউন্ডেশন - সমাজ সেবা ও উন্নয়ন",
@@ -20,10 +34,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="bn">
+    <html lang="bn" className={`${hindSiliguri.variable} ${geist.variable} ${geistMono.variable}`}>
       <link rel="icon" href={icon.src} sizes="any" />
       <head>
-        <script async src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <script 
+          async 
+          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -40,9 +57,7 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased`}>
         <div id="google_translate_element" style={{ display: "none" }}></div>
-        <Header />
         {children}
-        <Footer />
         <Analytics />
       </body>
     </html>
