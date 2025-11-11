@@ -1,5 +1,5 @@
 import { TeamCard } from "@/components/TeamCard"
-import { advisorsData } from "@/data/AdvisorData" 
+import { advisorsData } from "@/data/advisorData"
 
 export default function AdvisorsPage() {
   return (

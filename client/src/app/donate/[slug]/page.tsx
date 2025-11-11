@@ -4,10 +4,26 @@ import { useState } from "react"
 import Link from "next/link"
 import { ChevronDown } from "lucide-react"
 import { useParams } from "next/navigation"
+import {DONATION_TYPES} from "@/data/donationData"
 
+export type DonationType = {
+  id: number
+  slug: string
+  title: string
+  desc: string
+  benefits: string[]
+  videoUrl: string
+  icon: string
+  color: string
+  category: "regular" | "special" | "donor-type"
+}
 export default function DonateTypePage() {
   const params = useParams()
-  const donationType = params.type as string
+  const slug = params.slug as string
+  const getDonationTypeBySlug = (slug: string): DonationType | undefined => {
+    return DONATION_TYPES.find((type) => type.slug === slug)
+  }
+  const data = getDonationTypeBySlug(slug)
 
   const [selectedAmount, setSelectedAmount] = useState<string>("")
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
@@ -20,57 +36,20 @@ export default function DonateTypePage() {
     paymentMethod: "nagad",
   })
 
-  const donationTypeData: Record<
-    string,
-    {
-      title: string
-      desc: string
-      benefits: string[]
-      videoUrl: string
-      icon: string
-    }
-  > = {
-    regular: {
-      title: "নিয়মিত অনুদান পরিকল্পনা",
-      desc: "প্রতি মাসে বা বছরে নিয়মিত অবদান দিয়ে দীর্ঘমেয়াদী প্রভাব তৈরি করুন এবং সমাজের স্থায়ী পরিবর্তন নিশ্চিত করুন।",
-      benefits: ["নিয়মিত আপডেট এবং প্রতিবেদন পান", "বিশেষ সুবিধা এবং সার্টিফিকেট", "সম্প্রদায়ের অংশ হন", "ট্যাক্স সুবিধা পান"],
-      videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
-      icon: "📅",
-    },
-    emergency: {
-      title: "জরুরি অনুদান",
-      desc: "দুর্যোগকালীন পরিস্থিতিতে তাৎক্ষণিক সাহায্য প্রদান করুন এবং সংকটে পড়া মানুষদের জীবন রক্ষা করুন।",
-      benefits: ["তাৎক্ষণিক পরিত্রাণ কার্যক্রম", "সরাসরি প্রভাব দেখুন", "সম্প্রদায়ের সাথে সহায়তা করুন", "প্রকৃত পরিবর্তন আনুন"],
-      videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
-      icon: "🆘",
-    },
-    special: {
-      title: "বিশেষ অনুদান",
-      desc: "শিক্ষা, স্বাস্থ্য বা অন্য কোনো নির্দিষ্ট প্রকল্পে সরাসরি অবদান রাখুন এবং আপনার লক্ষ্য অনুযায়ী কাজ করুন।",
-      benefits: [
-        "নির্দিষ্ট প্রকল্প নির্বাচন করুন",
-        "ফলাফল সম্পর্কে বিস্তারিত জানুন",
-        "আপনার মূল্যবোধ অনুযায়ী দান করুন",
-        "টেকসই উন্নয়নে অবদান রাখুন",
-      ],
-      videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
-      icon: "⭐",
-    },
-    corporate: {
-      title: "কর্পোরেট অনুদান",
-      desc: "আপনার প্রতিষ্ঠানের সামাজিক দায়বদ্ধতা কর্মসূচির অংশ হিসেবে আমাদের সাথে যুক্ত হন এবং সমাজে প্রকৃত পার্থক্য তৈরি করুন।",
-      benefits: [
-        "কর্পোরেট স্বীকৃতি পান",
-        "ব্র্যান্ড মূল্যবোধ প্রদর্শন করুন",
-        "কর্মচারী এনগেজমেন্ট বৃদ্ধি করুন",
-        "দীর্ঘমেয়াদী অংশীদারিত্ব তৈরি করুন",
-      ],
-      videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
-      icon: "🏢",
-    },
+  if (!data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-4">তহবিল খুঁজে পাওয়া যায়নি</h1>
+          <Link href="/donate">
+            <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
+              ফিরে যান
+            </button>
+          </Link>
+        </div>
+      </div>
+    )
   }
-
-  const data = donationTypeData[donationType] || donationTypeData.regular
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -84,7 +63,7 @@ export default function DonateTypePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Donation submitted:", { ...formData, type: donationType })
+    console.log("Donation submitted:", { ...formData, type: data.id })
     alert("দান করুন - ফর্ম সাবমিট করা হয়েছে!")
   }
 
@@ -214,11 +193,10 @@ export default function DonateTypePage() {
                           key={amount}
                           type="button"
                           onClick={() => handleAmountClick(amount)}
-                          className={`py-2 px-3 rounded-lg border-2 font-semibold transition ${
-                            selectedAmount === amount
+                          className={`py-2 px-3 rounded-lg border-2 font-semibold transition ${selectedAmount === amount
                               ? "border-primary bg-primary text-primary-foreground"
                               : "border-primary text-primary hover:bg-primary/10"
-                          }`}
+                            }`}
                         >
                           ৳{amount}
                         </button>
