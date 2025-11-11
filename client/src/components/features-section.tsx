@@ -34,6 +34,7 @@ export function FeaturesSection() {
               <div key={idx} className="bg-card p-8 rounded-lg border border-border hover:shadow-sm transition">
                 <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                   <Icon className="w-6 h-6 text-primary" />
+                  
                 </div>
                 <h3 className="text-xl font-semibold mb-2 text-primary">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>

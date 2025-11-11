@@ -54,7 +54,7 @@ export const DONATION_TYPES: DonationType[] = [
         slug: "newmuslim",
         title: "নওমুসলিম তহবিল",
         desc: "নওমুসলিম এবং সংখ্যালঘু সম্প্রদায়ের কল্যাণ কর্মসূচি।",
-        icon: "🤝",
+        icon: "🫧",
         color: "from-purple-500 to-purple-600",
         category: "special",
         benefits: ["নওমুসলিমদের সহায়তা", "সম্প্রদায় ইন্টিগ্রেশন প্রোগ্রাম", "মেন্টরশিপ এবং পরামর্শ", "মানসিক সমর্থন সেবা"],
@@ -109,7 +109,7 @@ export const DONATION_TYPES: DonationType[] = [
         slug: "lifetimedonor",
         title: "লাইফটাইম ডোনার",
         desc: "আজীবনের জন্য নিয়মিত সহায়তা এবং বিশেষ সুবিধা প্যাকেজ।",
-        icon: "👑",
+        icon: "🧿",
         color: "from-yellow-500 to-yellow-600",
         category: "donor-type",
         benefits: ["আজীবন বিশেষ স্বীকৃতি", "আর্যাব শংসাপত্র", "এক্সক্লুসিভ ডোনার সুবিধা", "পরিবারের জন্য দোয়া ও সহায়তা", "বার্ষিক বোনাস উৎসব"],
@@ -133,22 +133,3 @@ export const DONATION_TYPES: DonationType[] = [
         videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
     },
 ]
-
-// Helper function to get all donation types as array
-// export const getDonationTypesArray = (): DonationType[] => {
-//     return DONATION_TYPES
-// }
-
-// Helper function to get donation type by ID
-// export const getDonationTypeById = (id: number): DonationType | undefined => {
-//     return DONATION_TYPES.find((type) => type.id === id)
-// }
-
-// export const getDonationTypeBySlug = (slug: string): DonationType | undefined => {
-//     return DONATION_TYPES.find((type) => type.slug === slug)
-// }
-
-// Group donation types by category
-// export const getDonationTypesByCategory = (category: DonationType["category"]) => {
-//     return getDonationTypesArray().filter((type) => type.category === category)
-// }
