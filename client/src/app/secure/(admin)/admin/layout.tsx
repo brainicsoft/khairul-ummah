@@ -45,65 +45,50 @@ const menuItems = [
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true); // Default to dark mode
+  const [darkMode, setDarkMode] = useState(true); // default dark
   const pathname = usePathname();
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeMobileSidebar = () => setMobileSidebarOpen(false);
+  const toggleDarkMode = () => setDarkMode(!darkMode);
 
-  const closeMobileSidebar = () => {
-    setMobileSidebarOpen(false);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  // Dynamic colors
+  const bgSidebar = darkMode ? "bg-gray-900 border-gray-700" : "bg-white border-gray-200";
+  const bgHeader = darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200";
+  const bgContent = darkMode ? "bg-gray-900" : "bg-gray-50";
+  const bgCard = darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200";
+  const textPrimary = darkMode ? "text-white" : "text-gray-900";
+  const textSecondary = darkMode ? "text-gray-400" : "text-gray-600";
+  const hoverBg = darkMode ? "hover:bg-gray-800" : "hover:bg-gray-100";
+  const activeBg = darkMode ? "bg-blue-900/50 text-blue-300 border border-blue-800/50" : "bg-blue-50 text-blue-700 border border-blue-100";
 
   return (
-    <div className={`flex h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50/30'}`}>
-      {/* Mobile sidebar backdrop */}
+    <div className={`flex h-screen ${darkMode ? "dark" : ""} ${bgContent}`}>
+      {/* Mobile Sidebar Backdrop */}
       {mobileSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/70 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={closeMobileSidebar}
         />
       )}
 
       {/* Sidebar */}
-      <aside
-        className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          flex flex-col bg-gray-900 border-r border-gray-700
-          transition-all duration-300 ease-in-out
-          ${sidebarOpen ? "w-64" : "w-20"}
-          ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-700">
+      <aside className={`fixed lg:static inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 ease-in-out ${sidebarOpen ? "w-64" : "w-20"} ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${bgSidebar}`}>
+        {/* Sidebar Header */}
+        <div className={`flex items-center justify-between h-16 px-4 border-b ${darkMode ? "border-gray-700" : "border-gray-200"}`}>
           <div className={`flex items-center gap-3 ${!sidebarOpen && "justify-center w-full"}`}>
             <div className="relative w-8 h-8">
-              <Image
-                src={logo}
-                alt="Khairul Ummah"
-                fill
-                className="rounded-full object-cover"
-              />
+              <Image src={logo} alt="Khairul Ummah" fill className="rounded-full object-cover" />
             </div>
             {sidebarOpen && (
               <div className="flex flex-col">
-                <span className="font-semibold text-white text-sm">খাইরুল উম্মাহ</span>
-                <span className="text-xs text-gray-400">Admin Panel</span>
+                <span className={`font-semibold text-sm ${textPrimary}`}>খাইরুল উম্মাহ</span>
+                <span className={`text-xs ${textSecondary}`}>Admin Panel</span>
               </div>
             )}
           </div>
-          
-          {/* Close button for mobile */}
-          <button 
-            onClick={closeMobileSidebar}
-            className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400"
-          >
+
+          <button onClick={closeMobileSidebar} className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -113,37 +98,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-            
             return (
               <Link
                 key={item.name}
                 href={item.href}
                 onClick={closeMobileSidebar}
-                className={`
-                  flex items-center gap-3 w-full p-3 rounded-xl
-                  transition-all duration-200 group
-                  ${isActive 
-                    ? "bg-blue-900/50 text-blue-300 border border-blue-800/50 shadow-sm" 
-                    : "text-gray-400 hover:bg-gray-800 hover:text-white"
-                  }
-                `}
+                className={`flex items-center gap-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive ? activeBg : `text-gray-400 ${hoverBg} hover:primary`}`}
               >
-                <div className={`
-                  flex items-center justify-center min-w-6
-                  ${isActive ? "text-blue-400" : "text-gray-500 group-hover:text-gray-300"}
-                `}>
+                <div className={`flex items-center justify-center min-w-6 ${isActive ? "text-blue-400" : "text-gray-500 group-hover:text-gray-300"}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                {sidebarOpen && (
-                  <span className="font-medium text-sm truncate">
-                    {item.name}
-                  </span>
-                )}
-                {!sidebarOpen && (
-                  <div className="absolute left-14 ml-2 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap border border-gray-700">
-                    {item.name}
-                  </div>
-                )}
+                {sidebarOpen && <span className="font-medium text-sm truncate">{item.name}</span>}
               </Link>
             );
           })}
@@ -152,32 +117,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Footer */}
         <div className="p-4 border-t border-gray-700 space-y-3">
           {/* Dark Mode Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleDarkMode}
-            className="w-full flex items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800"
-          >
-            {darkMode ? (
-              <>
-                <Sun className="w-4 h-4" />
-                {sidebarOpen && <span className="text-xs">Light Mode</span>}
-              </>
-            ) : (
-              <>
-                <Moon className="w-4 h-4" />
-                {sidebarOpen && <span className="text-xs">Dark Mode</span>}
-              </>
-            )}
+          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full flex items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800">
+            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {sidebarOpen && <span className="text-xs">{darkMode ? "Light Mode" : "Dark Mode"}</span>}
           </Button>
 
-          {/* Toggle Sidebar - Desktop */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="hidden lg:flex w-full items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800"
-          >
+          {/* Toggle Sidebar */}
+          <Button variant="ghost" size="sm" onClick={toggleSidebar} className="hidden lg:flex w-full items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800">
             {sidebarOpen ? (
               <>
                 <ChevronLeft className="w-4 h-4" />
@@ -189,21 +135,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </Button>
 
           {/* User & Logout */}
-          <div className={`flex items-center gap-3 p-2 rounded-lg bg-gray-800 ${!sidebarOpen && "justify-center"}`}>
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
+          <div className={`flex items-center gap-3 p-2 rounded-lg ${darkMode ? "bg-gray-800" : "bg-gray-100"} ${!sidebarOpen && "justify-center"}`}>
+            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
               <Shield className="w-4 h-4 text-white" />
             </div>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">Admin User</p>
-                <p className="text-xs text-gray-400 truncate">admin@khairul-ummah.org</p>
+                <p className={`text-sm font-medium truncate ${textPrimary}`}>Admin User</p>
+                <p className={`text-xs truncate ${textSecondary}`}>admin@khairul-ummah.org</p>
               </div>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20"
-            >
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-red-400 hover:bg-red-900/20">
               <LogOut className="w-4 h-4" />
             </Button>
           </div>
@@ -211,19 +153,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-gray-900">
+      <main className={`flex-1 flex flex-col min-w-0 overflow-hidden ${bgContent}`}>
         {/* Top Header */}
-        <header className="h-16 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-6">
+        <header className={`h-16 ${bgHeader} border-b flex items-center justify-between px-6`}>
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileSidebarOpen(true)}
-              className="lg:hidden text-gray-400 hover:text-white hover:bg-gray-700"
-            >
+            <Button variant="ghost" size="icon" onClick={() => setMobileSidebarOpen(true)} className="lg:hidden text-gray-400 hover:text-white hover:bg-gray-700">
               <Menu className="w-5 h-5" />
             </Button>
-            <h1 className="text-xl font-semibold text-white">
+            <h1 className={`text-xl font-semibold ${textPrimary}`}>
               {menuItems.find(item => item.href === pathname)?.name || "Dashboard"}
             </h1>
           </div>
@@ -233,12 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               Last login: Today, 10:30 AM
             </div>
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleDarkMode}
-                className="text-gray-400 hover:text-white hover:bg-gray-700"
-              >
+              <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-gray-400 hover:text-white hover:bg-gray-700">
                 {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </Button>
               <div className="w-8 h-8 bg-green-900/30 rounded-full flex items-center justify-center border border-green-800/50">
@@ -251,7 +183,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Page Content */}
         <div className="flex-1 overflow-auto p-6">
           <div className="md:container mx-auto">
-            <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+            <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
               {children}
             </div>
           </div>
