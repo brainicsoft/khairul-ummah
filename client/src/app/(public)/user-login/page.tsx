@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
-import siginlogo from '../../assets/login.png'
+import siginlogo from '@/assets/login.png'
 export default function SigninPage() {
     const [step, setStep] = useState<"mobile" | "otp">("mobile")
     const [mobileNumber, setMobileNumber] = useState("")
