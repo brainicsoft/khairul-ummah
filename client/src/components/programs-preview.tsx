@@ -36,7 +36,7 @@ export function ProgramsPreview() {
           {programs.map((program) => (
             <div
               key={program.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition flex flex-col"
+              className="bg-white rounded-lg overflow-hidden shadow-sm transition flex flex-col"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
