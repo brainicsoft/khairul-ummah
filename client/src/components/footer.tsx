@@ -5,7 +5,6 @@ import Image from "next/image"
 import Link from "next/link"
 import logo from "../assets/logo/logo.png"
 import { FaYoutube } from "react-icons/fa"
-
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground py-12">
