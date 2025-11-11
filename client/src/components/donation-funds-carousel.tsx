@@ -25,13 +25,13 @@ const fundTypes = [
   {
     id: "emergency-flood",
     title: "জরুরি বন্যা তহবিল",
-    desc: "বন্যা ও প্রাকৃতিক দুর্যোগে ত্রাণ ও পুনর্বাসন কার্যক্রম।",
+    desc: "বন্যা ও প্রাকৃতিক দুর্যোগে ত্রাণ,সাহায্য বিতরণ এবং পুনর্বাসন কার্যক্রম।",
     image: "/flood-relief-disaster.jpg",
   },
   {
     id: "zakat",
     title: "জাকাত তহবিল",
-    desc: "ইসলামিক নীতি অনুযায়ী দরিদ্র ও অসহায় মানুষের সেবায় ব্যয়।",
+    desc: "ইসলামিক নীতি অনুযায়ী দরিদ্র ও অসহায় মানুষের সেবায় ব্যয় করা সর্বদা।",
     image: jakat,
   },
 ]
@@ -74,7 +74,7 @@ export function DonationFundsCarousel() {
           {fundTypes.map((fund) => (
             <div
               key={fund.id}
-              className="bg-white shadow-lg rounded-xl overflow-hidden flex flex-col mx-2"
+              className="bg-white shadow-md mb-3 rounded-xl overflow-hidden flex flex-col mx-2"
             >
               <div className="relative w-full aspect-[4/3]">
                 <Image

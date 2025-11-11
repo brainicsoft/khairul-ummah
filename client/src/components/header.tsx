@@ -6,12 +6,26 @@ import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import logo from "../assets/logo/logo.png"
+import { DONATION_TYPES } from "@/data/donationData"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoverDropdown, setHoverDropdown] = useState<string | null>(null)
   const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
+
+  const fundSubMenu = DONATION_TYPES
+    .filter((type) => type.category === "special")
+    .map((type) => ({
+      id: type.id,
+      href: `/donate/${type.slug}`, 
+      label: type.title,
+    }))
+
+  const aboutSubMenu = [
+    { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
+    { href: "/about/committee", label: "পরিচালনা পরিষদ" },
+  ]
 
   const navLinks = [
     { href: "/", label: "হোম" },
@@ -21,32 +35,11 @@ export function Header() {
     { href: "/running-project", label: "চলমান প্রজেক্ট" },
     { href: "/#", label: "আজীবন দাতা সদস্য" },
     { href: "/contact", label: "যোগাযোগ" },
-    {
-      href: "/volunteer",
-      label: "স্বেচ্ছাসেবক নিবন্ধন",
-    },
+    { href: "/volunteer", label: "স্বেচ্ছাসেবক নিবন্ধন" },
     { href: "/gellery", label: "গ্যালারি" },
   ]
 
-  const fundSubMenu = [
-    { href: "/donation-fund/qurbani", label: "কুরবানী" },
-    { href: "/donation-fund/dawah", label: "দাওয়া" },
-    { href: "/donation-fund/education", label: "শিক্ষা" },
-    { href: "/donation-fund/new-muslim", label: "নওমুসলিম" },
-    { href: "/donation-fund/flood", label: "বন্যা" },
-    { href: "/donation-fund/general", label: "সাধারণ" },
-    { href: "/donation-fund/zakat", label: "জাকাত" },
-    { href: "/donation-fund/lifetime-donor", label: "লাইফটাইম ডোনার" },
-    { href: "/donation-fund/monthly-donor", label: "মাসিক ডোনার" },
-    { href: "/donation-fund/mosjid-madrasa", label: "মসজিদ-মাদ্রাসা" },
-  ]
-
-  const aboutSubMenu = [
-    { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
-    { href: "/about/committee", label: "পরিচালনা পরিষদ" },
-  ]
-
-  // Close dropdown and mobile menu when route changes
+  // ✅ Auto close dropdown & menu on route change
   useEffect(() => {
     setHoverDropdown(null)
     setClickDropdown(null)
@@ -55,7 +48,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
-      <div className="container mx-auto px-1 sm:px-2 py-2 sm:py-3 flex  justify-between items-center">
+      <div className="container mx-auto px-2 py-2 sm:py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href="/">
           <Image
@@ -70,7 +63,7 @@ export function Header() {
 
         {/* Desktop Menu */}
         <div className="flex justify-between items-center">
-          <nav className="hidden lg:flex gap-0.5 xl:gap-2 items-center relative flex-wrap justify-center">
+          <nav className="hidden lg:flex gap-1 xl:gap-2 items-center relative flex-wrap justify-center">
             {navLinks.map((link) => {
               const hasDropdown = !!link.dropdown
               const isOpen = hoverDropdown === link.dropdown || clickDropdown === link.dropdown
@@ -90,16 +83,13 @@ export function Header() {
                     }
                   }}
                 >
-                  <div className="flex items-center gap-1 ">
-                    {/* Main link navigates normally */}
+                  <div className="flex items-center gap-1">
                     <Link
                       href={link.href}
-                      className="font-semibold text-[15px] text-inherit px-2 py-1 hover:text-primary transition whitespace-nowrap "
+                      className="font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap"
                     >
                       {link.label}
                     </Link>
-
-                    {/* Dropdown toggle button */}
                     <button
                       onClick={(e) => {
                         e.preventDefault()
@@ -115,7 +105,7 @@ export function Header() {
                   {/* Dropdown menu */}
                   <div
                     className={`absolute left-0 mt-2 w-52 bg-white border border-gray-200 shadow-lg rounded-lg transition-all duration-200 ease-in-out transform 
-                  ${isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                    ${isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
                   >
                     {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
                       <Link
@@ -132,16 +122,15 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-semibold text-[15px] text-inherit px-2 py-1 hover:text-primary transition whitespace-nowrap ${pathname === link.href ? "text-primary" : ""
+                  className={`font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap ${pathname === link.href ? "text-primary" : ""
                     }`}
                 >
                   {link.label}
                 </Link>
               )
             })}
-
-
           </nav>
+
           <Link href="/donate">
             <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
               দান করুন
@@ -151,7 +140,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-2">
-          <Link href="/donate" className="">
+          <Link href="/donate">
             <button className="bg-primary text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-primary/90 transition text-xs sm:text-sm font-semibold">
               দান করুন
             </button>
@@ -176,10 +165,10 @@ export function Header() {
 
             return hasDropdown ? (
               <div key={link.href}>
-                <div className="flex">
+                <div className="flex justify-between items-center">
                   <Link
                     href={link.href}
-                    className="flex justify-between items-center w-full font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition"
+                    className="font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition"
                   >
                     {link.label}
                   </Link>
@@ -187,7 +176,7 @@ export function Header() {
                     onClick={() =>
                       setClickDropdown(isOpen ? null : link.dropdown!)
                     }
-                    className={`w-4 h-4 transition ${isOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 transition cursor-pointer ${isOpen ? "rotate-180" : ""}`}
                   />
                 </div>
 
@@ -209,7 +198,8 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition block ${pathname === link.href ? "bg-primary/10 text-primary" : ""}`}
+                className={`font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition block ${pathname === link.href ? "bg-primary/10 text-primary" : ""
+                  }`}
               >
                 {link.label}
               </Link>
