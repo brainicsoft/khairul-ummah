@@ -134,4 +134,26 @@
     box-shadow: 0 0 8px 1px #999;
     display: none;
 }
+
+/* Nuclear option - disable all Google Translate UI */
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+    all: unset !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Prevent text selection highlighting by Google Translate */
+* {
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: auto !important;
+}
+
+/* Disable pointer events for Google Translate elements */
+.goog-text-highlight,
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+    pointer-events: none !important;
+    cursor: default !important;
+}
 }
