@@ -73,10 +73,12 @@ export default function DonationTypesPage() {
                     <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1 text-black" />
                   </div>
 
-                  <div className="px-6 pb-6">
-                    <h3 className="text-2xl font-bold mb-3">{type.title}</h3>
-                    <p className=" leading-relaxed flex-grow">{type.desc}</p>
+                  <div className="px-6 pb-6 flex flex-col flex-1 justify-between">
+                    <div>
+                      <h3 className="text-2xl font-bold mb-3">{type.title}</h3>
+                      <p className=" leading-relaxed flex-grow">{type.desc}</p>
 
+                    </div>
                     {/* Button always at bottom */}
                     <button className="mt-6 text-xl bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition w-full">
                       দান করুন
