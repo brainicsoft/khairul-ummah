@@ -5,7 +5,32 @@ import { translationConfig } from '../lang/lang_config'
 
 export function GoogleTranslate() {
   useEffect(() => {
-    // Function to remove Google Translate banner
+    // Function to remove Google Translate tooltips only
+    const removeGoogleTooltips = () => {
+      // Remove the main tooltip element
+      const tooltip = document.getElementById('goog-gt-tt')
+      if (tooltip) {
+        tooltip.remove()
+      }
+      
+      // Remove any other tooltip elements
+      const tooltips = document.querySelectorAll('.goog-tooltip, [id*="goog-gt"]')
+      tooltips.forEach(tooltip => {
+        tooltip.remove()
+      })
+      
+      // Remove tooltip iframes
+      const iframes = document.querySelectorAll('iframe')
+      iframes.forEach(iframe => {
+        if (iframe.src?.includes('translate.google') || 
+            iframe.title?.includes('translate') ||
+            iframe.className?.includes('goog')) {
+          iframe.remove()
+        }
+      })
+    }
+
+    // Function to remove Google Translate banner (your existing code)
     const removeGoogleBanner = () => {
       // Remove the banner frame
       const banner = document.querySelector('.goog-te-banner-frame')
@@ -41,6 +66,8 @@ export function GoogleTranslate() {
         
         // Remove banner after initialization
         setTimeout(removeGoogleBanner, 100)
+        // Remove tooltips after initialization
+        setTimeout(removeGoogleTooltips, 150)
       }
     }
 
@@ -49,8 +76,11 @@ export function GoogleTranslate() {
       window.googleTranslateElementInit()
     }
 
-    // Continuously check and remove the banner
-    const interval = setInterval(removeGoogleBanner, 500)
+    // Continuously check and remove the banner AND tooltips
+    const interval = setInterval(() => {
+      removeGoogleBanner()
+      removeGoogleTooltips()
+    }, 500)
     
     // Cleanup interval on unmount
     return () => clearInterval(interval)
