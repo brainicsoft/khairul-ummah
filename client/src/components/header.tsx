@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import logo from "../assets/logo/logo.png"
 import { DONATION_TYPES } from "@/data/donationData"
+import { LanguageSwitcher } from "@/app/components/LanguageSwitcher"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -60,6 +61,7 @@ export function Header() {
             priority
           />
         </Link>
+    
 
         {/* Desktop Menu */}
         <div className="flex justify-between items-center">
@@ -130,6 +132,7 @@ export function Header() {
               )
             })}
           </nav>
+           <LanguageSwitcher/>
 
           <Link href="/donate">
             <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
@@ -137,6 +140,7 @@ export function Header() {
             </button>
           </Link>
         </div>
+
 
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-2">
@@ -211,6 +215,7 @@ export function Header() {
               দান করুন
             </button>
           </Link>
+         
         </nav>
       )}
     </header>
