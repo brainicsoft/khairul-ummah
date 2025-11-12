@@ -4,263 +4,330 @@ import { useState } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Upload } from "lucide-react"
+import { Label } from "./ui/label"
 
-export function VolunterForm() {
+export function VolunteerForm() {
   const [formData, setFormData] = useState({
     fullName: "",
-    mobileNumber: "",
-    email: "",
-    age: "",
     fatherName: "",
     motherName: "",
-    permanentAddress: "",
+    NidNo: "",
+    mobileNumber: "",
+    email: "",
+    birthDate: "",
+    gender: "",
+    age: "",
     presentAddress: "",
-    educationQualification: "",
-  })
-
-  const [skills, setSkills] = useState({
-    deskSkills: "",
-    workingArea: "",
-    references: "",
-    additionalSkills: "",
-  })
-
-  const [additionalInfo, setAdditionalInfo] = useState({
-    ngoExperience: false,
-    trainingExperience: false,
+    permanentAddress: "",
+    currentProfession: "",
     organizationName: "",
-    designatedSkill: "",
-    preferredLanguage: "",
-    preferredDuration: "",
-    presentationSkills: "",
-    additionalInfo: "",
+    workAddress: "",
+    educationQualification: "",
+    interestReason: "",
   })
 
+  const [photo, setPhoto] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string>("")
   const [submitted, setSubmitted] = useState(false)
-  const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
 
-  // handle input fields
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  // ✅ Handle Input Changes
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  const handleSkillsChange = (field: string, value: string | boolean) => {
-    setSkills((prev) => ({ ...prev, [field]: value }))
+  // ✅ Handle Photo Upload
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string)
+        setPhoto(file)
+      }
+      reader.readAsDataURL(file)
+    }
   }
 
-  const handleAdditionalChange = (field: string, value: string | boolean) => {
-    setAdditionalInfo((prev) => ({ ...prev, [field]: value }))
-  }
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) setProfilePhoto(e.target.files[0])
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ Handle Submit
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!formData.fullName || !formData.mobileNumber || !formData.email) {
-      alert("দয়া করে সমস্ত প্রয়োজনীয় ক্ষেত্র পূরণ করুন")
+    if (!photo) {
+      alert("image is required")
       return
     }
+    
 
-    console.log("Form Data:", { formData, skills, additionalInfo, profilePhoto })
+    // Combine all data
+    const finalData = {
+      fullName: formData.fullName,
+      fatherName: formData.fatherName,
+      motherName: formData.motherName,
+      NidNo: formData.NidNo,
+      mobileNumber: formData.mobileNumber,
+      email: formData.email,
+      birthDate: formData.birthDate,
+      gender: formData.gender,
+      age: formData.age,
+      presentAddress: formData.presentAddress,
+      permanentAddress: formData.permanentAddress,
+      currentProfession: formData.currentProfession,
+      organizationName: formData.organizationName,
+      workAddress: formData.workAddress,
+      educationQualification: formData.educationQualification,
+      interestReason: formData.interestReason,
+    }
 
-    setSubmitted(true)
-    setTimeout(() => setSubmitted(false), 3000)
+    const submissionData = new FormData()
+    if (photo) {
+      submissionData.append("photo", photo as Blob)
+    }
+    submissionData.append("data", JSON.stringify(finalData))
+    try {
+      const response = await fetch("http://localhost:3000/api/volunteer", {
+        method: "POST",
+        body: submissionData,
+      })
+
+      if (response?.ok) {
+        alert("Form submitted successfully")
+
+      } else {
+        alert("Form submission failed")
+
+      }
+    } catch (error) {
+      alert("Form submission failed")
+      console.error(error)
+
+    } finally {
+
+    }
+    // Clear form
+    // setFormData({
+    //   fullName: "",
+    //   fatherName: "",
+    //   motherName: "",
+    //   NidNo: "",
+    //   mobileNumber: "",
+    //   email: "",
+    //   birthDate: "",
+    //   gender: "",
+    //   age: "",
+    //   presentAddress: "",
+    //   permanentAddress: "",
+    //   currentProfession: "",
+    //   organizationName: "",
+    //   workAddress: "",
+    //   educationQualification: "",
+    //   interestReason: "",
+    // })
+    // setProfilePhoto(null)
   }
 
   return (
     <div className="bg-gray-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Green Header */}
+        {/* Header */}
         <div className="bg-primary text-white rounded-t-lg p-8 mb-0">
           <h2 className="text-2xl font-bold mb-2">স্বেচ্ছাসেবক আবেদন</h2>
-          <p className="text-green-100 text-sm leading-relaxed">
-            দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন। আপনার প্রদত্ত তথ্য সম্পূর্ণ গোপনীয় থাকবে এবং শুধুমাত্র আমাদের স্বেচ্ছাসেবক কর্মসূচির জন্য ব্যবহৃত হবে।
+          <p className="text-green-100 text-sm">
+            দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন। আপনার প্রদত্ত তথ্য গোপনীয় থাকবে।
           </p>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-b-lg shadow-lg p-8">
-          {/* Personal Information */}
-          <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">সম্পূর্ণ নাম *</label>
-                <Input
-                  type="text"
-                  name="fullName"
-                  placeholder="নাম"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">নিবন্ধন নম্বর</label>
-                <Input type="text" name="registrationNumber" placeholder="নিবন্ধন নম্বর" className="border-gray-300" />
-              </div>
+          {/* Personal Info */}
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">সম্পূর্ণ নাম <span className="text-red-500">*</span></label>
+              <Input
+                className="shadow-sm" name="fullName" value={formData.fullName} onChange={handleInputChange}
+                required />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">মোবাইল নম্বর *</label>
-                <Input
-                  type="tel"
-                  name="mobileNumber"
-                  placeholder="মোবাইল নম্বর"
-                  value={formData.mobileNumber}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">ইমেইল *</label>
-                <Input
-                  type="email"
-                  name="email"
-                  placeholder="ইমেইল"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">জেন্ডার</label>
-                <select
-                  name="gender"
-                  value={(formData as any).gender || ""}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600"
-                >
-                  <option value="">নির্বাচন করুন</option>
-                  <option value="male">পুরুষ</option>
-                  <option value="female">মহিলা</option>
-                  <option value="other">অন্যান্য</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">জন্মতারিখ</label>
-                <Input
-                  type="date"
-                  name="birthDate"
-                  value={(formData as any).birthDate || ""}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">বর্তমান ঠিকানা</label>
-                <Input
-                  type="text"
-                  name="presentAddress"
-                  placeholder="ঠিকানা"
-                  value={formData.presentAddress}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">স্থায়ী ঠিকানা</label>
-                <Input
-                  type="text"
-                  name="permanentAddress"
-                  placeholder="ঠিকানা"
-                  value={formData.permanentAddress}
-                  onChange={handleInputChange}
-                  className="border-gray-300"
-                />
-              </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">পিতার নাম <span className="text-red-500">*</span></label>
+              <Input className="shadow-sm" name="fatherName" value={formData.fatherName} onChange={handleInputChange} required />
             </div>
           </div>
 
-          <hr className="mb-8" />
-
-          {/* Educational Qualification */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">শিক্ষাগত যোগ্যতা</h3>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                শিক্ষাগত যোগ্যতা (যেমনঃ স্নাতক, উচ্চ মাধ্যমিক ইত্যাদি)
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                জাতীয় পরিচয়পত্র/জন্ম নিবন্ধন নম্বর
               </label>
+              <Input className="shadow-sm" name="NidNo" value={formData.NidNo} onChange={handleInputChange} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">মোবাইল নম্বর <span className="text-red-500">*</span></label>
               <Input
-                type="text"
-                name="educationQualification"
-                placeholder="আপনার শিক্ষাগত যোগ্যতা লিখুন"
-                value={formData.educationQualification}
+                className="shadow-sm"
+                type="tel"
+                name="mobileNumber"
+                value={formData.mobileNumber}
                 onChange={handleInputChange}
-                className="border-gray-300 bg-gray-100"
                 required
               />
             </div>
           </div>
 
-          <hr className="mb-8" />
-
-          {/* Profile Photo */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-700 mb-4">আপনার ছবি</label>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div>
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
-                  <Upload className="w-4 h-4" />
-                  <span className="text-sm font-medium">ছবি আপলোড করুন</span>
-                  <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-                </label>
-                {profilePhoto && <p className="text-sm text-gray-600 mt-2">{profilePhoto.name}</p>}
-              </div>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">ইমেইল <span className="text-red-500">*</span></label>
+              <Input
+                className="shadow-sm"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">জন্মতারিখ</label>
+              <Input className="shadow-sm" type="date" name="birthDate" value={formData.birthDate} onChange={handleInputChange} />
             </div>
           </div>
 
-          <hr className="mb-8" />
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">লিঙ্গ</label>
+              <select
 
-          {/* Important Notice */}
-          <div className="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded">
-            <p className="text-red-900 text-sm leading-relaxed">
-              <strong className="text-red-600">* গুরুত্বপূর্ণ বিষয়ের নোট:</strong> আপনার ব্যক্তিগত তথ্য সম্পূর্ণভাবে গোপনীয় থাকবে
-              এবং শুধুমাত্র স্বেচ্ছাসেবক নিয়োগের জন্য ব্যবহৃত হবে।
+                name="gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              >
+                <option value="">নির্বাচন করুন</option>
+                <option value="male">পুরুষ</option>
+                <option value="female">মহিলা</option>
+                <option value="other">অন্যান্য</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">বয়স</label>
+              <Input className="shadow-sm" name="age" value={formData.age} onChange={handleInputChange} type="number" />
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">বর্তমান ঠিকানা</label>
+              <Input className="shadow-sm" name="presentAddress" value={formData.presentAddress} onChange={handleInputChange} />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">স্থায়ী ঠিকানা</label>
+              <Input className="shadow-sm" name="permanentAddress" value={formData.permanentAddress} onChange={handleInputChange} />
+            </div>
+          </div>
+
+          {/* Profession */}
+          <hr className="my-8" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">পেশাগত তথ্য</h3>
+
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">বর্তমান পেশা <span className="text-red-500">*</span></label>
+              <Input
+                className="shadow-sm"
+                name="currentProfession"
+                value={formData.currentProfession}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">প্রতিষ্ঠানের নাম <span className="text-red-500">*</span></label>
+              <Input
+                className="shadow-sm"
+                name="organizationName"
+                value={formData.organizationName}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">কর্মস্থলের ঠিকানা <span className="text-red-500">*</span></label>
+            <Input
+              className="shadow-sm"
+              name="workAddress"
+              value={formData.workAddress}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
+          {/* Education */}
+          <hr className="my-8" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">শিক্ষাগত যোগ্যতা</h3>
+          <Input
+            className="shadow-sm"
+            name="educationQualification"
+            value={formData.educationQualification}
+            onChange={handleInputChange}
+            placeholder="যেমনঃ স্নাতক, উচ্চ মাধ্যমিক"
+            required
+          />
+
+          {/* Interest */}
+          <div className="my-8">
+            <label className="text-sm font-medium text-gray-700 mb-2 block">
+              স্বেচ্ছাসেবক হিসেবে আগ্রহ - কেন আপনি স্বেচ্ছাসেবক হতে চান?
+            </label>
+            <textarea
+              name="interestReason"
+              value={formData.interestReason}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              rows={4}
+            />
+          </div>
+
+          {/* Photo Upload */}
+          <div className="mb-8">
+            <label className="text-sm font-medium text-gray-700 mb-4 block">আপনার ছবি</label>
+
+            {photoPreview && (
+              <div className="mt-2">
+                {/* <Label>ছবির প্রিভিউ</Label> */}
+                <img
+                  src={photoPreview}
+                  alt="ছবির প্রিভিউ"
+                  className="mt-1 w-[100px] max-h-[100px] my-2 object-contain rounded-full border"
+                />
+              </div>
+            )}
+
+
+            <label className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90">
+              <Upload className="w-4 h-4" />
+              <span>ছবি আপলোড করুন</span>
+              <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+            </label>
+
+          </div>
+
+          {/* Privacy Notice */}
+          <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded mb-8">
+            <p className="text-sm text-red-900">
+              <strong>* গুরুত্বপূর্ণ:</strong> আপনার ব্যক্তিগত তথ্য শুধুমাত্র স্বেচ্ছাসেবক প্রক্রিয়ায় ব্যবহৃত হবে।
             </p>
           </div>
 
-          {/* Checkboxes */}
-          <div className="mb-8 space-y-3">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="terms"
-                className="w-4 h-4 mt-1 text-green-600 rounded border-gray-300 focus:ring-2 focus:ring-green-600"
-                required
-              />
-              <label htmlFor="terms" className="text-sm text-gray-700">
-                আমি সমস্ত শর্তাবলী এবং গোপনীয়তা নীতি সম্মত করছি *
-              </label>
-            </div>
-          </div>
-
+          {/* Success Message */}
           {submitted && (
-            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-800 font-medium">
-                ✓ আপনার আবেদন সফলভাবে জমা দেওয়া হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।
-              </p>
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 font-medium">
+              ✓ আপনার আবেদন সফলভাবে জমা হয়েছে!
             </div>
           )}
 
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 text-base">
+          <Button type="submit" className="w-full bg-primary text-white py-3 text-base">
             আবেদন করুন →
           </Button>
         </form>
