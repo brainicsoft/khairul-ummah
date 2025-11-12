@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
 import { Upload } from "lucide-react"
-import { Label } from "./ui/label"
 
 export function VolunteerForm() {
   const [formData, setFormData] = useState({
@@ -29,7 +28,7 @@ export function VolunteerForm() {
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>("")
   const [submitted, setSubmitted] = useState(false)
-
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   // ✅ Handle Input Changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -50,7 +49,14 @@ export function VolunteerForm() {
       reader.readAsDataURL(file)
     }
   }
-
+  const handleRemovePhoto = () => {
+    setPhoto(null)
+    setPhotoPreview("")
+    // ✅ Reset the input value so same file can be uploaded again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
   // ✅ Handle Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,13 +64,12 @@ export function VolunteerForm() {
       alert("image is required")
       return
     }
-    
+
 
     // Combine all data
     const finalData = {
       fullName: formData.fullName,
       fatherName: formData.fatherName,
-      motherName: formData.motherName,
       NidNo: formData.NidNo,
       mobileNumber: formData.mobileNumber,
       email: formData.email,
@@ -79,12 +84,17 @@ export function VolunteerForm() {
       educationQualification: formData.educationQualification,
       interestReason: formData.interestReason,
     }
+    console.log(finalData)
 
     const submissionData = new FormData()
     if (photo) {
       submissionData.append("photo", photo as Blob)
     }
     submissionData.append("data", JSON.stringify(finalData))
+    // for consol final data
+    // for (const pair of submissionData.entries()) {
+    //   console.log(pair[0], pair[1])
+    // }
     try {
       const response = await fetch("http://localhost:3000/api/volunteer", {
         method: "POST",
@@ -292,23 +302,30 @@ export function VolunteerForm() {
           {/* Photo Upload */}
           <div className="mb-8">
             <label className="text-sm font-medium text-gray-700 mb-4 block">আপনার ছবি</label>
-
             {photoPreview && (
-              <div className="mt-2">
-                {/* <Label>ছবির প্রিভিউ</Label> */}
-                <img
-                  src={photoPreview}
-                  alt="ছবির প্রিভিউ"
-                  className="mt-1 w-[100px] max-h-[100px] my-2 object-contain rounded-full border"
-                />
+              <div className="mt-4 flex flex-col items-start">
+                <div className="relative w-24 h-24">
+                  <img
+                    src={photoPreview}
+                    alt="ছবির প্রিভিউ"
+                    className="w-24 h-24 rounded-full border-2 border-primary object-cover shadow-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemovePhoto}
+                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 mt-2">প্রোফাইল ছবি প্রিভিউ</p>
               </div>
             )}
-
 
             <label className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90">
               <Upload className="w-4 h-4" />
               <span>ছবি আপলোড করুন</span>
-              <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
             </label>
 
           </div>
