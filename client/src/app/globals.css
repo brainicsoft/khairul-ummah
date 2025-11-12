@@ -120,4 +120,18 @@
    .bengali-text {
     font-feature-settings: "beng";
   }
+
+  .VIpgJd-ZVi9od-ORHb-OEVmcd {
+    left: 0;
+    top: 0;
+    height: 0;
+    width: 0;
+    z-index: 10000001;
+    position: fixed;
+    border: none;
+    border-bottom: 1px solid #6B90DA;
+    margin: 0;
+    box-shadow: 0 0 8px 1px #999;
+    display: none;
+}
 }
