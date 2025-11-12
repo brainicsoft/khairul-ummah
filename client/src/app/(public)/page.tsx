@@ -11,7 +11,6 @@ import { ProgramsPreview } from "@/components/programs-preview"
 import { GallerySection } from "@/components/gallery-section"
 import { BlogSection } from "@/components/blog-section"
 import { NewsletterSection } from "@/components/newsletter-section"
-import { Footer } from "@/components/footer"
 
 export default function Home() {
   const [showScroll, setShowScroll] = useState(false)
