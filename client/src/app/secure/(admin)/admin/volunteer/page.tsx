@@ -37,7 +37,7 @@ export default function VolunteerManagementPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Volunteers</CardTitle>
+          {/* <CardTitle>Volunteers</CardTitle> */}
           <CardDescription>Total volunteers: {filteredVolunteers.length}</CardDescription>
         </CardHeader>
         <CardContent>

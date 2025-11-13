@@ -167,7 +167,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-400 hidden md:block">
+            <div className="text-sm text-gray-900 dark:text-white hidden md:block">
               Last login: Today, 10:30 AM
             </div>
             <div className="flex items-center gap-3">
@@ -182,7 +182,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-6 dark:bg-[#1A2328]">
+        <div className="flex-1 overflow-auto dark:bg-[#1A2328] py-6">
           <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
               {children}
