@@ -1,19 +1,19 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
     type ColumnDef,
     type ColumnFiltersState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
-    getPaginationRowModel,
     getSortedRowModel,
     type SortingState,
     useReactTable,
     type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Eye, Trash2 } from "lucide-react"
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Eye, Trash2, ChevronLeft, ChevronRight } from "lucide-react"
 import type { Volunteer } from "@/data/volunteerData"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -28,10 +28,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import VolunteerDetailModal from "./Volunteer-detail-modal"
 
 interface VolunteerTableProps {
     data: Volunteer[]
+    searchTerm: string
+    onSearchChange: (value: string) => void
+    currentPage: number
+    totalPages: number
+    onPageChange: (page: number) => void
 }
 
 export const columns: ColumnDef<Volunteer>[] = [
@@ -99,59 +103,45 @@ export const columns: ColumnDef<Volunteer>[] = [
         enableHiding: false,
         cell: ({ row }) => {
             const volunteer = row.original
-            return <VolunteerActions volunteer={volunteer} />
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/volunteers/${volunteer.slug}`} className="cursor-pointer flex items-center">
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Details
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                            className="cursor-pointer text-destructive"
+                            onClick={() => console.log("Delete:", volunteer.fullName)}
+                        >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            )
         },
     },
 ]
 
-function VolunteerActions({ volunteer }: { volunteer: Volunteer }) {
-    const [selectedVolunteer, setSelectedVolunteer] = React.useState<Volunteer | null>(null)
-    const [isModalOpen, setIsModalOpen] = React.useState(false)
-
-    return (
-        <>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem
-                        onClick={() => {
-                            setSelectedVolunteer(volunteer)
-                            setIsModalOpen(true)
-                        }}
-                        className="cursor-pointer"
-                    >
-                        <Eye className="h-4 w-4 mr-2" />
-                        View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        className="cursor-pointer text-destructive"
-                        onClick={() => console.log("Delete:", volunteer.fullName)}
-                    >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-
-            {selectedVolunteer && (
-                <VolunteerDetailModal
-                    volunteer={selectedVolunteer}
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                />
-            )}
-        </>
-    )
-}
-
-export default function VolunteerTable({ data }: VolunteerTableProps) {
+export default function VolunteerTable({
+    data,
+    searchTerm,
+    onSearchChange,
+    currentPage,
+    totalPages,
+    onPageChange,
+}: VolunteerTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -163,7 +153,6 @@ export default function VolunteerTable({ data }: VolunteerTableProps) {
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -180,9 +169,9 @@ export default function VolunteerTable({ data }: VolunteerTableProps) {
         <div className="w-full space-y-4">
             <div className="flex items-center gap-2">
                 <Input
-                    placeholder="Filter by email or name..."
-                    value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) => table.getColumn("email")?.setFilterValue(event.target.value)}
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => onSearchChange(e.target.value)}
                     className="max-w-sm"
                 />
                 <DropdownMenu>
@@ -229,7 +218,9 @@ export default function VolunteerTable({ data }: VolunteerTableProps) {
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
                             table.getRowModel().rows.map((row) => (
-                                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}
+                                    className="text-sm md:text-base h-16"
+                                >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                                     ))}
@@ -246,24 +237,28 @@ export default function VolunteerTable({ data }: VolunteerTableProps) {
                 </Table>
             </div>
 
-            <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-                    selected.
-                </div>
-                <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                        Next
-                    </Button>
-                </div>
+            <div className="flex justify-between items-center gap-3 max-w-sm">
+                <Button
+                    variant="ghost"
+                    onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={`hover:text-primary hover:bg-muted transition-all duration-200 active:bg-muted ${currentPage === 1 ? "text-muted-foreground" : "text-primary"
+                        }`}
+                >
+                    <ChevronLeft className="mr-2 h-4 w-4" /> Previous
+                </Button>
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    Page {currentPage} of {totalPages || 1}
+                </span>
+                <Button
+                    variant="ghost"
+                    onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`hover:text-primary hover:bg-muted transition-all duration-200 active:bg-muted ${currentPage === totalPages ? "text-muted-foreground" : "text-primary"
+                        }`}
+                >
+                    Next <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
             </div>
         </div>
     )

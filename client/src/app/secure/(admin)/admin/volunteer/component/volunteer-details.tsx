@@ -15,7 +15,7 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{volunteer.fullName}</DialogTitle>
+          <DialogTitle className="dark:">{volunteer.fullName}</DialogTitle>
           <DialogDescription>Volunteer Details</DialogDescription>
         </DialogHeader>
 
@@ -40,10 +40,10 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
                   <p className="text-sm text-muted-foreground">Father's Name</p>
                   <p className="font-medium">{volunteer.fatherName}</p>
                 </div>
-                <div>
+                {/* <div>
                   <p className="text-sm text-muted-foreground">Mother's Name</p>
                   <p className="font-medium">{volunteer.motherName}</p>
-                </div>
+                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
