@@ -182,7 +182,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         {/* Page Content */}
         <div className="flex-1 overflow-auto p-6">
-          <div className="md:container mx-auto">
+          <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
               {children}
             </div>
