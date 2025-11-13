@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Hind_Siliguri } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import icon from "@/assets/logo/logo-round.jpg"
+import { GoogleTranslate } from "./components/GoogleTranslate"
 
 // Configure Hind Siliguri with all weights and subsets
 const hindSiliguri = Hind_Siliguri({
@@ -13,12 +14,12 @@ const hindSiliguri = Hind_Siliguri({
   display: "swap",
 })
 
-const geist = Geist({ 
+const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
 })
 
-const geistMono = Geist_Mono({ 
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-geist-mono",
 })
@@ -35,30 +36,35 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="bn" className={`${hindSiliguri.variable} ${geist.variable} ${geistMono.variable}`}>
-      <link rel="icon" href={icon.src} sizes="any" />
       <head>
-        <script 
-          async 
-          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-        />
+        <link rel="icon" href={icon.src} sizes="any" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              window.googleTranslateElementInit = function() {
-                new google.translate.TranslateElement({
-                  pageLanguage: 'bn',
-                  includedLanguages: 'bn,en,ar,hi,ur',
-                  layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                }, 'google_translate_element');
+              window.__GOOGLE_TRANSLATION_CONFIG__ = {
+                languages: [
+                  { title: 'English', name: 'en' },
+                  { title: 'Bangla', name: 'bn' },
+                  { title: 'Arabic', name: 'ar' }
+                ],
+                defaultLanguage: 'bn'
               };
             `,
           }}
         />
       </head>
       <body className={`font-sans antialiased`}>
-        <div id="google_translate_element" style={{ display: "none" }}></div>
+        <GoogleTranslate />
         {children}
         <Analytics />
+        
+        {/* Load Google Translate Script */}
+        <script
+          src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+          async
+          defer
+        />
+
       </body>
     </html>
   )
