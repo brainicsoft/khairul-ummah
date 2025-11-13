@@ -1,46 +1,61 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { useForm } from "react-hook-form"
 import { Button } from "./ui/button"
-import { Input } from "./ui/input"
-import { Upload } from "lucide-react"
+import { FormInput, FormTextarea } from "./form/FormInput"
+import { FormSelect } from "./form/form-select"
+import { PhotoUpload } from "./form/photo-upload"
+
+interface VolunteerFormData {
+  fullName: string
+  fatherName: string
+  motherName: string
+  NidNo: string
+  mobileNumber: string
+  email: string
+  birthDate: string
+  gender: string
+  age: string
+  presentAddress: string
+  permanentAddress: string
+  currentProfession: string
+  organizationName: string
+  workAddress: string
+  educationQualification: string
+  interestReason: string
+}
 
 export function VolunteerForm() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    fatherName: "",
-    motherName: "",
-    NidNo: "",
-    mobileNumber: "",
-    email: "",
-    birthDate: "",
-    gender: "",
-    age: "",
-    presentAddress: "",
-    permanentAddress: "",
-    currentProfession: "",
-    organizationName: "",
-    workAddress: "",
-    educationQualification: "",
-    interestReason: "",
-  })
-
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>("")
   const [submitted, setSubmitted] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-  // ✅ Handle Input Changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  }
 
-  // ✅ Handle Photo Upload
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset
+  } = useForm<VolunteerFormData>()
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Handle Photo Upload
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('শুধুমাত্র ছবি ফাইল আপলোড করুন')
+        return
+      }
+      
+      // Validate file size (2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('ছবির সাইজ 2MB এর কম হতে হবে')
+        return
+      }
+
       const reader = new FileReader()
       reader.onloadend = () => {
         setPhotoPreview(reader.result as string)
@@ -49,93 +64,52 @@ export function VolunteerForm() {
       reader.readAsDataURL(file)
     }
   }
+
   const handleRemovePhoto = () => {
     setPhoto(null)
     setPhotoPreview("")
-    // ✅ Reset the input value so same file can be uploaded again
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
   }
-  // ✅ Handle Submit
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+
+  // Handle Form Submission
+  const onSubmit = async (data: VolunteerFormData) => {
     if (!photo) {
-      alert("image is required")
+      alert("ছবি আপলোড করা বাধ্যতামূলক")
       return
     }
 
-
-    // Combine all data
-    const finalData = {
-      fullName: formData.fullName,
-      fatherName: formData.fatherName,
-      NidNo: formData.NidNo,
-      mobileNumber: formData.mobileNumber,
-      email: formData.email,
-      birthDate: formData.birthDate,
-      gender: formData.gender,
-      age: formData.age,
-      presentAddress: formData.presentAddress,
-      permanentAddress: formData.permanentAddress,
-      currentProfession: formData.currentProfession,
-      organizationName: formData.organizationName,
-      workAddress: formData.workAddress,
-      educationQualification: formData.educationQualification,
-      interestReason: formData.interestReason,
-    }
-    console.log(finalData)
-
     const submissionData = new FormData()
-    if (photo) {
-      submissionData.append("photo", photo as Blob)
-    }
-    submissionData.append("data", JSON.stringify(finalData))
-    // for consol final data
-    // for (const pair of submissionData.entries()) {
-    //   console.log(pair[0], pair[1])
-    // }
+    submissionData.append("file", photo)
+    submissionData.append("data", JSON.stringify(data))
+
     try {
-      const response = await fetch("http://localhost:3000/api/volunteer", {
+      const response = await fetch("http://localhost:8080/api/v1/volunteer/request", {
         method: "POST",
         body: submissionData,
       })
 
-      if (response?.ok) {
-        alert("Form submitted successfully")
-
+      if (response.ok) {
+        alert("আবেদন সফলভাবে জমা হয়েছে!")
+        setSubmitted(true)
+        reset()
+        setPhoto(null)
+        setPhotoPreview("")
       } else {
-        alert("Form submission failed")
-
+        alert("আবেদন জমা ব্যর্থ হয়েছে")
       }
     } catch (error) {
-      alert("Form submission failed")
+      alert("আবেদন জমা ব্যর্থ হয়েছে")
       console.error(error)
-
-    } finally {
-
     }
-    // Clear form
-    // setFormData({
-    //   fullName: "",
-    //   fatherName: "",
-    //   motherName: "",
-    //   NidNo: "",
-    //   mobileNumber: "",
-    //   email: "",
-    //   birthDate: "",
-    //   gender: "",
-    //   age: "",
-    //   presentAddress: "",
-    //   permanentAddress: "",
-    //   currentProfession: "",
-    //   organizationName: "",
-    //   workAddress: "",
-    //   educationQualification: "",
-    //   interestReason: "",
-    // })
-    // setProfilePhoto(null)
   }
+
+  const genderOptions = [
+    { value: "male", label: "পুরুষ" },
+    { value: "female", label: "মহিলা" },
+    { value: "other", label: "অন্যান্য" }
+  ]
 
   return (
     <div className="bg-gray-50 py-12">
@@ -149,90 +123,128 @@ export function VolunteerForm() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-white rounded-b-lg shadow-lg p-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-b-lg shadow-lg p-8">
           {/* Personal Info */}
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">সম্পূর্ণ নাম <span className="text-red-500">*</span></label>
-              <Input
-                className="shadow-sm" name="fullName" value={formData.fullName} onChange={handleInputChange}
-                required />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">পিতার নাম <span className="text-red-500">*</span></label>
-              <Input className="shadow-sm" name="fatherName" value={formData.fatherName} onChange={handleInputChange} required />
-            </div>
+            <FormInput
+              label="সম্পূর্ণ নাম"
+              required
+              error={errors.fullName?.message}
+              {...register("fullName", { 
+                required: "সম্পূর্ণ নাম আবশ্যক",
+                minLength: {
+                  value: 2,
+                  message: "কমপক্ষে ২টি অক্ষর প্রয়োজন"
+                }
+              })}
+            />
+            <FormInput
+              label="পিতার নাম"
+              required
+              error={errors.fatherName?.message}
+              {...register("fatherName", { 
+                required: "পিতার নাম আবশ্যক",
+                minLength: {
+                  value: 2,
+                  message: "কমপক্ষে ২টি অক্ষর প্রয়োজন"
+                }
+              })}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">
-                জাতীয় পরিচয়পত্র/জন্ম নিবন্ধন নম্বর
-              </label>
-              <Input className="shadow-sm" name="NidNo" value={formData.NidNo} onChange={handleInputChange} />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">মোবাইল নম্বর <span className="text-red-500">*</span></label>
-              <Input
-                className="shadow-sm"
-                type="tel"
-                name="mobileNumber"
-                value={formData.mobileNumber}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <FormInput
+              label="জাতীয় পরিচয়পত্র/জন্ম নিবন্ধন নম্বর"
+              error={errors.NidNo?.message}
+              placeholder="জাতীয় পরিচয়পত্র বা জন্ম নিবন্ধন নম্বর"
+              {...register("NidNo", {
+                pattern: {
+                  value: /^[0-9]{10,17}$/,
+                  message: "সঠিক জাতীয় পরিচয়পত্র নম্বর দিন"
+                }
+              })}
+            />
+            <FormInput
+              label="মোবাইল নম্বর"
+              type="tel"
+              required
+              error={errors.mobileNumber?.message}
+              placeholder="01XXXXXXXXX"
+              {...register("mobileNumber", {
+                required: "মোবাইল নম্বর আবশ্যক",
+                pattern: {
+                  value: /^(?:\+88|01)?\d{11}$/,
+                  message: "সঠিক মোবাইল নম্বর দিন"
+                }
+              })}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">ইমেইল <span className="text-red-500">*</span></label>
-              <Input
-                className="shadow-sm"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">জন্মতারিখ</label>
-              <Input className="shadow-sm" type="date" name="birthDate" value={formData.birthDate} onChange={handleInputChange} />
-            </div>
+            <FormInput
+              label="ইমেইল"
+              type="email"
+              required
+              error={errors.email?.message}
+              placeholder="your@email.com"
+              {...register("email", {
+                required: "ইমেইল আবশ্যক",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "সঠিক ইমেইল দিন"
+                }
+              })}
+            />
+            <FormInput
+              label="জন্মতারিখ"
+              type="date"
+              error={errors.birthDate?.message}
+              {...register("birthDate")}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">লিঙ্গ</label>
-              <select
-
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
-              >
-                <option value="">নির্বাচন করুন</option>
-                <option value="male">পুরুষ</option>
-                <option value="female">মহিলা</option>
-                <option value="other">অন্যান্য</option>
-              </select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">বয়স</label>
-              <Input className="shadow-sm" name="age" value={formData.age} onChange={handleInputChange} type="number" />
-            </div>
+            <FormSelect
+              label="লিঙ্গ"
+              options={genderOptions}
+              error={errors.gender?.message}
+              {...register("gender")}
+            />
+            <FormInput
+              label="বয়স"
+              type="number"
+              error={errors.age?.message}
+              placeholder="১৮"
+              {...register("age", {
+                min: { 
+                  value: 18, 
+                  message: "বয়স কমপক্ষে ১৮ বছর হতে হবে" 
+                },
+                max: { 
+                  value: 100, 
+                  message: "সঠিক বয়স দিন" 
+                },
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: "শুধুমাত্র সংখ্যা দিন"
+                }
+              })}
+            />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">বর্তমান ঠিকানা</label>
-              <Input className="shadow-sm" name="presentAddress" value={formData.presentAddress} onChange={handleInputChange} />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">স্থায়ী ঠিকানা</label>
-              <Input className="shadow-sm" name="permanentAddress" value={formData.permanentAddress} onChange={handleInputChange} />
-            </div>
+            <FormInput
+              label="বর্তমান ঠিকানা"
+              error={errors.presentAddress?.message}
+              placeholder="বর্তমান ঠিকানা"
+              {...register("presentAddress")}
+            />
+            <FormInput
+              label="স্থায়ী ঠিকানা"
+              error={errors.permanentAddress?.message}
+              placeholder="স্থায়ী ঠিকানা"
+              {...register("permanentAddress")}
+            />
           </div>
 
           {/* Profession */}
@@ -240,95 +252,80 @@ export function VolunteerForm() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">পেশাগত তথ্য</h3>
 
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">বর্তমান পেশা <span className="text-red-500">*</span></label>
-              <Input
-                className="shadow-sm"
-                name="currentProfession"
-                value={formData.currentProfession}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-700 mb-2 block">প্রতিষ্ঠানের নাম <span className="text-red-500">*</span></label>
-              <Input
-                className="shadow-sm"
-                name="organizationName"
-                value={formData.organizationName}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+            <FormInput
+              label="বর্তমান পেশা"
+              required
+              error={errors.currentProfession?.message}
+              placeholder="আপনার বর্তমান পেশা"
+              {...register("currentProfession", { 
+                required: "বর্তমান পেশা আবশ্যক" 
+              })}
+            />
+            <FormInput
+              label="প্রতিষ্ঠানের নাম"
+              required
+              error={errors.organizationName?.message}
+              placeholder="প্রতিষ্ঠানের নাম"
+              {...register("organizationName", { 
+                required: "প্রতিষ্ঠানের নাম আবশ্যক" 
+              })}
+            />
           </div>
 
           <div className="mb-6">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">কর্মস্থলের ঠিকানা <span className="text-red-500">*</span></label>
-            <Input
-              className="shadow-sm"
-              name="workAddress"
-              value={formData.workAddress}
-              onChange={handleInputChange}
+            <FormInput
+              label="কর্মস্থলের ঠিকানা"
               required
+              error={errors.workAddress?.message}
+              placeholder="কর্মস্থলের সম্পূর্ণ ঠিকানা"
+              {...register("workAddress", { 
+                required: "কর্মস্থলের ঠিকানা আবশ্যক" 
+              })}
             />
           </div>
 
           {/* Education */}
           <hr className="my-8" />
           <h3 className="text-lg font-semibold text-gray-900 mb-4">শিক্ষাগত যোগ্যতা</h3>
-          <Input
-            className="shadow-sm"
-            name="educationQualification"
-            value={formData.educationQualification}
-            onChange={handleInputChange}
-            placeholder="যেমনঃ স্নাতক, উচ্চ মাধ্যমিক"
+          <FormInput
+            label=""
+            placeholder="যেমনঃ স্নাতক, উচ্চ মাধ্যমিক, এসএসসি"
             required
+            error={errors.educationQualification?.message}
+            {...register("educationQualification", { 
+              required: "শিক্ষাগত যোগ্যতা আবশ্যক" 
+            })}
           />
 
           {/* Interest */}
           <div className="my-8">
-            <label className="text-sm font-medium text-gray-700 mb-2 block">
-              স্বেচ্ছাসেবক হিসেবে আগ্রহ - কেন আপনি স্বেচ্ছাসেবক হতে চান?
-            </label>
-            <textarea
-              name="interestReason"
-              value={formData.interestReason}
-              onChange={handleInputChange}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2"
-              rows={4}
+            <FormTextarea
+              label="স্বেচ্ছাসেবক হিসেবে আগ্রহ - কেন আপনি স্বেচ্ছাসেবক হতে চান?"
+              required
+              error={errors.interestReason?.message}
+              placeholder="আপনার আগ্রহের কারণ, অভিজ্ঞতা এবং কীভাবে আপনি অবদান রাখতে চান তা বিস্তারিত লিখুন..."
+              rows={5}
+              {...register("interestReason", {
+                required: "আগ্রহের কারণ আবশ্যক",
+                minLength: {
+                  value: 20,
+                  message: "কমপক্ষে ২০টি অক্ষর লিখুন"
+                },
+                maxLength: {
+                  value: 1000,
+                  message: "১০০০টি অক্ষরের বেশি লিখতে পারবেন না"
+                }
+              })}
             />
           </div>
 
           {/* Photo Upload */}
-          <div className="mb-8">
-            <label className="text-sm font-medium text-gray-700 mb-4 block">আপনার ছবি</label>
-            {photoPreview && (
-              <div className="mt-4 flex flex-col items-start">
-                <div className="relative w-24 h-24">
-                  <img
-                    src={photoPreview}
-                    alt="ছবির প্রিভিউ"
-                    className="w-24 h-24 rounded-full border-2 border-primary object-cover shadow-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleRemovePhoto}
-                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 text-xs hover:bg-red-600"
-                  >
-                    ✕
-                  </button>
-                </div>
-                <p className="text-sm text-gray-600 mt-2">প্রোফাইল ছবি প্রিভিউ</p>
-              </div>
-            )}
-
-            <label className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg cursor-pointer hover:bg-primary/90">
-              <Upload className="w-4 h-4" />
-              <span>ছবি আপলোড করুন</span>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-            </label>
-
-          </div>
+          <PhotoUpload
+            photoPreview={photoPreview}
+            onPhotoUpload={handlePhotoUpload}
+            onRemovePhoto={handleRemovePhoto}
+            error={!photo ? "ছবি আপলোড করা বাধ্যতামূলক" : undefined}
+          />
 
           {/* Privacy Notice */}
           <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded mb-8">
@@ -344,8 +341,12 @@ export function VolunteerForm() {
             </div>
           )}
 
-          <Button type="submit" className="w-full bg-primary text-white py-3 text-base">
-            আবেদন করুন →
+          <Button 
+            type="submit" 
+            className="w-full bg-primary text-white py-3 text-base hover:bg-primary/90 transition-colors"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "জমা হচ্ছে..." : "আবেদন করুন →"}
           </Button>
         </form>
       </div>

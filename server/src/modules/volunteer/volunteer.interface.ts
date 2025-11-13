@@ -1,10 +1,22 @@
 // volunteer.model.ts
-export interface IVolunteer {
-  name: string;
-  email: string;
-  phone?: string;
-
-  // update your content here 
+export interface IVolunteer extends Document {
+  fullName: string
+  fatherName: string
+  NidNo: string
+  mobileNumber: string
+  email: string
+  birthDate: Date
+  gender: 'male' | 'female' | 'other'
+  age: number
+  presentAddress: string
+  permanentAddress: string
+  currentProfession: string
+  organizationName?: string
+  workAddress?: string
+  educationQualification: string
+  interestReason: string
+  createdAt?: Date
+  updatedAt?: Date
 }
 
   
