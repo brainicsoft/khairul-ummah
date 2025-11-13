@@ -11,7 +11,7 @@ export default function VolunteerManagementPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
 
-  const itemsPerPage = 10
+  const itemsPerPage = 5
   const filteredVolunteers = volunteerData.filter(
     (volunteer) =>
       volunteer.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
