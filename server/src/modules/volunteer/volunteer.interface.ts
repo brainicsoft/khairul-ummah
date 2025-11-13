@@ -17,6 +17,7 @@ export interface IVolunteer extends Document {
   interestReason: string
   createdAt?: Date
   updatedAt?: Date
+  avatar?:string
 }
 
   

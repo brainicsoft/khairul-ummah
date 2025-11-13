@@ -30,6 +30,11 @@ const volunteerSchema = new Schema<IVolunteer>(
       lowercase: true,
       trim: true,
     },
+
+    avatar: {
+      type: String,
+    },
+
     birthDate: {
       type: Date,
       required: true,

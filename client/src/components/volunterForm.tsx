@@ -81,7 +81,7 @@ export function VolunteerForm() {
     }
 
     const submissionData = new FormData()
-    submissionData.append("file", photo)
+    submissionData.append("avatar", photo)
     submissionData.append("data", JSON.stringify(data))
 
     try {

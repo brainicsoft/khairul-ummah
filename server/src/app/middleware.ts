@@ -8,7 +8,7 @@ import passport from 'passport';
 const middleware = [
   morgan('dev'),
   cors({
-    origin: corsOrigin,
+    origin: '*',
   }),
   cookieParser(),
   express.static("docs"),
