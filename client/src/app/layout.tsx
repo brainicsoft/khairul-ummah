@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import icon from "@/assets/logo/logo-round.jpg"
 import { GoogleTranslate } from "./components/GoogleTranslate"
+import StoreProvider from "@/redux/StoreProvider"
 
 // Configure Hind Siliguri with all weights and subsets
 const hindSiliguri = Hind_Siliguri({
@@ -54,10 +55,14 @@ export default function RootLayout({
         />
       </head>
       <body className={`font-sans antialiased`}>
+
         <GoogleTranslate />
-        {children}
-        <Analytics />
-        
+        <StoreProvider>
+          {children}
+          <Analytics />
+        </StoreProvider>
+
+
         {/* Load Google Translate Script */}
         <script
           src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
