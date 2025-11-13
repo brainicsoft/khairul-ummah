@@ -6,6 +6,7 @@ import { Button } from "./ui/button"
 import { FormInput, FormTextarea } from "./form/FormInput"
 import { FormSelect } from "./form/form-select"
 import { PhotoUpload } from "./form/photo-upload"
+import { useVolunteerRequestMutation } from "@/redux/features/volunteer/volunteerApi"
 
 interface VolunteerFormData {
   fullName: string
@@ -27,14 +28,16 @@ interface VolunteerFormData {
 }
 
 export function VolunteerForm() {
+  const [volunteerRequest, { isLoading }] = useVolunteerRequestMutation()
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>("")
   const [submitted, setSubmitted] = useState(false)
+  const [apiError, setApiError] = useState<string>("")
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset
   } = useForm<VolunteerFormData>()
 
@@ -73,35 +76,119 @@ export function VolunteerForm() {
     }
   }
 
-  // Handle Form Submission
+  // Handle Form Submission with Redux
   const onSubmit = async (data: VolunteerFormData) => {
     if (!photo) {
       alert("ছবি আপলোড করা বাধ্যতামূলক")
       return
     }
 
-    const submissionData = new FormData()
-    submissionData.append("avatar", photo)
-    submissionData.append("data", JSON.stringify(data))
+    // Clear previous errors
+    setApiError("")
 
     try {
-      const response = await fetch("http://localhost:8080/api/v1/volunteer/request", {
-        method: "POST",
-        body: submissionData,
-      })
+      const formData = new FormData()
 
-      if (response.ok) {
-        alert("আবেদন সফলভাবে জমা হয়েছে!")
-        setSubmitted(true)
-        reset()
-        setPhoto(null)
-        setPhotoPreview("")
-      } else {
-        alert("আবেদন জমা ব্যর্থ হয়েছে")
+      // 1. Append the photo file as "avatar"
+      formData.append("avatar", photo)
+
+      // 2. Create the data object with proper field names (match backend DTO)
+      const volunteerData = {
+        fullName: data.fullName,
+        fatherName: data.fatherName,
+        motherName: data.motherName || "",
+        nidNo: data.NidNo || "",
+        mobileNumber: data.mobileNumber,
+        email: data.email,
+        birthDate: data.birthDate || "",
+        gender: data.gender || "",
+        age: data.age ? parseInt(data.age) : null,
+        presentAddress: data.presentAddress || "",
+        permanentAddress: data.permanentAddress || "",
+        currentProfession: data.currentProfession,
+        organizationName: data.organizationName,
+        workAddress: data.workAddress,
+        educationQualification: data.educationQualification,
+        interestReason: data.interestReason || "",
       }
-    } catch (error) {
-      alert("আবেদন জমা ব্যর্থ হয়েছে")
-      console.error(error)
+
+      // 3. Append the JSON string as "data" field
+      formData.append("data", JSON.stringify(volunteerData))
+
+      // Debug: Check FormData contents
+      console.log("FormData contents:")
+      for (let [key, value] of formData.entries()) {
+        if (key === "avatar") {
+          console.log("avatar:", (value as File).name)
+        } else if (key === "data") {
+          console.log("data:", value)
+        }
+      }
+
+      // Use Redux mutation
+      const response = await volunteerRequest(formData).unwrap()
+
+      // Success case
+      alert("আবেদন সফলভাবে জমা হয়েছে!")
+      setSubmitted(true)
+      
+      // Reset form
+      reset()
+      setPhoto(null)
+      setPhotoPreview("")
+      setApiError("")
+
+    } catch (error: any) {
+      // Error handling
+      console.error('Submission error:', error)
+      
+      let errorMessage = "আবেদন জমা ব্যর্থ হয়েছে"
+
+      if (error.data) {
+        // Backend returned error response
+        errorMessage = error.data.message || error.data.error || errorMessage
+        
+        // Handle validation errors from backend
+        if (error.data.errors) {
+          const validationErrors = Object.values(error.data.errors).join(', ')
+          errorMessage = `ভ্যালিডেশন ত্রুটি: ${validationErrors}`
+        }
+      } else if (error.status) {
+        // HTTP error status
+        switch (error.status) {
+          case 400:
+            errorMessage = "অনুরোধটি সঠিক নয়। দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন"
+            break
+          case 401:
+            errorMessage = "অনুমোদন প্রয়োজন"
+            break
+          case 403:
+            errorMessage = "আপনার এই কাজ করার অনুমতি নেই"
+            break
+          case 404:
+            errorMessage = "সার্ভার পাওয়া যায়নি"
+            break
+          case 409:
+            errorMessage = "এই ইমেইল বা মোবাইল নম্বর দিয়ে আগেই আবেদন করা হয়েছে"
+            break
+          case 413:
+            errorMessage = "আপলোড করা ফাইলের সাইজ খুব বড় (সর্বোচ্চ 2MB)"
+            break
+          case 415:
+            errorMessage = "অসমর্থিত ফাইল ফরম্যাট। শুধুমাত্র ছবি ফাইল আপলোড করুন"
+            break
+          case 500:
+            errorMessage = "সার্ভারে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন"
+            break
+          default:
+            errorMessage = `সার্ভার ত্রুটি (কোড: ${error.status})`
+        }
+      } else if (error instanceof TypeError) {
+        // Network error
+        errorMessage = "নেটওয়ার্ক সংযোগ সমস্যা। ইন্টারনেট সংযোগ পরীক্ষা করুন"
+      }
+
+      setApiError(errorMessage)
     }
   }
 
@@ -124,6 +211,13 @@ export function VolunteerForm() {
 
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-b-lg shadow-lg p-8">
+          {/* API Error Message */}
+          {apiError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 font-medium">
+              ⚠️ {apiError}
+            </div>
+          )}
+
           {/* Personal Info */}
           <div className="grid md:grid-cols-2 gap-6 mb-6">
             <FormInput
@@ -344,9 +438,9 @@ export function VolunteerForm() {
           <Button 
             type="submit" 
             className="w-full bg-primary text-white py-3 text-base hover:bg-primary/90 transition-colors"
-            disabled={isSubmitting}
+            disabled={isLoading}
           >
-            {isSubmitting ? "জমা হচ্ছে..." : "আবেদন করুন →"}
+            {isLoading ? "জমা হচ্ছে..." : "আবেদন করুন →"}
           </Button>
         </form>
       </div>

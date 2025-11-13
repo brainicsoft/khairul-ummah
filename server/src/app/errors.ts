@@ -17,6 +17,7 @@ import { handleDuplicateError } from '../errors/duplicateErrors';
  */
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
+  console.log(error)
   let status = 500;
   let message = 'Something went wrong';
   const success = false;

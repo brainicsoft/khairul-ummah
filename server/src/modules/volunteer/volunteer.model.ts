@@ -13,7 +13,7 @@ const volunteerSchema = new Schema<IVolunteer>(
       required: true,
       trim: true,
     },
-    NidNo: {
+    nidNo: {
       type: String,
       required: true,
       unique: true,

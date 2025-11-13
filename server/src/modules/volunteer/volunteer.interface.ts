@@ -2,7 +2,7 @@
 export interface IVolunteer extends Document {
   fullName: string
   fatherName: string
-  NidNo: string
+  nidNo: string
   mobileNumber: string
   email: string
   birthDate: Date
