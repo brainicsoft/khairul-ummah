@@ -33,6 +33,7 @@ interface AdminLayoutProps {
 const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "User Management", href: "/admin/users", icon: Users },
+  { name: "volunteer Management", href: "/secure/admin/volunteer", icon: Users },
   { name: "Donations", href: "/admin/donations", icon: DollarSign },
   { name: "Projects", href: "/admin/projects", icon: Package },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
@@ -105,10 +106,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 onClick={closeMobileSidebar}
                 className={`flex items-center gap-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive ? activeBg : `text-gray-400 ${hoverBg} hover:primary`}`}
               >
-                <div className={`flex items-center justify-center min-w-6 ${isActive ? "text-blue-400" : "text-gray-500 group-hover:text-gray-300"}`}>
+                <div className={`flex items-center justify-center min-w-6 ${isActive ? "text-blue-400" : "text-black dark:text-gray-200 group-hover:text-gray-300"}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                {sidebarOpen && <span className="font-medium text-sm truncate">{item.name}</span>}
+                {sidebarOpen && <span className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{item.name}</span>}
               </Link>
             );
           })}
@@ -181,8 +182,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-6">
-          <div className="md:container mx-auto">
+        <div className="flex-1 overflow-auto p-6 dark:bg-[#1A2328]">
+          <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
               {children}
             </div>
