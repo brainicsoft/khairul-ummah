@@ -3,11 +3,19 @@
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import VolunteerTable from "./component/Volunteer-table"
-import { useGetAllVolunteersQuery } from "@/redux/features/volunteers/volunteersApi"
+import { IVolunteer, useGetAllVolunteersQuery } from "@/redux/features/volunteers/volunteersApi"
+import VolunteerDetailModal from "./component/volunteer-details"
 
 export default function VolunteerManagementPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
+
+
+   // Modal state
+   const [selectedVolunteer, setSelectedVolunteer] = useState<IVolunteer | null>(null)
+   const [isModalOpen, setIsModalOpen] = useState(false)
+
+
 
   // 🔥 Backend থেকে pagination আসবে → এখানে শুধু page + searchTerm পাঠাবো
   const { data: volunteers, error, isLoading } = useGetAllVolunteersQuery({
@@ -23,6 +31,13 @@ export default function VolunteerManagementPage() {
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
     setCurrentPage(1) // new search করলে সবসময় প্রথম পেজে যাবে
+  }
+
+
+  // Function to open modal
+  const handleViewDetails = (volunteer: IVolunteer) => {
+    setSelectedVolunteer(volunteer)
+    setIsModalOpen(true)
   }
 
   if (isLoading) return <p>Loading...</p>
@@ -53,9 +68,16 @@ export default function VolunteerManagementPage() {
             totalPages={totalPages}
             onPageChange={setCurrentPage}
             isLoading={isLoading}
+            onViewDetails={handleViewDetails}
           />
         </CardContent>
       </Card>
+      {/* Modal */}
+      <VolunteerDetailModal
+        volunteer={selectedVolunteer}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </main>
   )
 }

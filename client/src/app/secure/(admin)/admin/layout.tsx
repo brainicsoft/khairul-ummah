@@ -89,7 +89,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             )}
           </div>
 
-          <button onClick={closeMobileSidebar} className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
+          <button onClick={closeMobileSidebar}
+           className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
             <X className="w-5 h-5" />
           </button>
         </div>
