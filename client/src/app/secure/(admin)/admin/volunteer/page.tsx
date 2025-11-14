@@ -11,21 +11,15 @@ export default function VolunteerManagementPage() {
   const [searchTerm, setSearchTerm] = useState("")
 
 
-   // Modal state
    const [selectedVolunteer, setSelectedVolunteer] = useState<IVolunteer | null>(null)
    const [isModalOpen, setIsModalOpen] = useState(false)
 
-
-
-  // 🔥 Backend থেকে pagination আসবে → এখানে শুধু page + searchTerm পাঠাবো
   const { data: volunteers, error, isLoading } = useGetAllVolunteersQuery({
     page: currentPage,
-    searchTerm,
+    searchTerm, 
     limit:"25"
   })
 
-console.log(volunteers?.meta)
-  // 🔥 Backend meta.totalPage ব্যবহার (সঠিক উপায়)
   const totalPages = volunteers?.meta?.totalPage || 1
 
   const handleSearchChange = (value: string) => {
@@ -34,7 +28,6 @@ console.log(volunteers?.meta)
   }
 
 
-  // Function to open modal
   const handleViewDetails = (volunteer: IVolunteer) => {
     setSelectedVolunteer(volunteer)
     setIsModalOpen(true)
