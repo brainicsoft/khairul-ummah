@@ -55,13 +55,13 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
             <div className="flex gap-6 items-start">
               {/* Profile Image */}
               <div className="flex-shrink-0">
-                <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-300 dark:bg-gray-600 border-4 border-white dark:border-gray-700 shadow-md">
+                <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-300 dark:bg-gray-600 border-4 border-white dark:border-gray-700 shadow-md ">
                   <Image
-                    src={volunteer.profileImage || "/placeholder.svg?height=96&width=96&query=volunteer profile"}
+                    src={volunteer.avatar || "/placeholder.svg?height=96&width=96&query=volunteer profile"}
                     alt={volunteer.fullName}
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover"
+                    width={100}
+                    height={100}
+                    className="w-full h-[100px] object-cover "
                   />
                 </div>
               </div>
@@ -72,13 +72,13 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                   {volunteer.currentProfession || "Volunteer"}
                 </p>
-                <div className="flex gap-3 mt-3">
-                  <a
+                <div className="flex gap-2 mt-3">
+                  {/* <a
                     href={`tel:${volunteer.mobileNumber}`}
                     className="text-xs bg-white dark:bg-gray-800 text-blue-600 px-3 py-1 rounded-full hover:bg-gray-50 transition-colors"
                   >
                     {volunteer.mobileNumber}
-                  </a>
+                  </a> */}
                   <a
                     href={`mailto:${volunteer.email}`}
                     className="text-xs bg-white dark:bg-gray-800 text-blue-600 px-3 py-1 rounded-full hover:bg-gray-50 transition-colors"

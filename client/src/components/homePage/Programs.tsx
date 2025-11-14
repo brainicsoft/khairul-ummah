@@ -2,10 +2,10 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import meeting1 from "../assets/opinion-meetimg/meet1.jpg"
-import meeting2 from "../assets/opinion-meetimg/meet2.jpg"
+import meeting1 from "@/assets/opinion-meetimg/meet1.jpg"
+import meeting2 from "@/assets/opinion-meetimg/meet2.jpg"
 
-export function ProgramsPreview() {
+export function Programs() {
   const programs = [
     {
       id: 1,
