@@ -21,10 +21,10 @@ export default function VolunteerManagementPage() {
   const { data: volunteers, error, isLoading } = useGetAllVolunteersQuery({
     page: currentPage,
     searchTerm,
+    limit:"25"
   })
 
-  console.log(volunteers)
-
+console.log(volunteers?.meta)
   // 🔥 Backend meta.totalPage ব্যবহার (সঠিক উপায়)
   const totalPages = volunteers?.meta?.totalPage || 1
 

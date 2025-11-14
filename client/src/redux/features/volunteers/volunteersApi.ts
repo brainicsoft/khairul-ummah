@@ -49,12 +49,12 @@ export const {
     // GET ALL VOLUNTEERS
     getAllVolunteers: query<
       GetAllVolunteersResponse,
-      { page?: number; searchTerm?: string }
+      { page?: number; searchTerm?: string ,limit?:string}
     >({
-      query: ({ page, searchTerm }) => {
+      query: ({ page, searchTerm ,limit}) => {
         const params = new URLSearchParams({
           ...(page !== undefined ? { page: page.toString() } : {}),
-          limit: "1",
+          ...(limit ? {limit}: {}),
           ...(searchTerm ? { searchTerm } : {}),
         }).toString();
 

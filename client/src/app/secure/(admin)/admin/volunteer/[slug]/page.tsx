@@ -22,11 +22,6 @@ export default async function VolunteerDetailPage({ params }: VolunteerDetailPag
     return (
         <main className="flex-1 space-y-8 p-8">
             <div className="flex items-center gap-4">
-                {/* <Link href="/volunteers">
-                    <Button variant="ghost" size="icon">
-                        <ArrowLeft className="h-4 w-4 dark:text-white" />
-                    </Button>
-                </Link> */}
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight dark:text-white">{volunteer.fullName}</h1>
                     <p className="text-muted-foreground mt-1">{volunteer.currentProfession}</p>
