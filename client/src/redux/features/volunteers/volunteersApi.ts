@@ -1,7 +1,7 @@
 import { injectEndpoints } from "../../api/api";
 
 export interface IVolunteer {
-  _id?: string;
+  _id: string;
   slug: string;
   fullName: string;
   fatherName: string;

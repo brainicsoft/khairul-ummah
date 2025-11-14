@@ -1,5 +1,4 @@
 "use client"
-
 import * as React from "react"
 import {
   type ColumnDef,
@@ -47,100 +46,111 @@ interface VolunteerTableProps {
   onPageChange: (page: number) => void
   isLoading?: boolean
   onViewDetails?: (volunteer: IVolunteer) => void
+  onDelete?: (volunteer: IVolunteer) => void
+
 }
 
-export const getColumns = (onViewDetails?: (volunteer: IVolunteer) => void): ColumnDef<IVolunteer>[] => [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "fullName",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Full Name <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("fullName")}</div>,
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Email <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "mobileNumber",
-    header: "Mobile",
-    cell: ({ row }) => <div>{row.getValue("mobileNumber")}</div>,
-  },
-  {
-    accessorKey: "currentProfession",
-    header: "Profession",
-    cell: ({ row }) => <div>{row.getValue("currentProfession")}</div>,
-  },
-  {
-    accessorKey: "organizationName",
-    header: "Organization",
-    cell: ({ row }) => <div>{row.getValue("organizationName")}</div>,
-  },
-  {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("gender")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const volunteer = row.original
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent align="end" className="bg-white shadow-md rounded-md">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-
-            <DropdownMenuItem
-              onClick={() => onViewDetails?.(volunteer)}
-            >
-              <Eye className="mr-2 h-4 w-4" /> View Details
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              className="text-destructive"
-              onClick={() => console.log("Delete:", volunteer.fullName)}
-            >
-              <Trash2 className="mr-2 h-4 w-4" /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+export const getColumns = (
+  onViewDetails?: (volunteer: IVolunteer) => void,
+  onDelete?: (volunteer: IVolunteer) => void
+): ColumnDef<IVolunteer>[] => [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
-  },
-]
+    {
+      accessorKey: "fullName",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Full Name <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => <div className="font-medium">{row.getValue("fullName")}</div>,
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Email <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    },
+    {
+      accessorKey: "mobileNumber",
+      header: "Mobile",
+      cell: ({ row }) => <div>{row.getValue("mobileNumber")}</div>,
+    },
+    {
+      accessorKey: "currentProfession",
+      header: "Profession",
+      cell: ({ row }) => <div>{row.getValue("currentProfession")}</div>,
+    },
+    {
+      accessorKey: "organizationName",
+      header: "Organization",
+      cell: ({ row }) => <div>{row.getValue("organizationName")}</div>,
+    },
+    {
+      accessorKey: "gender",
+      header: "Gender",
+      cell: ({ row }) => <div className="capitalize">{row.getValue("gender")}</div>,
+    },
+
+    // ACTIONS MENU
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const volunteer = row.original
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild
+              className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-gray-100">
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <MoreHorizontal className="h-4 w-4 text-black dark:text-gray-100" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end"
+              className="bg-white shadow-md rounded-md"
+            >
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+              <DropdownMenuItem onClick={() => onViewDetails?.(volunteer)}>
+                <div className="flex items-center">
+                  <Eye className="mr-2 h-4 w-4" /> View Details
+                </div>
+              </DropdownMenuItem>
+
+
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => onDelete?.(volunteer)}
+              >
+                <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
 
 export default function VolunteerTable({
   data,
@@ -151,13 +161,13 @@ export default function VolunteerTable({
   onPageChange,
   isLoading = false,
   onViewDetails,
+  onDelete,
 }: VolunteerTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
-  const columns = React.useMemo(() => getColumns(onViewDetails), [onViewDetails])
+  const columns = React.useMemo(() => getColumns(onViewDetails, onDelete), [onViewDetails, onDelete])
 
   const table = useReactTable({
     data,
@@ -190,12 +200,14 @@ export default function VolunteerTable({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto hover:text-black dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-700 shadow-md rounded-md">
+          <DropdownMenuContent align="end"
+            className="bg-white dark:bg-gray-700 shadow-md rounded-md"
+          >
             {table.getAllColumns().map(
               (column) =>
                 column.getCanHide() && (
@@ -220,9 +232,7 @@ export default function VolunteerTable({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -259,6 +269,7 @@ export default function VolunteerTable({
       <div className="flex justify-between items-center mt-2 max-w-sm">
         <Button
           variant="outline"
+          className=""
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
         >
