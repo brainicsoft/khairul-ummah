@@ -1,6 +1,6 @@
 "use client"
+
 import * as React from "react"
-import Link from "next/link"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -105,8 +105,6 @@ export const getColumns = (onViewDetails?: (volunteer: IVolunteer) => void): Col
     header: "Gender",
     cell: ({ row }) => <div className="capitalize">{row.getValue("gender")}</div>,
   },
-
-  // ACTIONS MENU
   {
     id: "actions",
     enableHiding: false,
@@ -114,24 +112,20 @@ export const getColumns = (onViewDetails?: (volunteer: IVolunteer) => void): Col
       const volunteer = row.original
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild
-            className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-gray-100">
+          <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4 text-black dark:text-gray-100" />
+              <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end"
-            className="bg-white shadow-md rounded-md"
-          >
+          <DropdownMenuContent align="end" className="bg-white shadow-md rounded-md">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
 
-            <DropdownMenuItem onClick={() => onViewDetails?.(volunteer)}>
-              <div className="flex items-center">
-                <Eye className="mr-2 h-4 w-4" /> View Details
-              </div>
+            <DropdownMenuItem
+              onClick={() => onViewDetails?.(volunteer)}
+            >
+              <Eye className="mr-2 h-4 w-4" /> View Details
             </DropdownMenuItem>
-
 
             <DropdownMenuSeparator />
 
@@ -139,7 +133,7 @@ export const getColumns = (onViewDetails?: (volunteer: IVolunteer) => void): Col
               className="text-destructive"
               onClick={() => console.log("Delete:", volunteer.fullName)}
             >
-              <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
+              <Trash2 className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -162,6 +156,7 @@ export default function VolunteerTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
   const columns = React.useMemo(() => getColumns(onViewDetails), [onViewDetails])
 
   const table = useReactTable({
@@ -195,14 +190,12 @@ export default function VolunteerTable({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto hover:text-black dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Button variant="outline" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end"
-            className="bg-white dark:bg-gray-700 shadow-md rounded-md"
-          >
+          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-700 shadow-md rounded-md">
             {table.getAllColumns().map(
               (column) =>
                 column.getCanHide() && (
@@ -227,7 +220,9 @@ export default function VolunteerTable({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -264,7 +259,6 @@ export default function VolunteerTable({
       <div className="flex justify-between items-center mt-2 max-w-sm">
         <Button
           variant="outline"
-          className=""
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
         >
