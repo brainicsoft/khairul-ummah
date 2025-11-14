@@ -54,7 +54,7 @@ export const {
       query: ({ page, searchTerm }) => {
         const params = new URLSearchParams({
           ...(page !== undefined ? { page: page.toString() } : {}),
-          limit: "1",
+          limit: "25",
           ...(searchTerm ? { searchTerm } : {}),
         }).toString();
 
