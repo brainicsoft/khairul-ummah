@@ -114,16 +114,16 @@ export const columns: ColumnDef<Volunteer>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-gray-100">
               <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4 text-black dark:text-gray-100" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white shadow-md rounded-md">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem asChild>
+            <DropdownMenuItem asChild className="">
               <Link href={`/volunteers/${volunteer.slug}`} className="cursor-pointer flex items-center">
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye className="h-4 w-4 mr-2 hover:text-white" />
                 View Details
               </Link>
             </DropdownMenuItem>
@@ -132,7 +132,7 @@ export const columns: ColumnDef<Volunteer>[] = [
               className="cursor-pointer text-destructive"
               onClick={() => console.log("Delete:", volunteer.fullName)}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="h-4 w-4 mr-2 hover:text-white" />
               Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -185,11 +185,11 @@ export default function VolunteerTable({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {/* 🔹 CHANGED: Removed transparent background */}
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto hover:text-black dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-700 shadow-md rounded-md">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())

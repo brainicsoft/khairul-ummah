@@ -17,9 +17,9 @@
       .sort()
       .filter()
       .search([
-            'name',
-            'category',
-            'description',
+            'email',
+            'fullName',
+            // 'description',
             // replace  with proper fields
             ])
       .fields()
