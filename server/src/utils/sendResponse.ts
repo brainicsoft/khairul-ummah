@@ -6,11 +6,12 @@ interface IResponse<T> {
   message?: string;
   data?: T;
   token?: string;
+  meta?: { page: number; limit: number; total: number; totalPage: number };
 }
 
 export const sendResponse = <T>(
   res: Response,
-  { data, message, status, success, token }: IResponse<T>,
+  { data, message, status, success, token,meta }: IResponse<T>,
 ) => {
   return res.status(status).json({
     status,
@@ -18,5 +19,6 @@ export const sendResponse = <T>(
     message,
     data,
     token,
+    meta,
   });
 };

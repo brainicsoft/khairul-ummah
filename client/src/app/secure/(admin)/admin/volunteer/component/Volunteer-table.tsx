@@ -1,5 +1,4 @@
-'use client'
-
+"use client"
 import * as React from "react"
 import Link from "next/link"
 import {
@@ -22,7 +21,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react"
-import type { Volunteer } from "@/data/volunteerData"
+
+import type { IVolunteer } from "@/redux/features/volunteers/volunteersApi"
+
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -38,29 +39,28 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface VolunteerTableProps {
-  data: Volunteer[]
+  data: IVolunteer[]
   searchTerm: string
   onSearchChange: (value: string) => void
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  isLoading?: boolean
 }
 
-export const columns: ColumnDef<Volunteer>[] = [
+export const columns: ColumnDef<IVolunteer>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
       />
     ),
     enableSorting: false,
@@ -70,8 +70,7 @@ export const columns: ColumnDef<Volunteer>[] = [
     accessorKey: "fullName",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Full Name
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Full Name <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => <div className="font-medium">{row.getValue("fullName")}</div>,
@@ -80,8 +79,7 @@ export const columns: ColumnDef<Volunteer>[] = [
     accessorKey: "email",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Email
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        Email <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
@@ -106,6 +104,8 @@ export const columns: ColumnDef<Volunteer>[] = [
     header: "Gender",
     cell: ({ row }) => <div className="capitalize">{row.getValue("gender")}</div>,
   },
+
+  // ACTIONS MENU
   {
     id: "actions",
     enableHiding: false,
@@ -113,27 +113,31 @@ export const columns: ColumnDef<Volunteer>[] = [
       const volunteer = row.original
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild
+            className="h-8 w-8 p-0 hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-gray-100">
             <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
+              <MoreHorizontal className="h-4 w-4 text-black dark:text-gray-100" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+
+          <DropdownMenuContent align="end"
+            className="bg-white shadow-md rounded-md"
+          >
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
             <DropdownMenuItem asChild>
-              <Link href={`/volunteers/${volunteer.slug}`} className="cursor-pointer flex items-center">
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
+              <Link href={`/volunteers/${volunteer.slug}`} className="flex items-center">
+                <Eye className="mr-2 h-4 w-4 hover:text-white" /> View Details
               </Link>
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem
-              className="cursor-pointer text-destructive"
+              className="text-destructive"
               onClick={() => console.log("Delete:", volunteer.fullName)}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              <Trash2 className="mr-2 h-4 w-4 hover:text-white" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -149,6 +153,7 @@ export default function VolunteerTable({
   currentPage,
   totalPages,
   onPageChange,
+  isLoading = false,
 }: VolunteerTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -175,6 +180,7 @@ export default function VolunteerTable({
 
   return (
     <div className="w-full space-y-4">
+      {/* Search + Column Toggle */}
       <div className="flex items-center gap-2">
         <Input
           placeholder="Search by name or email..."
@@ -182,33 +188,34 @@ export default function VolunteerTable({
           onChange={(e) => onSearchChange(e.target.value)}
           className="max-w-sm"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {/* 🔹 CHANGED: Removed transparent background */}
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto hover:text-black dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
+
+          <DropdownMenuContent align="end"
+            className="bg-white dark:bg-gray-700 shadow-md rounded-md"
+          >
+            {table.getAllColumns().map(
+              (column) =>
+                column.getCanHide() && (
                   <DropdownMenuCheckboxItem
                     key={column.id}
-                    className="capitalize"
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
                 )
-              })}
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
+      {/* TABLE */}
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -222,14 +229,17 @@ export default function VolunteerTable({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  Loading…
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="text-sm md:text-base h-16"
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
@@ -238,7 +248,7 @@ export default function VolunteerTable({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  No results found.
                 </TableCell>
               </TableRow>
             )}
@@ -246,18 +256,19 @@ export default function VolunteerTable({
         </Table>
       </div>
 
-      {/* 🔹 Pagination buttons with solid background instead of transparent */}
-      <div className="flex justify-between items-center gap-3 max-w-sm">
+
+      {/* PAGINATION */}
+      <div className="flex justify-between items-center mt-2 max-w-sm">
         <Button
           variant="outline"
+          className=""
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className={`transition-all duration-200 ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <ChevronLeft className="mr-2 h-4 w-4" /> Previous
         </Button>
 
-        <span className="text-sm text-muted-foreground whitespace-nowrap">
+        <span className="text-sm text-muted-foreground">
           Page {currentPage} of {totalPages || 1}
         </span>
 
@@ -265,7 +276,6 @@ export default function VolunteerTable({
           variant="outline"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className={`transition-all duration-200 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           Next <ChevronRight className="ml-2 h-4 w-4" />
         </Button>

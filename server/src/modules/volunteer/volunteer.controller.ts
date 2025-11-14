@@ -32,12 +32,13 @@ export const createVolunteerController: RequestHandler = catchAsync(async (req, 
 // Get All Volunteer 
 
 export const getAllVolunteerController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await getAllVolunteerService(req.query);
+  const {result,meta} = await getAllVolunteerService(req.query);
   sendResponse(res, {
     status: 200,
     success: true,
     message: 'volunteer retrived successfully',
     data: result,
+    meta: meta,
   });
 });
 
