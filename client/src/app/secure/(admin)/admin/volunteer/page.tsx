@@ -6,6 +6,7 @@ import { IVolunteer, useDeleteVolunteerMutation, useGetAllVolunteersQuery } from
 import VolunteerDetailModal from "./component/volunteer_details"
 import Swal from "sweetalert2"
 import { toast } from "sonner"
+import VolunteerEditModal from "./component/VolunteerEditModal"
 export default function VolunteerManagementPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
@@ -13,7 +14,9 @@ export default function VolunteerManagementPage() {
   const [limit, setLimit] = useState(25);
   // Modal state
   const [selectedVolunteer, setSelectedVolunteer] = useState<IVolunteer | null>(null)
+  const [selectedEditVolunteer, setSelectedEditVolunteer] = useState<IVolunteer | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const { data: volunteers, error, isLoading, refetch } = useGetAllVolunteersQuery({
     page: currentPage,
     searchTerm,
@@ -29,6 +32,10 @@ export default function VolunteerManagementPage() {
   const handleViewDetails = (volunteer: IVolunteer) => {
     setSelectedVolunteer(volunteer)
     setIsModalOpen(true)
+  }
+  const handleEditDetails = (volunteer: IVolunteer) => {
+    setSelectedEditVolunteer(volunteer)
+    setIsEditModalOpen(true)
   }
   const handleDeleteVolunteer = (volunteer: IVolunteer) => {
     if (!volunteer?._id) {
@@ -88,6 +95,7 @@ export default function VolunteerManagementPage() {
             onPageChange={setCurrentPage}
             isLoading={isLoading}
             onViewDetails={handleViewDetails}
+            onEditDetails={handleEditDetails}
             onDelete={handleDeleteVolunteer}
             limit={limit}
             onLimitChange={(newLimit) => {
@@ -102,6 +110,12 @@ export default function VolunteerManagementPage() {
         volunteer={selectedVolunteer}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+      <VolunteerEditModal
+        volunteer={selectedEditVolunteer}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        refetch={refetch}
       />
     </main>
   )
