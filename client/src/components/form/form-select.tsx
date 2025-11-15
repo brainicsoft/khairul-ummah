@@ -12,12 +12,12 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
   ({ label, required = false, error, options, className, ...props }, ref) => {
     return (
       <div className={className}>
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
+        <label className="text-sm font-medium text-gray-700 dark:text-white mb-2 block">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
         <select
           ref={ref}
-          className={`w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
+          className={`w-full border dark:text-white dark:bg-[#202A37] border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent ${
             error ? "border-red-500 focus:ring-red-500" : ""
           }`}
           {...props}

@@ -32,6 +32,7 @@ interface VolunteerTableProps {
   onPageChange: (page: number) => void
   isLoading?: boolean
   onViewDetails?: (volunteer: IVolunteer) => void
+  onEditDetails?: (volunteer: IVolunteer) => void
   onDelete?: (volunteer: IVolunteer) => void
   limit: number
   onLimitChange: (limit: number) => void
@@ -49,13 +50,14 @@ export default function VolunteerTable({
   onPageChange,
   isLoading = false,
   onViewDetails,
+  onEditDetails,
   onDelete,
 }: VolunteerTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const columns = React.useMemo(() => getColumns(onViewDetails, onDelete), [onViewDetails, onDelete])
+  const columns = React.useMemo(() => getColumns(onViewDetails,onEditDetails, onDelete), [onViewDetails,onEditDetails, onDelete])
 
   const table = useReactTable({
     data,

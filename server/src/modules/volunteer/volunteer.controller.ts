@@ -59,7 +59,14 @@ export const getVolunteerByIdController: RequestHandler = catchAsync(async (req,
 // update Volunteer 
 
 export const updateVolunteerByIdController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await updateVolunteerByIdService(req.params.id, req.body);
+  let formattedData = req.body;
+
+  if (req.files) {
+    const imageInfo: any = await handleMulterUpload(req.files);
+    formattedData = { ...imageInfo, ...req.body, user: (req.user as any)?.userId };
+  }
+  
+  const result = await updateVolunteerByIdService( req.params.id, formattedData);
   sendResponse(res, {
     status: 200,
     success: true,

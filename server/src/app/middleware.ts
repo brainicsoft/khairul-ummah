@@ -12,20 +12,20 @@ const allowedOrigins = [
 ];
 const middleware = [
   morgan('dev'),
-  // cors({
-  //   origin: (origin, callback) => {
-  //     // allow requests with no origin (like Postman)
-  //     if (!origin || allowedOrigins.includes(origin)) {
-  //       callback(null, true);
-  //     } else {
-  //       callback(new Error("CORS not allowed"));
-  //     }
-  //   },
-  //   credentials: true, // ✅ important for cookies/sessions
-  // }),
   cors({
-    origin:'*'
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
+    credentials: true, // ✅ important for cookies/sessions
   }),
+  // cors({
+  //   origin:'*'
+  // }),
   cookieParser(),
   express.static("docs"),
   express.json({ limit: '50mb' }),

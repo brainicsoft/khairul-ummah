@@ -1,5 +1,5 @@
 "use client";
-
+import { Toaster } from "react-hot-toast"
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -186,6 +186,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 overflow-auto dark:bg-[#1A2328] py-6">
           <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
+            <Toaster position="top-right" reverseOrder={false} />
               {children}
             </div>
           </div>
