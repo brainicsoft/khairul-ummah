@@ -5,7 +5,7 @@ export interface IVolunteer {
   slug: string;
   fullName: string;
   fatherName: string;
-  NidNo: string;
+  nidNo: string;
   mobileNumber: string;
   email: string;
   avatar?: string;
@@ -32,7 +32,7 @@ interface Meta {
 }
 
 interface GetAllVolunteersResponse {
-  data: IVolunteer[];
+  data: any;
   meta: Meta;
 }
 
@@ -45,6 +45,7 @@ export const {
   useDeleteVolunteerMutation,
   endpoints: VolunteerEndpoints
 } = injectEndpoints({
+  
   endpoints: ({ query, mutation }) => ({
 
     // GET ALL VOLUNTEERS
@@ -89,7 +90,7 @@ export const {
     }),
 
     // UPDATE VOLUNTEER
-    updateVolunteer: mutation<any, { id: string; data: Partial<IVolunteer> }>(
+    updateVolunteer: mutation<any, { id: string; data: object }>(
       {
         query: ({ id, data }) => ({
           url: `/volunteer/${id}`, // ✅ fixed
