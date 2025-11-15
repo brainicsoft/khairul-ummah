@@ -4,10 +4,10 @@ import Image from "next/image"
 import Link from "next/link"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
-import nomuslem1 from "../assets/donate-section/social-meeting.jpg"
-import korbani from "../assets/donate-section/korbani.jpg"
-import jakat from "../assets/donate-section/jakat.jpg"
-import nomuslem2 from "../assets/donate-section/noumoslim.jpg"
+// import nomuslem1 from "@/assets/donate-section/social-meeting.jpg"
+import korbani from "@/assets/donate-section/korbani.jpg"
+import jakat from "@/assets/donate-section/jakat.jpg"
+import nomuslem2 from "@/assets/donate-section/noumoslim.jpg"
 
 const fundTypes = [
   {
@@ -51,7 +51,7 @@ const responsive = {
   },
 }
 
-export function DonationFundsCarousel() {
+export function Donation() {
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">

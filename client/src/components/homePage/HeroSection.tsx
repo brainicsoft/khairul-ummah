@@ -1,5 +1,5 @@
 import Image from "next/image"
-import bannerimg from "../assets/banner.png"
+import bannerimg from "@/assets/banner.png"
 import { FaHandsHelping, FaHeartbeat, FaSchool } from "react-icons/fa"
 export function HeroSection() {
   const heroCards = [

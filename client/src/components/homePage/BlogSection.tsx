@@ -1,12 +1,12 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
-import { Button } from "./ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import Link from "next/link"
-import workimg1 from "../assets/social-work/মসজিদ-নির্মাণ.png"
-import workimg2 from "../assets/social-work/শিক্ষা-বিস্তার-তহবিল-1-1024x683.jpg"
-import workimg3 from "../assets/social-work/social-meeting.jpg"
+import workimg1 from "@/assets/social-work/মসজিদ-নির্মাণ.png"
+import workimg2 from "@/assets/social-work/শিক্ষা-বিস্তার-তহবিল-1-1024x683.jpg"
+import workimg3 from "@/assets/social-work/social-meeting.jpg"
 import Image from "next/image"
+import { Button } from "../ui/button"
 
 const blogPosts = [
   {

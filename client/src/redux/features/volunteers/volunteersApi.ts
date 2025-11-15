@@ -1,7 +1,7 @@
 import { injectEndpoints } from "../../api/api";
 
 export interface IVolunteer {
-  _id?: string;
+  _id: string;
   slug: string;
   fullName: string;
   fatherName: string;
@@ -37,6 +37,7 @@ interface GetAllVolunteersResponse {
 }
 
 export const {
+  useVolunteerRequestMutation,
   useGetAllVolunteersQuery,
   useGetVolunteerBySlugQuery,
   useCreateVolunteerMutation,
@@ -49,12 +50,12 @@ export const {
     // GET ALL VOLUNTEERS
     getAllVolunteers: query<
       GetAllVolunteersResponse,
-      { page?: number; searchTerm?: string ,limit?:string}
+      { page?: number; searchTerm?: string, limit?: string }
     >({
-      query: ({ page, searchTerm ,limit}) => {
+      query: ({ page, searchTerm, limit }) => {
         const params = new URLSearchParams({
           ...(page !== undefined ? { page: page.toString() } : {}),
-          ...(limit ? {limit}: {}),
+          ...(limit ? { limit } : {}),
           ...(searchTerm ? { searchTerm } : {}),
         }).toString();
 
@@ -74,6 +75,7 @@ export const {
       transformResponse: (response: any) => response?.data,
       transformErrorResponse: (response: any) => response?.data,
     }),
+
 
     // CREATE VOLUNTEER
     createVolunteer: mutation<any, Partial<IVolunteer>>({
@@ -108,6 +110,16 @@ export const {
       transformResponse: (response: any) => response?.data,
       transformErrorResponse: (response: any) => response?.data,
     }),
+
+    volunteerRequest: mutation<object, any>({
+      query: (data) => ({
+        url: "/volunteer/request",
+        method: "POST",
+        body: data,
+      }),
+      transformResponse: (response: any) => response,
+      transformErrorResponse: (response: any) => response?.data,
+    })
 
   }),
 });

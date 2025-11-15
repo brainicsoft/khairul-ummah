@@ -119,7 +119,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Footer */}
         <div className="p-4 border-t border-gray-700 space-y-3">
           {/* Dark Mode Toggle */}
-          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full flex items-center gap-2 justify-center text-gray-800 hover:text-white hover:bg-[#276B95]">
+          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full dark:text-white flex items-center gap-2 justify-center text-gray-800 hover:text-white hover:bg-[#276B95]">
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             {sidebarOpen && <span className="text-xs">{darkMode ? "Light Mode" : "Dark Mode"}</span>}
           </Button>
@@ -128,8 +128,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Button variant="ghost" size="sm" onClick={toggleSidebar} className="hidden lg:flex w-full items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800">
             {sidebarOpen ? (
               <>
-                <ChevronLeft className="w-4 h-4" />
-                <span className="text-xs">Collapse</span>
+                <ChevronLeft className="w-4 h-4 text-gray-800 dark:text-white" />
+                <span className="text-xs text-gray-800 dark:text-white">Collapse</span>
               </>
             ) : (
               <ChevronRight className="w-4 h-4" />
