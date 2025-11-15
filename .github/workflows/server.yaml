@@ -22,12 +22,12 @@ jobs:
         env:
           PROD_ENV: ${{ secrets.SERVER_ENV }}
         run: |
-          echo "$PROD_ENV" > backend/.env
+          echo "$PROD_ENV" > server/.env
       # Step 3: Install dependencies for both frontend and backend
       - name: Install dependencies
         run: |
           npm i -g pnpm 
-          cd backend && pnpm i
+          cd server && pnpm i
           pnpm build
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
@@ -37,9 +37,9 @@ jobs:
           key: ${{ secrets.SSH }}
           port: 22
           overwrite: true
-          source: "backend/package.json,backend/pnpm-lock.yaml,backend/.env,backend/dist/*,backend/pm2.config.js,backend/upload,backend/server.js,backend/docs/* backend/tsconfig.json"
+          source: "server/package.json,server/pnpm-lock.yaml,server/.env,server/dist/*,server/pm2.config.js,server/upload,server/server.js,server/docs/* server/tsconfig.json"
           target:
-            /var/www/brainicmart
+            /var/www/khairulummah
       - name: Run scripts on server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -47,7 +47,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH }}
           script: |
-            cd /var/www/brainicmart/backend
+            cd /var/www/khairulummah/server
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
