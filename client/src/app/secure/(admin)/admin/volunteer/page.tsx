@@ -68,7 +68,7 @@ export default function VolunteerManagementPage() {
       }
     })
   }
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <p className="text-center text-black dark:text-white h-10">Loading...</p>
   if (error) return <p>Error loading volunteers.</p>
   return (
     <main className="flex-1 space-y-8 p-8">

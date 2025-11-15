@@ -15,7 +15,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     return (
       <div className={className}>
         {/* Label */}
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
+        <label className="text-sm font-medium text-gray-700 dark:text-white mb-2 block">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
 
@@ -65,7 +65,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
     return (
       <div className={className}>
         {/* Label */}
-        <label className="text-sm font-medium text-gray-700 mb-2 block">
+        <label className="text-sm font-medium text-gray-700 dark:text-white mb-2 block">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
 
