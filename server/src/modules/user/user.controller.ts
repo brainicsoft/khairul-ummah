@@ -6,7 +6,8 @@ import { getUserService, updateUserService } from './user.service';
 
 export const getUserController: RequestHandler = catchAsync(
   async (req, res) => {
-    const result = await getUserService(req.user.userId);
+  
+    const result = await getUserService((req as any).user.userId);
     sendResponse(res, {
       status: httpStatus.OK,
       success: true,
@@ -17,7 +18,7 @@ export const getUserController: RequestHandler = catchAsync(
 );
 export const updateUserController: RequestHandler = catchAsync(
   async (req, res) => {
-    const result = await updateUserService(req.user.userId, req.body);
+    const result = await updateUserService((req as any).user.userId, req.body);
     sendResponse(res, {
       status: httpStatus.OK,
       success: true,
