@@ -128,7 +128,7 @@ export default function VolunteerForm({ volunteer, onClose, refetch }: Volunteer
     ]
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form id="volunteer-edit-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Info */}
             <div className="grid md:grid-cols-2 gap-6">
                 <FormInput label="সম্পূর্ণ নাম" required {...register("fullName", { required: true })} />
@@ -164,10 +164,10 @@ export default function VolunteerForm({ volunteer, onClose, refetch }: Volunteer
             {/* Photo */}
             <PhotoUpload photoPreview={photoPreview} onPhotoUpload={handlePhotoUpload} onRemovePhoto={handleRemovePhoto} error={undefined} />
             {/* Actions */}
-            <div className="flex justify-end gap-4 pt-4 border-t">
+            {/* <div className="flex justify-end gap-4 pt-4 border-t">
                 <Button variant="outline" onClick={onClose} disabled={isLoading}>বাতিল করুন</Button>
                 <Button type="submit" disabled={isLoading}>{isLoading ? "আপডেট হচ্ছে..." : "আপডেট করুন"}</Button>
-            </div>
+            </div> */}
         </form>
     )
 }

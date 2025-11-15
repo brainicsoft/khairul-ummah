@@ -29,13 +29,14 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
         className="fixed inset-0 bg-black/60 z-50 h-screen"
         onClick={onClose}
       />
+
       {/* Modal Wrapper */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
 
         {/* Modal Content Box */}
         <div
           className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl modal-scrollbar relative"
-          onClick={(e) => e.stopPropagation()}  // VERY IMPORTANT!
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Custom Scrollbar */}
           <style>{`
@@ -61,16 +62,8 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
             }
           `}</style>
 
-          <button
-            onClick={onClose}
-            className="fixed top-8 right-8 z-[60] text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg"
-            aria-label="Close details"
-          >
-            <X className="w-6 h-6 cursor-pointer" />
-          </button>
-
           {/* HEADER AREA */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 p-8 border-b border-gray-200 dark:border-gray-600 flex gap-4 items-start">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 p-8 border-b border-gray-200 dark:border-gray-600 flex gap-4 items-start sticky top-0 z-50">
 
             {/* Profile Image */}
             <div className="flex-shrink-0">
@@ -96,12 +89,21 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
                 <Mail className="h-4 w-4 dark:text-white" />
                 <a
                   href={`mailto:${volunteer.email}`}
-                  className="text-xs dark:bg-gray-200 ml-2 text-blue-600 px-2 py-1 rounded-full  transition-colors"
+                  className="text-xs dark:bg-gray-200 ml-2 text-blue-600 px-2 py-1 rounded-full transition-colors"
                 >
                   {volunteer.email}
                 </a>
               </div>
             </div>
+
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="ml-auto text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors p-2 bg-white dark:bg-gray-800 rounded-full shadow-md hover:shadow-lg"
+              aria-label="Close details"
+            >
+              <X className="w-6 h-6 cursor-pointer" />
+            </button>
           </div>
 
           {/* BODY CONTENT */}
@@ -185,12 +187,12 @@ export default function VolunteerDetailModal({ volunteer, isOpen, onClose }: Vol
             </div>
 
           </main>
-
         </div>
       </div>
     </>
   )
 }
+
 /* Small Reusable Components */
 function ContactItem({ icon, label, value, link }: any) {
   return (
