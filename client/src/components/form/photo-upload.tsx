@@ -6,10 +6,12 @@ interface PhotoUploadProps {
   onPhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
   onRemovePhoto: () => void
   error?: string
+  photoTitle?: string
 }
 
 export function PhotoUpload({
   photoPreview,
+  photoTitle,
   onPhotoUpload,
   onRemovePhoto,
   error
@@ -30,8 +32,9 @@ export function PhotoUpload({
 
   return (
     <div className="mb-8">
-      <label className="text-sm font-medium text-gray-700 mb-4 block">
-        আপনার ছবি
+      <label className="text-sm font-medium text-gray-700 dark:text-white mb-4 block">
+        {/* আপনার ছবি */}
+        {photoTitle || "আপনার ছবি"}
       </label>
 
       {error && <p className="text-red-500 text-xs mb-2">{error}</p>}
@@ -53,7 +56,7 @@ export function PhotoUpload({
               ✕
             </button>
           </div>
-          <p className="text-sm text-gray-600 mt-2">প্রোফাইল ছবি প্রিভিউ</p>
+          <p className="text-sm text-gray-600 mt-2">{photoTitle? photoTitle : "প্রোফাইল ছবি"} প্রিভিউ</p>
         </div>
       )}
 
@@ -86,8 +89,8 @@ export function PhotoUpload({
         }}
       >
         <Upload className="w-5 h-5 text-gray-700 mb-2" />
-        <p className="text-sm text-gray-700">ছবি ড্র্যাগ & ড্রপ করুন</p>
-        <p className="text-xs text-gray-500">অথবা ক্লিক করে আপলোড করুন</p>
+        <p className="text-sm text-gray-700 dark:text-white">ছবি ড্র্যাগ & ড্রপ করুন</p>
+        <p className="text-xs text-gray-500 dark:text-white">অথবা ক্লিক করে আপলোড করুন</p>
 
         <input
           ref={fileInputRef}
