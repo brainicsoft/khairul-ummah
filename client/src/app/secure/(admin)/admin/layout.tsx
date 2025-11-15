@@ -33,6 +33,7 @@ interface AdminLayoutProps {
 const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "User Management", href: "/admin/users", icon: Users },
+  { name: "volunteer Management", href: "/secure/admin/volunteer", icon: Users },
   { name: "Donations", href: "/admin/donations", icon: DollarSign },
   { name: "Projects", href: "/admin/projects", icon: Package },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
@@ -88,7 +89,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             )}
           </div>
 
-          <button onClick={closeMobileSidebar} className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
+          <button onClick={closeMobileSidebar}
+           className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -105,10 +107,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 onClick={closeMobileSidebar}
                 className={`flex items-center gap-3 w-full p-3 rounded-xl transition-all duration-200 group ${isActive ? activeBg : `text-gray-400 ${hoverBg} hover:primary`}`}
               >
-                <div className={`flex items-center justify-center min-w-6 ${isActive ? "text-blue-400" : "text-gray-500 group-hover:text-gray-300"}`}>
+                <div className={`flex items-center justify-center min-w-6 ${isActive ? "text-blue-400" : "text-black dark:text-gray-200 group-hover:text-gray-300"}`}>
                   <Icon className="w-5 h-5" />
                 </div>
-                {sidebarOpen && <span className="font-medium text-sm truncate">{item.name}</span>}
+                {sidebarOpen && <span className="font-medium text-sm text-gray-700 dark:text-gray-300 truncate">{item.name}</span>}
               </Link>
             );
           })}
@@ -117,7 +119,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* Footer */}
         <div className="p-4 border-t border-gray-700 space-y-3">
           {/* Dark Mode Toggle */}
-          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full flex items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800">
+          <Button variant="ghost" size="sm" onClick={toggleDarkMode} className="w-full dark:text-white flex items-center gap-2 justify-center text-gray-800 hover:text-white hover:bg-[#276B95]">
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             {sidebarOpen && <span className="text-xs">{darkMode ? "Light Mode" : "Dark Mode"}</span>}
           </Button>
@@ -126,8 +128,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <Button variant="ghost" size="sm" onClick={toggleSidebar} className="hidden lg:flex w-full items-center gap-2 justify-center text-gray-400 hover:text-white hover:bg-gray-800">
             {sidebarOpen ? (
               <>
-                <ChevronLeft className="w-4 h-4" />
-                <span className="text-xs">Collapse</span>
+                <ChevronLeft className="w-4 h-4 text-gray-800 dark:text-white" />
+                <span className="text-xs text-gray-800 dark:text-white">Collapse</span>
               </>
             ) : (
               <ChevronRight className="w-4 h-4" />
@@ -166,7 +168,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-400 hidden md:block">
+            <div className="text-sm text-gray-900 dark:text-white hidden md:block">
               Last login: Today, 10:30 AM
             </div>
             <div className="flex items-center gap-3">
@@ -181,8 +183,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-6">
-          <div className="md:container mx-auto">
+        <div className="flex-1 overflow-auto dark:bg-[#1A2328] py-6">
+          <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
               {children}
             </div>

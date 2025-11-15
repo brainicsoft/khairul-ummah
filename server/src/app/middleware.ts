@@ -5,10 +5,23 @@ import cors from 'cors';
 import session from 'express-session';
 import { corsOrigin } from '../config';
 import passport from 'passport';
+const allowedOrigins = [
+   "http://localhost:3000",
+   "https://a.khairulummahfoundation.org/"
+
+];
 const middleware = [
   morgan('dev'),
   cors({
-    origin: corsOrigin,
+    origin: (origin, callback) => {
+      // allow requests with no origin (like Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
+    credentials: true, // ✅ important for cookies/sessions
   }),
   cookieParser(),
   express.static("docs"),

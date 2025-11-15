@@ -1,10 +1,10 @@
 import Image from "next/image"
-import gellery1 from "../assets/gellery/gellery1.jpg"
-import gellery2 from "../assets/gellery/gellery2.jpg"
-import gellery3 from "../assets/gellery/gellery3.jpg"
-import gellery4 from "../assets/gellery/gellery4.jpg"
-import gellery5 from "../assets/gellery/gellery5.jpg"
-import gellery7 from "../assets/gellery//gellery7.jpg"
+import gellery1 from "@/assets/gellery/gellery1.jpg"
+import gellery2 from "@/assets/gellery/gellery2.jpg"
+import gellery3 from "@/assets/gellery/gellery3.jpg"
+import gellery4 from "@/assets/gellery/gellery4.jpg"
+import gellery5 from "@/assets/gellery/gellery5.jpg"
+import gellery7 from "@/assets/gellery//gellery7.jpg"
 import Link from "next/link"
 
 
@@ -23,7 +23,7 @@ const images = [
 
 ]
 
-export function GallerySection() {
+export function Gallery() {
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">

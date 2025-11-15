@@ -1,5 +1,5 @@
 "use client"
-import { AboutContent } from "@/components/about-content"
+import { AboutContent } from "@/components/AboutContent"
 
 
 export default function AboutPage() {

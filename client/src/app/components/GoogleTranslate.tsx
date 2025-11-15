@@ -60,7 +60,7 @@ export function GoogleTranslate() {
         new window.google.translate.TranslateElement({
           pageLanguage: translationConfig.defaultLanguage,
           includedLanguages: 'en,bn,ar',
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+          layout: window.google.translate.TranslateElement?.InlineLayout.SIMPLE,
           autoDisplay: false
         }, 'google_translate_element')
         

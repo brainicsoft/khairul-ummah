@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-export function NewsletterSection() {
+export function Newsletter() {
   const [email, setEmail] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
