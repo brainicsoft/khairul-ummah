@@ -8,8 +8,8 @@ import swaggerUI from 'swagger-ui-express';
 import { errorHandler } from './errors';
 import { notFoundHandler } from '../errors/notFoundError';
 const app: Application = express();
-const doc = YAML.load(`${process.cwd()}/src/docs/swagger.yaml`);
-app.use('/docs', swaggerUI.serve, swaggerUI.setup(doc));
+// const doc = YAML.load(`${process.cwd()}/src/docs/swagger.yaml`);
+// app.use('/docs', swaggerUI.serve, swaggerUI.setup(doc));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '..', 'views'));
