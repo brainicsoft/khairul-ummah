@@ -1,11 +1,12 @@
-import jwt from 'jsonwebtoken';
-import { TJwtPayload } from '../modules/auth/auth.interface';
+import jwt, { SignOptions  } from "jsonwebtoken";
+import { TJwtPayload } from "../modules/auth/auth.interface";
+
 export const genarateToken = (
-  jwtPayload: TJwtPayload,
+  payload: TJwtPayload,
   secret: string,
-  expiresIn: string,
-) => {
-  return jwt.sign(jwtPayload, secret, {
-    expiresIn,
-  });
+  expiresIn:  any
+): string => {
+  const options: SignOptions = { expiresIn };
+
+  return jwt.sign(payload, secret, options);
 };
