@@ -3,7 +3,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import VolunteerTable from "./component/Volunteer_table"
 import { IVolunteer, useDeleteVolunteerMutation, useGetAllVolunteersQuery } from "@/redux/features/volunteers/volunteersApi"
-import VolunteerDetailModal from "./component/Volunteer_details"
+import VolunteerDetailModal from "./component/volunteer_details"
 import Swal from "sweetalert2"
 import { toast } from "sonner"
 export default function VolunteerManagementPage() {
