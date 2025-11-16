@@ -4,100 +4,72 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import GalleryGrid from './components/GalleryGrid';
-import GalleryCreateModal from './components/GaleeryCreateModal';
+
 import GalleryEditModal from './components/GalleryEditModal';
-import { useGetGalleryQuery } from '@/redux/features/gallery/galleryApi';
+import { useDeleteGalleryMutation, useGetGalleryQuery } from '@/redux/features/gallery/galleryApi';
+import GalleryCreateModal from './components/GaleeryCreateModal';
+import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface GalleryImage {
-    id: number;
+    _id: string;
     image: string;
     alt: string;
     title: string;
     purpose: string;
     date: string;
 }
-const MOCK_GALLERY_DATA: GalleryImage[] = [
-    {
-        id: 1,
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
-        alt: 'Community event',
-        title: 'প্রতিবেদন',
-        purpose: 'community',
-        date: '2025-06-12',
-    },
-    {
-        id: 2,
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
-        alt: 'Food distribution during flood',
-        title: 'স্টোমান বৃক্ষরোপণ',
-        purpose: 'flood',
-        date: '2025-06-17',
-    },
-    {
-        id: 3,
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
-        alt: 'Team meeting',
-        title: 'স্টোমান মাসার',
-        purpose: 'meeting',
-        date: '2025-06-17',
-    },
-    {
-        id: 4,
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
-        alt: 'Community gathering',
-        title: 'প্রকার্য সদার রামবায়াইয়া মিটিং',
-        purpose: 'gathering',
-        date: '2025-06-17',
-    },
-    {
-        id: 5,
-        image: 'https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=500&h=400&fit=crop',
-        alt: 'Relief work',
-        title: 'প্রকার্য সদার রামবায়াইয়া',
-        purpose: 'relief',
-        date: '2025-06-17',
-    },
-    {
-        id: 6,
-        image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&h=400&fit=crop',
-        alt: 'Flood relief',
-        title: 'রামবায়াইয়া সময়ের',
-        purpose: 'flood',
-        date: '2025-06-17',
-    },
-    {
-        id: 7,
-        image: 'https://images.unsplash.com/photo-1559027615-cd2628902d4a?w=500&h=400&fit=crop',
-        alt: 'Team event',
-        title: 'রামবায়াইয়া সময়ের',
-        purpose: 'event',
-        date: '2025-06-17',
-    },
-    {
-        id: 8,
-        image: 'https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=500&h=400&fit=crop',
-        alt: 'Water relief',
-        title: 'প্রাণ বিদ্রোহ',
-        purpose: 'water',
-        date: '2025-06-17',
-    },
-];
-export default function GalleryPage() {
-    const { data, error, isLoading } = useGetGalleryQuery();
-    console.log(data)
 
-    const [images, setImages] = useState<GalleryImage[]>(MOCK_GALLERY_DATA);
+export default function GalleryPage() {
+    const { data: galleryData, error, isLoading, refetch } = useGetGalleryQuery();
+    const [deleteGallery] = useDeleteGalleryMutation()
+    // API ডাটা ম্যাপ করে GalleryImage টাইপে ফিক্স করা
+    const galleryImages: GalleryImage[] = galleryData?.data.map((img: any) => ({
+        _id: img._id,
+        image: img.image || '/placeholder.svg',
+        alt: img.alt || 'ছবির বিবরণ নেই',
+        title: img.title || 'বিবরণ নেই',
+        purpose: img.purpose || 'অন্যান্য',
+        date: img.date || new Date().toISOString(),
+    })) || [];
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-    const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
-    const purposes = Array.from(new Set(images.map(img => img.purpose))).sort();
-    const filteredImages = selectedPurpose
-        ? images.filter(img => img.purpose === selectedPurpose)
-        : images;
 
-    const handleDelete = (id: number) => {
-        setImages(images.filter(img => img.id !== id));
+    const handleDelete = (_id: string) => {
+        // ডিলিট ফাংশন
+        // setImages(images.filter(img => img._id !== _id));
+        console.log(_id)
+        if (!_id) {
+            toast.error("Volunteer ID not found!")
+            return
+        }
+        // console.log(volunteer._id)
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await deleteGallery(_id).unwrap()
+                    refetch()
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Volunteer has been deleted.",
+                        icon: "success",
+                    })
+
+                } catch (error: any) {
+                    toast.error(error?.data?.message || "Something went wrong.")
+                }
+            }
+        })
     };
     const handleEditOpen = (image: GalleryImage) => {
         setSelectedImage(image);
@@ -113,37 +85,16 @@ export default function GalleryPage() {
                         নতুন ছবি যোগ করুন
                     </Button>
                 </div>
-
-                <div className="mb-6 flex flex-wrap gap-2 dark:text-white">
-                    <Button
-                        variant={selectedPurpose === null ? "default" : "outline"}
-                        onClick={() => setSelectedPurpose(null)}
-                        className="rounded-full"
-                    >
-                        All
-                    </Button>
-                    {purposes.map((purpose) => (
-                        <Button
-                            key={purpose}
-                            variant={selectedPurpose === purpose ? "default" : "outline"}
-                            onClick={() => setSelectedPurpose(purpose)}
-                            className="rounded-full capitalize"
-                        >
-                            {purpose}
-                        </Button>
-                    ))}
-                </div>
-
                 <GalleryGrid
-                    images={filteredImages}
+                    images={galleryImages}
                     onEdit={handleEditOpen}
                     onDelete={handleDelete}
                 />
             </div>
-
             <GalleryCreateModal
                 open={isCreateOpen}
                 onOpenChange={setIsCreateOpen}
+                refetch={refetch}
             />
 
             {selectedImage && (
@@ -151,6 +102,7 @@ export default function GalleryPage() {
                     open={isEditOpen}
                     onOpenChange={setIsEditOpen}
                     selectedImage={selectedImage}
+                    refetch={refetch}
                 />
             )}
         </main>

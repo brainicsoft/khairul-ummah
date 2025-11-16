@@ -13,22 +13,21 @@ import {
 } from '@/components/ui/select';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-
+import { useUpdateGalleryMutation } from '@/redux/features/gallery/galleryApi';
 interface GalleryImage {
-  id: number;
+  _id: string;
   image: string;
   alt: string;
   title: string;
   purpose: string;
   date: string;
 }
-
 interface GalleryEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedImage: GalleryImage;
+  refetch: () => void;
 }
-
 const PURPOSES = [
   { value: 'community', label: 'কমিউনিটি' },
   { value: 'flood', label: 'বন্যা ত্রাণ' },
@@ -43,11 +42,13 @@ export default function GalleryEditModal({
   open,
   onOpenChange,
   selectedImage,
+  refetch
 }: GalleryEditModalProps) {
   const [formData, setFormData] = useState<GalleryImage>(selectedImage);
   const [preview, setPreview] = useState<string>(selectedImage.image);
   const [image, setImage] = useState<File | null>(null);
-  
+  const [updateGallery, { isLoading }] = useUpdateGalleryMutation()
+
   useEffect(() => {
     setFormData(selectedImage);
     setPreview(selectedImage.image);
@@ -56,68 +57,51 @@ export default function GalleryEditModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-        if (!file.type.startsWith('image/')) {
-            toast.error('শুধুমাত্র ছবি ফাইল আপলোড করুন');
-            return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-            toast.error('ছবির সাইজ 10MB এর কম হতে হবে');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setPreview(reader.result as string);
-            setImage(file);
-        };
-        reader.readAsDataURL(file);
+      if (!file.type.startsWith('image/')) {
+        toast.error('শুধুমাত্র ছবি ফাইল আপলোড করুন');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('ছবির সাইজ 10MB এর কম হতে হবে');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+        setImage(file);
+      };
+      reader.readAsDataURL(file);
     }
-};
-  const handleSubmit = async(e: React.FormEvent) => {
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!image) {
-      toast.error("ছবি আপলোড করা বাধ্যতামূলক");
-      return;
-    }
+
     const finalData = {
       alt: formData.alt,
       title: formData.title,
       purpose: formData.purpose,
       date: formData.date,
     };
-    console.log(finalData);
 
     const formdata = new FormData();
-    formdata.append("image", image);
+    if (image) {
+      formdata.append("image", image);
+    }
     formdata.append("data", JSON.stringify(finalData));
-
-    // todo: api call
-    // const response= await updateGallery({ id: formData.id, data: formdata }).unwrap();
-    
-
-    // try {
-    //     const response = await galleryRequest(formdata).unwrap();
-    //     if (response.status === 200) {
-    //         toast.success("ছবি আপডেট করা হয়েছে!");
-    //     }
-    //     
-    //     setPreview("");
-    //     setImage(null);
-    //     onOpenChange(false);
-    // } catch (error: any) {
-    //     toast.error(error?.data?.message || "Something went wrong.");
-    // }
-
-    toast.error(" need to be implemented api call");
-    setPreview("");
-    setImage(null);
-    onOpenChange(false);
-   
+    try {
+      const response = await updateGallery({ id: formData._id, data: formdata }).unwrap();
+      if (response.status === 200) {
+        toast.success("ছবি আপডেট করা হয়েছে!");
+      }
+      refetch()
+      setPreview("");
+      setImage(null);
+      onOpenChange(false);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Something went wrong.");
+    }
   };
-
   if (!open) return null;
-
   return (
     <>
       {/* Overlay */}
@@ -125,7 +109,6 @@ export default function GalleryEditModal({
         className="fixed inset-0 z-50 bg-black/50"
         onClick={() => onOpenChange(false)}
       />
-
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
@@ -182,7 +165,6 @@ export default function GalleryEditModal({
                 </div>
               )}
             </div>
-
             <div className='dark:text-white'>
               <Label htmlFor="title-edit">শিরোনাম</Label>
               <Input
@@ -195,7 +177,6 @@ export default function GalleryEditModal({
                 className="mt-2"
               />
             </div>
-
             <div className='dark:text-white'>
               <Label htmlFor="alt-edit">বিকল্প পাঠ্য</Label>
               <Input
@@ -210,17 +191,15 @@ export default function GalleryEditModal({
             </div>
 
             <div className='dark:text-white'>
-              <Label htmlFor="purpose-edit">উদ্দেশ্য</Label>
+              <Label>বিভাগ</Label>
               <Select
                 value={formData.purpose}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, purpose: value })
-                }
+                onValueChange={(value) => setFormData({ ...formData, purpose: value })}
               >
-                <SelectTrigger id="purpose-edit" className="mt-2">
-                  <SelectValue />
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   {PURPOSES.map((p) => (
                     <SelectItem key={p.value} value={p.value}>
                       {p.label}
@@ -229,7 +208,6 @@ export default function GalleryEditModal({
                 </SelectContent>
               </Select>
             </div>
-
             <div className='dark:text-white'>
               <Label htmlFor="date-edit">তারিখ</Label>
               <Input
@@ -242,8 +220,6 @@ export default function GalleryEditModal({
                 className="mt-2"
               />
             </div>
-
-
           </form>
           <div className=" pt-4 sticky bottom-0 bg-white dark:text-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
             <Button

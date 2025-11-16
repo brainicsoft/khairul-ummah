@@ -14,23 +14,19 @@ import {
 import { useState } from 'react';
 
 interface GalleryImage {
-  id: number;
+  _id: string;
   image: string;
   alt: string;
   title: string;
   purpose: string;
   date: string;
 }
-
 interface GalleryGridProps {
   images: GalleryImage[];
   onEdit: (image: GalleryImage) => void;
-  onDelete: (id: number) => void;
+  onDelete: (_id: string) => void;
 }
-
 export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridProps) {
-  const [deleteId, setDeleteId] = useState<number | null>(null);
-
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('bn-BD', {
@@ -40,11 +36,8 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
     }).format(date);
   };
 
-  const handleDeleteConfirm = () => {
-    if (deleteId !== null) {
-      onDelete(deleteId);
-      setDeleteId(null);
-    }
+  const handleDeleteConfirm = (id: string) => {
+    onDelete(id);
   };
 
   return (
@@ -52,7 +45,7 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {images.map((image) => (
           <div
-            key={image.id}
+            key={image._id}
             className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-border"
           >
             <div className="relative w-full h-48 bg-muted overflow-hidden">
@@ -77,14 +70,14 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
                   variant="outline"
                   size="icon"
                   onClick={() => onEdit(image)}
-                  className="flex-1 dark:bg-gray-600 dark:text-white"
+                  className="flex-1 dark:bg-gray-600 dark:text-white dark:hover:text-black"
                 >
-                  <Pencil className="w-4 h-4" />
+                  <Pencil className="w-4 h-4 dark:hover:text-black" />
                 </Button>
                 <Button
                   variant="destructive"
                   size="icon"
-                  onClick={() => setDeleteId(image.id)}
+                  onClick={() => handleDeleteConfirm(image._id)}
                   className="flex-1 dark:bg-gray-600 bg-white text-red-600 border"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -95,20 +88,6 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
         ))}
       </div>
 
-      <AlertDialog open={deleteId !== null} onOpenChange={(open) => !open && setDeleteId(null)}>
-        <AlertDialogContent>
-          <AlertDialogTitle>ছবি মুছে ফেলুন?</AlertDialogTitle>
-          <AlertDialogDescription>
-            এই ক্রিয়া অপরিবর্তনীয়। এই ছবিটি চিরস্থায়ীভাবে মুছে দেওয়া হবে।
-          </AlertDialogDescription>
-          <div className="flex justify-end gap-2">
-            <AlertDialogCancel>বাতিল</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-red-600">
-              মুছে ফেলুন
-            </AlertDialogAction>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

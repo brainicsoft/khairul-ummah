@@ -26,6 +26,7 @@ interface GalleryImage {
 interface GalleryCreateModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    refetch: () => void;
 }
 const PURPOSES = [
     { value: 'community', label: 'কমিউনিটি' },
@@ -37,7 +38,7 @@ const PURPOSES = [
     { value: 'water', label: 'জল ত্রাণ' },
 ];
 
-export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreateModalProps) {
+export default function GalleryCreateModal({ open, onOpenChange, refetch }: GalleryCreateModalProps) {
     if (!open) return null;
     const [createGallery, { isLoading }] = useCreateGalleryMutation()
 
@@ -108,6 +109,7 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
             if (response.status === 201) {
                 toast.success("ছবি যোগ করা হয়েছে!");
             }
+            refetch()
             setFormData({
                 image: '',
                 alt: '',
