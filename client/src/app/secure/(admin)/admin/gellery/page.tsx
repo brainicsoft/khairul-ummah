@@ -15,7 +15,6 @@ interface GalleryImage {
     purpose: string;
     date: string;
 }
-
 const MOCK_GALLERY_DATA: GalleryImage[] = [
     {
         id: 1,
@@ -82,35 +81,24 @@ const MOCK_GALLERY_DATA: GalleryImage[] = [
         date: '2025-06-17',
     },
 ];
-
 export default function GalleryPage() {
     const [images, setImages] = useState<GalleryImage[]>(MOCK_GALLERY_DATA);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
     const [selectedPurpose, setSelectedPurpose] = useState<string | null>(null);
-
     const purposes = Array.from(new Set(images.map(img => img.purpose))).sort();
-
     const filteredImages = selectedPurpose
         ? images.filter(img => img.purpose === selectedPurpose)
         : images;
 
-    const handleEdit = (editedImage: GalleryImage) => {
-        setImages(images.map(img => img.id === editedImage.id ? editedImage : img));
-        setIsEditOpen(false);
-        setSelectedImage(null);
-    };
-
     const handleDelete = (id: number) => {
         setImages(images.filter(img => img.id !== id));
     };
-
     const handleEditOpen = (image: GalleryImage) => {
         setSelectedImage(image);
         setIsEditOpen(true);
     };
-
     return (
         <main className="min-h-screen bg-background p-6">
             <div className="max-w-7xl mx-auto">
@@ -128,7 +116,7 @@ export default function GalleryPage() {
                         onClick={() => setSelectedPurpose(null)}
                         className="rounded-full"
                     >
-                        সব
+                        All
                     </Button>
                     {purposes.map((purpose) => (
                         <Button
@@ -158,8 +146,7 @@ export default function GalleryPage() {
                 <GalleryEditModal
                     open={isEditOpen}
                     onOpenChange={setIsEditOpen}
-                    image={selectedImage}
-                    onSubmit={handleEdit}
+                    selectedImage={selectedImage}
                 />
             )}
         </main>
