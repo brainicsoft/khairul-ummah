@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import GalleryGrid from './components/GalleryGrid';
 import GalleryCreateModal from './components/GaleeryCreateModal';
 import GalleryEditModal from './components/GalleryEditModal';
+import { useGetGalleryQuery } from '@/redux/features/gallery/galleryApi';
 
 interface GalleryImage {
     id: number;
@@ -82,6 +83,9 @@ const MOCK_GALLERY_DATA: GalleryImage[] = [
     },
 ];
 export default function GalleryPage() {
+    const { data, error, isLoading } = useGetGalleryQuery();
+    console.log(data)
+
     const [images, setImages] = useState<GalleryImage[]>(MOCK_GALLERY_DATA);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);

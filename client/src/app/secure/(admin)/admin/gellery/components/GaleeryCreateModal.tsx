@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import { useCreateGalleryMutation } from '@/redux/features/gallery/galleryApi';
 
 interface GalleryImage {
     image: string;
@@ -22,12 +23,10 @@ interface GalleryImage {
     purpose: string;
     date: string;
 }
-
 interface GalleryCreateModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
-
 const PURPOSES = [
     { value: 'community', label: 'কমিউনিটি' },
     { value: 'flood', label: 'বন্যা ত্রাণ' },
@@ -40,6 +39,7 @@ const PURPOSES = [
 
 export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreateModalProps) {
     if (!open) return null;
+    const [createGallery, { isLoading }] = useCreateGalleryMutation()
 
     const [formData, setFormData] = useState<GalleryImage>({
         image: '',
@@ -75,7 +75,7 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
         }
     };
 
-    const handleSubmit = async(e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!image) {
@@ -100,37 +100,39 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
         formdata.append("data", JSON.stringify(finalData));
 
         // todo: api call
-        
-        // try {
-        //     const response = await galleryRequest(formdata).unwrap();
-        //     if (response.status === 201) {
-        //         toast.success("ছবি যোগ করা হয়েছে!");
-        //     }
-        //     setFormData({
-        //         image: '',
-        //         alt: '',
-        //         title: '',
-        //         purpose: '',
-        //         date: new Date().toISOString().split('T')[0],
-        //     });
-        //     setPreview("");
-        //     setImage(null);
-        //     onOpenChange(false);
-        // } catch (error: any) {
-        //     toast.error(error?.data?.message || "Something went wrong.");
-        // }
 
-        toast.error(" need to be implemented api call");
-        setFormData({
-            image: '',
-            alt: '',
-            title: '',
-            purpose: '',
-            date: new Date().toISOString().split('T')[0],
-        });
-        setPreview("");
-        setImage(null);
-        onOpenChange(false);
+        try {
+            const response = await createGallery(formdata).unwrap()
+            
+            console.log(response);
+            if (response.status === 201) {
+                toast.success("ছবি যোগ করা হয়েছে!");
+            }
+            setFormData({
+                image: '',
+                alt: '',
+                title: '',
+                purpose: '',
+                date: new Date().toISOString().split('T')[0],
+            });
+            setPreview("");
+            setImage(null);
+            onOpenChange(false);
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Something went wrong.");
+        }
+
+        // toast.error(" need to be implemented api call");
+        // setFormData({
+        //     image: '',
+        //     alt: '',
+        //     title: '',
+        //     purpose: '',
+        //     date: new Date().toISOString().split('T')[0],
+        // });
+        // setPreview("");
+        // setImage(null);
+        // onOpenChange(false);
     };
 
     return (
@@ -207,7 +209,7 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
                             />
                         </div>
 
-                        <div  className='dark:text-white'>
+                        <div className='dark:text-white'>
                             <Label>বিকল্প পাঠ্য</Label>
                             <Input
                                 value={formData.alt}
@@ -218,7 +220,7 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
                             />
                         </div>
 
-                        <div  className='dark:text-white'>
+                        <div className='dark:text-white'>
                             <Label>বিভাগ</Label>
                             <Select
                                 value={formData.purpose}
@@ -237,7 +239,7 @@ export default function GalleryCreateModal({ open, onOpenChange }: GalleryCreate
                             </Select>
                         </div>
 
-                        <div  className='dark:text-white'>
+                        <div className='dark:text-white'>
                             <Label>তারিখ</Label>
                             <Input
                                 type="date"
