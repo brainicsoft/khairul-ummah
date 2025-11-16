@@ -49,7 +49,7 @@ export default function ProjectManagementPage() {
     const [projects, setProjects] = useState(dummyProjects)
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(25)
     const [selectedProject, setSelectedProject] = useState<any | null>(null)
     const [selectedEditProject, setSelectedEditProject] = useState<any | null>(null)
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
