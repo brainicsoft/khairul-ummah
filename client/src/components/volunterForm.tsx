@@ -26,6 +26,10 @@ interface VolunteerFormData {
   educationQualification: string
   interestReason: string
 }
+interface ApiResponse {
+  status: number;
+  data?: any;
+}
 
 export function VolunteerForm() {
   const [volunteerRequest, { isLoading }] = useVolunteerRequestMutation()
@@ -126,17 +130,19 @@ export function VolunteerForm() {
       }
 
       // Use Redux mutation
-      const response = await volunteerRequest(formData).unwrap()
+      const response = await volunteerRequest(formData).unwrap() as ApiResponse
 
       // Success case
-      alert("আবেদন সফলভাবে জমা হয়েছে!")
-      setSubmitted(true)
-      
-      // Reset form
-      reset()
-      setPhoto(null)
-      setPhotoPreview("")
-      setApiError("")
+      if (response.status === 201) {
+        alert("আবেদন সফলভাবে জমা হয়েছে!")
+        setSubmitted(true)
+        
+        // Reset form
+        reset()
+        setPhoto(null)
+        setPhotoPreview("")
+        setApiError("")
+      }
 
     } catch (error: any) {
       // Error handling

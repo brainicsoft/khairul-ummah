@@ -4,13 +4,11 @@ import BlogForm, { IBlog } from "./BlogForm"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useState } from "react"
-
 interface BlogCreateModalProps {
   isOpen: boolean
   onClose: () => void
   refetch: () => void
 }
-
 export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreateModalProps) {
   if (!isOpen) return null
   const [photo, setPhoto] = useState<File | null>(null)
