@@ -38,12 +38,12 @@ const menuItems = [
   { name: "Donate-type", href: "/secure/admin/projects", icon: Package },
   { name: "blogs", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
-  { name: "Donations", href: "/admin/donations", icon: DollarSign },
-  { name: "Reports", href: "/admin/reports", icon: BarChart3 },
+  { name: "Donations", href: "/secure/admin/donations", icon: DollarSign },
+  { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },
   // { name: "Content", href: "/admin/content", icon: FileText },
-  { name: "Events", href: "/admin/events", icon: Calendar },
-  { name: "Messages", href: "/admin/messages", icon: MessageSquare },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
+  { name: "Events", href: "/secure/admin/events", icon: Calendar },
+  { name: "Messages", href: "/secure/admin/messages", icon: MessageSquare },
+  { name: "Settings", href: "/secure/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
