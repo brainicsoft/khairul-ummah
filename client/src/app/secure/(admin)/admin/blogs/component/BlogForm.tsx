@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { PhotoUpload } from "@/components/form/photo-upload"
 export interface IBlog {
-  id?: number
+  _id?: string
   title: string
   description: string
   date: string
@@ -56,6 +56,7 @@ export default function BlogForm({ blog, onSubmit, setPhoto, photo }: BlogFormPr
     { value: "শিক্ষা", label: "শিক্ষা" },
     { value: "স্বাস্থ্য", label: "স্বাস্থ্য" },
     { value: "দাতব্য", label: "দাতব্য" },
+    { value: "অন্যান্য", label: "অন্যান্য" },
   ]
   return (
     <form id="blog-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">

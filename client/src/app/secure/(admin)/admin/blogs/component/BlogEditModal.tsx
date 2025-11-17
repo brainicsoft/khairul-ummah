@@ -2,19 +2,21 @@
 import { X } from "lucide-react"
 import BlogForm, { IBlog } from "./BlogForm"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
 import { useState, useEffect } from "react"
+import { useUpdateBlogMutation } from "@/redux/features/blogs/blogApi"
+import toast from "react-hot-toast"
 
 interface BlogEditModalProps {
   blog: IBlog | null
   isOpen: boolean
   onClose: () => void
   refetch: () => void
+  setIsLoading?: (loading: boolean) => void
 }
 
-export default function BlogEditModal({ blog, isOpen, onClose, refetch }: BlogEditModalProps) {
+export default function BlogEditModal({ blog, isOpen, onClose, refetch, setIsLoading }: BlogEditModalProps) {
   const [photo, setPhoto] = useState<File | null>(null)
-
+  const [updateBlog, { isLoading }] = useUpdateBlogMutation()
   useEffect(() => {
     if (blog) {
       setPhoto(null)
@@ -23,7 +25,7 @@ export default function BlogEditModal({ blog, isOpen, onClose, refetch }: BlogEd
 
   if (!isOpen || !blog) return null
 
-  const handleSubmit = (data: IBlog) => {
+  const handleSubmit = async(data: IBlog) => {
     const finalData = {
       title: data.title,
       author: data.author,
@@ -32,19 +34,23 @@ export default function BlogEditModal({ blog, isOpen, onClose, refetch }: BlogEd
       description: data.description,
       content: data.content || "",
     }
-    const formData = new FormData()
+    try {
+      if (setIsLoading) setIsLoading(true);
+      const formData = new FormData()
     if (photo) formData.append("image", photo)
     formData.append("data", JSON.stringify(finalData))
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+
+      // Replace with your API call
+      await updateBlog({ id: blog?._id, data: formData }).unwrap()
+      refetch()
+      onClose()
+      toast.success("প্রকল্প সফলভাবে আপডেট হয়েছে!")
+    } catch (error: any) {
+      toast.error(error?.data?.message || "আপডেট করতে সমস্যা হয়েছে।")
+    } finally {
+      if (setIsLoading) setIsLoading(false);
     }
-
-    // TODO: API call
-    refetch()
-    toast.success("Blog updated successfully!")
-    // onClose()
   }
-
   return (
     <>
       {/* Overlay */}

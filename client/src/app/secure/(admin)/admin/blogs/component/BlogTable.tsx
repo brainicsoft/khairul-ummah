@@ -24,7 +24,7 @@ import Pagination from "@/components/Pagination"
 import { getBlogColumns } from "./BlogColumns"
 
 interface IBlog {
-  id: number
+  _id: string
   slug: string
   title: string
   description: string

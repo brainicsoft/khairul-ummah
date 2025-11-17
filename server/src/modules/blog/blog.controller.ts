@@ -45,7 +45,7 @@ import { handleMulterUpload } from '../../utils/uploader/multerHandler';
       });
     }
     formattedData.slug = baseSlug;
-    const result = await createBlogService(req.body);
+    const result = await createBlogService(formattedData);
     sendResponse(res, {
       status: 201,
       success: true,

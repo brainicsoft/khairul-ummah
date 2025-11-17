@@ -8,9 +8,10 @@ import BlogCreateModal from "./component/BlogCreateModal"
 import BlogTable from "./component/BlogTable"
 import BlogDetailModal from "./component/BlogDetailsModal"
 import BlogEditModal from "./component/BlogEditModal"
+import { useDeleteBlogMutation, useGetAllBlogsQuery } from "@/redux/features/blogs/blogApi"
 
 interface IBlog {
-    id: number
+    _id: string
     slug: string
     title: string
     description: string
@@ -25,38 +26,24 @@ export default function BlogManagementPage() {
     const [currentPage, setCurrentPage] = useState(1)
     const [searchTerm, setSearchTerm] = useState("")
     const [limit, setLimit] = useState(25)
-
+    const [deleteBlog] = useDeleteBlogMutation()
     // Modal state
     const [selectedBlog, setSelectedBlog] = useState<IBlog | null>(null)
     const [selectedEditBlog, setSelectedEditBlog] = useState<IBlog | null>(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isEditModalOpen, setIsEditModalOpen] = useState(false)
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-
-    const refetch = () => {
-        console.log("refetch")
-    }
-    // Mock data - Replace with API call
-    const mockBlogs: IBlog[] = [
-        {
-            id: 1,
-            slug: "সমাজ-সেবা",
-            title: "সমাজের উন্নয়নে আমাদের ভূমিকা",
-            description: "খাইরুল উম্মাহ ফাউন্ডেশন সমাজের বিভিন্ন ক্ষেত্রে ইতিবাচক পরিবর্তন আনতে কাজ করে থাকে।",
-            date: "2023-01-01",
-            author: "ফাউন্ডেশন টিম",
-            category: "সমাজ সেবা",
-            image: "https://res.cloudinary.com/daftymluv/image/upload/v1763195612/DSC_8408%5B1%5D-1763195606867.webp",
-            content: "খাইরুল উম্মাহ ফাউন্ডেশন সমাজের বিভিন্ন ক্ষেত্রে ইতিবাচক পরিবর্তন আনতে কাজ করে থাকে। আমরা বিশ্বাস করি, শিক্ষার প্রসার, মসজিদ ও কমিউনিটি সেন্টার নির্মাণ, স্বাস্থ্য সচেতনতা এবং দরিদ্র মানুষের পাশে দাঁড়ানো আমাদের মূল লক্ষ্য।"
-        }
-    ]
-
-    const filteredBlogs = mockBlogs.filter(blog =>
+    const { data, error, isLoading, refetch } = useGetAllBlogsQuery({
+        page: currentPage,
+        searchTerm,
+        limit: limit.toString()
+    })
+    const allblogs = data?.data || []
+    const filteredBlogs = allblogs.filter(blog =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
         blog.category.toLowerCase().includes(searchTerm.toLowerCase())
     )
-
     const paginatedBlogs = filteredBlogs.slice(
         (currentPage - 1) * limit,
         currentPage * limit
@@ -80,7 +67,6 @@ export default function BlogManagementPage() {
     }
 
     const handleDeleteBlog = (blog: IBlog) => {
-        const blogId = blog.id
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -89,10 +75,12 @@ export default function BlogManagementPage() {
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
+        }).then(result => {
             if (result.isConfirmed) {
-                toast.success("Blog deleted successfully!")
-                // Add delete API call here
+                // todo: api call
+                deleteBlog(blog._id).unwrap()
+                refetch()
+                toast.success(`${blog.title} deleted successfully!`)
             }
         })
     }
@@ -100,7 +88,10 @@ export default function BlogManagementPage() {
     const handleAddBlog = () => {
         setIsCreateModalOpen(true)
     }
-
+    const mappedData = allblogs.map((proj) => ({
+        ...proj,
+        id: proj._id, // Add id for table row keys
+    }));
     return (
         <div className="p-6 space-y-6">
             <CardHeader className="flex flex-row items-center justify-between">
@@ -113,16 +104,12 @@ export default function BlogManagementPage() {
                 </Button>
             </CardHeader>
             <Card>
-
-
                 <CardContent>
-
                     <CardHeader className="text-sm text-gray-600">
                         <CardDescription>Total blogs: {filteredBlogs.length}</CardDescription>
                     </CardHeader>
-
                     <BlogTable
-                        data={paginatedBlogs}
+                        data={mappedData}
                         searchTerm={searchTerm}
                         onSearchChange={handleSearchChange}
                         currentPage={currentPage}
@@ -137,7 +124,6 @@ export default function BlogManagementPage() {
                             setCurrentPage(1)
                         }}
                     />
-
                 </CardContent>
             </Card>
 

@@ -2,17 +2,24 @@
 import { X } from "lucide-react"
 import BlogForm, { IBlog } from "./BlogForm"
 import { Button } from "@/components/ui/button"
-import { toast } from "sonner"
 import { useState } from "react"
+import { useBlogRequestMutation } from "@/redux/features/blogs/blogApi"
+import toast from "react-hot-toast"
 interface BlogCreateModalProps {
   isOpen: boolean
   onClose: () => void
   refetch: () => void
 }
+interface ApiResponse {
+  status: number;
+  data?: any;
+  message?: string;
+}
 export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreateModalProps) {
-  if (!isOpen) return null
+  const [blogRequest, { isLoading }] = useBlogRequestMutation()
+
   const [photo, setPhoto] = useState<File | null>(null)
-  const handleSubmit = (data: IBlog) => {
+  const handleSubmit = async(data: IBlog) => {
     // API call করার সময় data + photo একসাথে পাঠাবে
     const finalData = {
       title: data.title,
@@ -23,19 +30,30 @@ export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreate
       content: data.content || "",
     }
     console.log(finalData)
-    const formData = new FormData()
-    if (photo) formData.append("image", photo)
-    formData.append("data", JSON.stringify(finalData))
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+   
+    try {
+      const formData = new FormData()
+      if (photo) formData.append("image", photo)
+      formData.append("data", JSON.stringify(finalData))
+      const response = await blogRequest(formData).unwrap() as ApiResponse
+      console.log(response)
+      if (response.status === 201) {
+        toast.success(" সফলভাবে যোগ হয়েছে!")
+        refetch()
+        onClose()
+      }
+
+    } catch (error: any) {
+      if (error.status === 409) {
+        toast.error(error.message)
+      } else {
+        toast.error(error?.data?.message || "যোগ করতে সমস্যা হয়েছে।")
+      }
+
     }
-    // fetch/axios call
-    refetch()
-    toast.success("Blog created successfully!")
-    // onClose()
   }
 
-
+  if (!isOpen) return null
   return (
     <>
       <div className="fixed inset-0 z-50 h-screen bg-black/50" onClick={onClose} />

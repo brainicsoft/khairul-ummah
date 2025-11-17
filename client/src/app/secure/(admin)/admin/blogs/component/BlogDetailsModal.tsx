@@ -5,7 +5,7 @@ import { Calendar, User, Tag, X } from 'lucide-react'
 import Image from "next/image"
 
 interface IBlog {
-  id: number
+  _id: string
   slug: string
   title: string
   description: string

@@ -13,7 +13,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 interface IBlog {
-  id: number
+  _id: string
   slug: string
   title: string
   description: string
