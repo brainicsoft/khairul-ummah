@@ -5,11 +5,11 @@ import { IDonationProject } from "./donationProject.interface";
 
 const donationProjectSchema = new Schema<IDonationProject>(
   {
-    // slug: {
-    //   type: String,
-    //   required: true,
-    //   unique: true,
-    // },
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     name: {
       type: String,
       required: true,

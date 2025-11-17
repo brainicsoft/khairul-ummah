@@ -24,17 +24,20 @@ import Pagination from "@/components/Pagination"
 import { getProjectColumns } from "./projectColumns"
 
 export interface IProject {
-  id: number
+  _id: string
+  id?: string        // for table row keys
   slug: string
   title: string
   desc: string
-  image: string
-  color: string
-  category: string
-  benefits: string[]
+  image?: string      // optional
+  color?: string      // optional
+  category?: string   // optional
+  benefits?: string[] // optional
   status: string
-  videoUrl: string
+  videoUrl?: string   // optional
 }
+
+
 
 interface ProjectTableProps {
   data: IProject[]

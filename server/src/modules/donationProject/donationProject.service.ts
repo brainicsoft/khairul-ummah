@@ -1,5 +1,6 @@
 // donationProject.service.ts
-    import { QueryBuilder } from "../../builder/QueryBuilder";
+    import { Types } from "mongoose";
+import { QueryBuilder } from "../../builder/QueryBuilder";
     import { IDonationProject } from "./donationProject.interface";
     import { DonationProject } from "./donationProject.model";
 
@@ -34,6 +35,16 @@
 export const getDonationProjectByIdService = async (id:string) => {
   const result = await DonationProject.findById(id);
   return result;
+};
+
+// get donationProject by slug
+
+export const getDonationProjectBySlugService = async (slug:string) => {
+  let donationProject;
+  if(slug){
+    donationProject = await DonationProject.findOne({slug:slug});
+  }
+  return donationProject;
 };
 
 // delete donationProject by Id or single  service

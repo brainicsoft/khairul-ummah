@@ -8,76 +8,58 @@ import {
   getAllDonationProjectService,
   getDonationProjectByIdService,
   updateDonationProjectByIdService,
-  deleteDonationProjectByIdService
+  deleteDonationProjectByIdService,
+  getDonationProjectBySlugService
 } from './donationProject.service'; // Update with your service path
 import { handleMulterUpload } from '../../utils/uploader/multerHandler';
-import slugify from 'slugify';
 import { DonationProject } from './donationProject.model';
+import { generateUniqueId } from '../../utils/generateUniqueId';
+import { generateSlug } from '../../utils/generateSlug';
 
-// export const createDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
-//   let formattedData = req.body;
-//   if (req.files) {
-//     const imageInfo: any = await handleMulterUpload(req.files);
-//     formattedData = { ...imageInfo, ...req.body, user: (req.user as any)?.userId };
-//   }
-//   const result = await createDonationProjectService(formattedData);
-//   sendResponse(res, {
-//     status: 201,
-//     success: true,
-//     message: 'Successfully created donationProject',
-//     data: result,
-//   });
-// });
+export const createDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
 
-export const createDonationProjectController: RequestHandler = catchAsync(
-  async (req, res) => {
-    let formattedData = req.body;
-
-    // Handle image upload
-    if (req.files) {
-      const imageInfo: any = await handleMulterUpload(req.files);
-      formattedData = {
-        ...imageInfo,
-        ...req.body,
-      };
-    }
-
-    // --- 🔥 Slug Generation From Title ---
-    if (!formattedData.title) {
-      throw new Error("Title is required to generate slug");
-    }
-
-    const existingProject = await DonationProject.findOne({
-      title: formattedData.title,
-    });
-
-    let baseSlug = slugify(formattedData.title, {
-      lower: true,
-      strict: true,
-    });
-
-    if (existingProject) {
-      baseSlug = `${baseSlug}-${Math.floor(Math.random() * 10000)}`;
-    }
-
-    // Ensure slug is set outside any condition
-    formattedData.slug = baseSlug;
-
-    // Save project
-    const result = await createDonationProjectService(formattedData);
-
-    sendResponse(res, {
-      status: 201,
-      success: true,
-      message: "Successfully created donationProject",
-      data: result,
-    });
+  // Parse JSON from form-data
+  if (req.body.data) {
+    req.body = JSON.parse(req.body.data);
   }
-);
+  let formattedData = req.body;
+  console.log("📦 Parsed Body:", formattedData);
+
+  // Handle file upload
+  if (req.files) {
+    const imageInfo: any = await handleMulterUpload(req.files);
+    formattedData = {
+      ...imageInfo,
+      ...formattedData,
+      user: (req.user as any)?.userId
+    };
+  }
+
+  // Generate slug manually (Bangla + English)
+  let baseSlug = generateSlug(formattedData.title);
+  console.log("Initial slug:", baseSlug);
+
+  // Check for existing title
+  const existingTitle = await DonationProject.findOne({ title: formattedData.title });
+  if (existingTitle) {
+    baseSlug = `${baseSlug}-${generateUniqueId(5)}`; // make unique
+  }
+
+  formattedData.slug = baseSlug;
+  console.log("Final slug:", formattedData.slug);
+
+  // Save to DB
+  const result = await createDonationProjectService(formattedData);
+
+  sendResponse(res, {
+    status: 201,
+    success: true,
+    message: 'Successfully created donationProject',
+    data: result,
+  });
+});
 
 
-
-// Get All DonationProject 
 
 export const getAllDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
   const result = await getAllDonationProjectService(req.query);
@@ -99,6 +81,26 @@ export const getDonationProjectByIdController: RequestHandler = catchAsync(async
     success: true,
     message: 'donationProject retrived successfully',
     data: result,
+  });
+});
+
+// get donationProject by slug
+export const getDonationProjectBySlugContoller: RequestHandler = catchAsync(async (req, res) => {
+  const {slug} = req.params;
+  const donationProject = await getDonationProjectBySlugService(slug);
+  if(!donationProject){
+    sendResponse(res, {
+      status: 404,
+      success: false,
+      message: 'donationProject not found',
+      data: null,
+    });
+  }
+  sendResponse(res, {
+    status: 200,
+    success: true,
+    message: 'donationProject retrived successfully',
+    data: donationProject,
   });
 });
 
