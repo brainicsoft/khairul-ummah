@@ -21,7 +21,8 @@ import {
   Shield,
   Package,
   Moon,
-  Sun
+  Sun,
+  ImageIcon
 } from "lucide-react";
 import logo from '@/assets/logo/logo-round.jpg';
 import Image from "next/image";
@@ -34,10 +35,12 @@ const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "User Management", href: "/admin/users", icon: Users },
   { name: "volunteer Management", href: "/secure/admin/volunteer", icon: Users },
-  { name: "Projects", href: "/secure/admin/projects", icon: Package },
+  { name: "Donate-type", href: "/secure/admin/projects", icon: Package },
+  { name: "blogs", href: "/secure/admin/blogs", icon: FileText },
+  { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
   { name: "Donations", href: "/admin/donations", icon: DollarSign },
   { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-  { name: "Content", href: "/admin/content", icon: FileText },
+  // { name: "Content", href: "/admin/content", icon: FileText },
   { name: "Events", href: "/admin/events", icon: Calendar },
   { name: "Messages", href: "/admin/messages", icon: MessageSquare },
   { name: "Settings", href: "/admin/settings", icon: Settings },

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { FormInput, FormTextarea } from "@/components/form/FormInput"
 import { PhotoUpload } from "@/components/form/photo-upload"
 import toast from "react-hot-toast"
+import { useDonationRequestMutation } from "@/redux/features/donationProjects/donationProjectApi"
 
 export interface ProjectFormData {
     title: string
@@ -18,14 +19,21 @@ export interface ProjectFormData {
 interface ProjectAddFormProps {
     onClose: () => void
     refetch: () => void
+    setIsLoading?: (loading: boolean) => void
+}
+interface ApiResponse {
+    status: number;
+    data?: any;
+    message?: string;
 }
 
-export default function AddForm({ onClose, refetch }: ProjectAddFormProps) {
+export default function AddForm({ onClose, refetch, setIsLoading }: ProjectAddFormProps) {
     const [photo, setPhoto] = useState<File | null>(null)
     const [photoPreview, setPhotoPreview] = useState("")
     const [addingBenefit, setAddingBenefit] = useState(false)
     const [newBenefit, setNewBenefit] = useState("")
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const [donationRequest, { isLoading }] = useDonationRequestMutation()
 
     const { register, handleSubmit, setValue, watch } = useForm<ProjectFormData>({
         defaultValues: { benefits: [] }
@@ -66,26 +74,32 @@ export default function AddForm({ onClose, refetch }: ProjectAddFormProps) {
     }
 
     const onSubmit = async (data: ProjectFormData) => {
+        const formData = new FormData()
+        console.log(photo)
+        if (photo) formData.append("image", photo)
+        formData.append("data", JSON.stringify(data))
+        // TODO: Replace with API call
         try {
-            const formData = new FormData()
-            console.log(photo)
-            if (photo) formData.append("image", photo)
-            formData.append("data", JSON.stringify(data))
-            // for console
-            for (let [key, value] of formData.entries()) {
-                console.log(key, value);
-            }
+            if (setIsLoading) setIsLoading(true);
+            const response = await donationRequest(formData).unwrap() as ApiResponse
+            console.log(response)
+            if (response.status === 201) {
+                toast.success("প্রকল্প সফলভাবে যোগ হয়েছে!")
+                refetch()
+                onClose()
+            } 
 
-            // TODO: Replace with API call
-            //  const response = await projectRequest(formData).unwrap()
-            // toast.success("প্রকল্প সফলভাবে যোগ হয়েছে!")
-
-            refetch()
-            // onClose()
-            toast.success("প্রকল্প সফলভাবে যোগ হয়েছে!")
         } catch (error: any) {
-            toast.error(error?.data?.message || "যোগ করতে সমস্যা হয়েছে।")
+            if(error.status === 409){
+                toast.error(error.message)
+            } else {
+                toast.error(error?.data?.message || "যোগ করতে সমস্যা হয়েছে।")
+            }
+            
+        } finally {
+            if (setIsLoading) setIsLoading(false);
         }
+
     }
 
     return (
@@ -95,7 +109,19 @@ export default function AddForm({ onClose, refetch }: ProjectAddFormProps) {
 
             <div className="grid md:grid-cols-2 gap-6">
                 <FormInput label="ক্যাটাগরি" {...register("category")} />
-                <FormInput label="স্ট্যাটাস" {...register("status")} />
+                <div className="flex flex-col">
+                    <label className="mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">স্ট্যাটাস</label>
+                    <select
+                        {...register("status")}
+                        className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:bg-gray-800 dark:text-gray-100"
+                    >
+                        <option value="">Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        {/* add more as needed */}
+                    </select>
+                </div>
             </div>
 
             <FormInput type="url" label="ভিডিও URL" {...register("videoUrl")} />

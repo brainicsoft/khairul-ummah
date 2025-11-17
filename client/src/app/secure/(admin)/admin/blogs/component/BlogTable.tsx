@@ -10,7 +10,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -21,35 +21,34 @@ import {
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Pagination from "@/components/Pagination"
-import { getProjectColumns } from "./projectColumns"
-export interface IProject {
+import { getBlogColumns } from "./BlogColumns"
+
+interface IBlog {
   _id: string
-  id?: string       
   slug: string
   title: string
-  desc: string
-  image?: string      
-  color?: string     
-  category?: string   
-  benefits?: string[] 
-  status: string
-  videoUrl?: string  
+  description: string
+  date: string
+  author: string
+  category: string
+  image: string
 }
-interface ProjectTableProps {
-  data: IProject[]
+
+interface BlogTableProps {
+  data: IBlog[]
   searchTerm: string
   onSearchChange: (value: string) => void
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
+  onViewDetails?: (blog: IBlog) => void
+  onEditDetails?: (blog: IBlog) => void
+  onDelete?: (blog: IBlog) => void
   limit: number
   onLimitChange: (limit: number) => void
-  isLoading?: boolean
-  onViewDetails?: (project: IProject) => void
-  onEditDetails?: (project: IProject) => void
-  onDelete?: (project: IProject) => void
 }
-export default function ProjectTable({
+
+export default function BlogTable({
   data,
   limit,
   onLimitChange,
@@ -58,19 +57,17 @@ export default function ProjectTable({
   currentPage,
   totalPages,
   onPageChange,
-  isLoading = false,
   onViewDetails,
   onEditDetails,
   onDelete,
-}: ProjectTableProps) {
+}: BlogTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const columns = React.useMemo(
-    () => getProjectColumns(onViewDetails, onEditDetails, onDelete),
-    [onViewDetails, onEditDetails, onDelete]
-  )
+
+  const columns = React.useMemo(() => getBlogColumns(onViewDetails, onEditDetails, onDelete), [onViewDetails, onEditDetails, onDelete])
+
   const table = useReactTable({
     data,
     columns,
@@ -90,39 +87,41 @@ export default function ProjectTable({
   })
 
   return (
-    <div className="w-full space-y-4">
+    <div className="space-y-4">
       {/* Search + Column Toggle */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Search by title..."
+          placeholder="Search blogs..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="max-w-sm"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto hover:text-black dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Button variant="outline" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white dark:bg-gray-700 shadow-md rounded-md">
-            {table.getAllColumns().map(
-              (column) =>
-                column.getCanHide() && (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-            )}
+          <DropdownMenuContent align="end">
+            {table.getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
       {/* TABLE */}
-      <div className="overflow-hidden rounded-md border">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -136,17 +135,13 @@ export default function ProjectTable({
             ))}
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Loading…
-                </TableCell>
-              </TableRow>
-            ) : table.getRowModel().rows.length ? (
+            {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))
@@ -165,8 +160,8 @@ export default function ProjectTable({
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        limit={limit}
         onPageChange={onPageChange}
+        limit={limit}
         onLimitChange={onLimitChange}
       />
     </div>

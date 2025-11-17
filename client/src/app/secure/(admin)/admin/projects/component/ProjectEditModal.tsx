@@ -2,6 +2,7 @@
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import EditForm from "./EditFom"
+import { useState } from "react"
 
 interface ProjectEditModalProps {
   project: any | null
@@ -10,9 +11,9 @@ interface ProjectEditModalProps {
   refetch: () => void
 }
 
-export default function ProjectEditModal({ project, isOpen, onClose, refetch }: ProjectEditModalProps) {
+export default function ProjectEditModal({ project, isOpen, onClose, refetch, }: ProjectEditModalProps) {
   if (!isOpen) return null
-
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <>
       {/* Overlay */}
@@ -50,7 +51,7 @@ export default function ProjectEditModal({ project, isOpen, onClose, refetch }: 
 
           {/* FORM CONTENT */}
           <div className="p-6 flex-1 overflow-y-auto modal-scrollbar">
-          <style>{`
+            <style>{`
             .modal-scrollbar::-webkit-scrollbar {
               width: 6px;
               height: 4px;
@@ -72,13 +73,13 @@ export default function ProjectEditModal({ project, isOpen, onClose, refetch }: 
               background: #64748b;
             }
           `}</style>
-            <EditForm project={project} onClose={onClose} refetch={refetch} />
+            <EditForm project={project} onClose={onClose} refetch={refetch} setIsLoading={setIsLoading} />
           </div>
 
           {/* FOOTER BUTTONS */}
           <div className="sticky bottom-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-4 flex justify-end gap-4">
             <Button variant="outline" onClick={onClose}>বাতিল করুন</Button>
-            <Button type="submit" form="project-edit-form">আপডেট করুন</Button>
+            <Button type="submit" form="project-edit-form" disabled={isLoading}>{isLoading ? "আপডেট হচ্ছে..." : "আপডেট করুন"}</Button>
           </div>
         </div>
       </div>

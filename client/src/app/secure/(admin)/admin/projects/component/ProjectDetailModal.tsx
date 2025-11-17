@@ -79,7 +79,6 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
 
                     {/* BODY */}
                     <main className="space-y-6 p-6">
-                        {/* IMAGE CARD — FIXED RESPONSIVE & CORRECT ASPECT */}
                         <div className="overflow-hidden border-0 bg-white dark:bg-gray-800">
                             <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
                                 <Image
