@@ -60,10 +60,10 @@ export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreate
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-lg overflow-y-auto" onClick={e => e.stopPropagation()}>
           {/* HEADER */}
-          <div className="sticky top-0 border-b bg-white px-6 py-4 flex items-center justify-between">
-            <div>
+          <div className="sticky top-0 border-b bg-white dark:bg-gray-600 px-6 py-4 flex items-center justify-between">
+            <div className="dark:text-white">
               <h2 className="text-xl font-bold">Add New Blog Post</h2>
-              <p className="text-sm text-gray-600">Create a new blog post</p>
+              <p className="text-sm text-gray-600 dark:text-white">Create a new blog post</p>
             </div>
             <button onClick={onClose} className="rounded-md hover:bg-gray-100 p-1">
               <X className="h-5 w-5" />
@@ -71,15 +71,15 @@ export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreate
           </div>
 
           {/* FORM */}
-          <div className="p-6">
+          <div className="p-6 dark:bg-gray-600">
             <BlogForm blog={null} onSubmit={handleSubmit}
               photo={photo}
               setPhoto={setPhoto} />
           </div>
 
           {/* FOOTER BUTTONS */}
-          <div className="sticky bottom-0 bg-white border-t p-4 flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <div className="sticky bottom-0 bg-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
+            <Button className="dark:bg-white" variant="outline" onClick={onClose}>Cancel</Button>
             <Button type="submit" form="blog-form">Create</Button>
           </div>
         </div>

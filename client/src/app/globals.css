@@ -7,6 +7,7 @@
   --background: #ffffff;
   --foreground: #1a1a1a;
   --card: #f8f8f8;
+  --text:var(--foreground)
   --card-foreground: #1a1a1a;
   --primary: #0778B0;
   --primary-foreground: #ffffff;
@@ -38,9 +39,10 @@
 .dark {
   --background: #0f1419;
   --foreground: #f0f0f0;
-  --card: #1a2328;
+  --card: #192227;
+  --modalbg: #4A5565;
   --card-foreground: #f0f0f0;
-  --primary: #2d8659;
+  --primary: #276B95;
   --primary-foreground: #f0f0f0;
   --secondary: #d4a574;
   --secondary-foreground: #1a1a1a;

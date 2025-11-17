@@ -59,7 +59,7 @@ export default function BlogForm({ blog, onSubmit, setPhoto, photo }: BlogFormPr
     { value: "অন্যান্য", label: "অন্যান্য" },
   ]
   return (
-    <form id="blog-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form id="blog-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4 dark:bg-gray-600">
       <div className="space-y-2">
         <Label htmlFor="title">Blog Title *</Label>
         <Input
@@ -84,7 +84,7 @@ export default function BlogForm({ blog, onSubmit, setPhoto, photo }: BlogFormPr
           <select
             id="category"
             {...register("category", { required: "Category is required" })}
-            className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ${errors.category ? "border-red-500" : ""}`}
+            className={`flex text-foreground h-10 w-full rounded-md border border-input dark:bg-input/30 px-3 py-2 text-base ${errors.category ? "border-red-500" : ""}`}
           >
             <option value="">Select category</option>
             {categories.map(cat => (
@@ -101,7 +101,6 @@ export default function BlogForm({ blog, onSubmit, setPhoto, photo }: BlogFormPr
           {...register("date", { required: true })}
           defaultValue={blog?.date || ""}
         />
-
       </div>
       <div className="space-y-2">
         <Label htmlFor="description">Description *</Label>
