@@ -16,14 +16,11 @@ import { DonationProject } from './donationProject.model';
 import { generateSlug } from '../../utils/generateSlug';
 
 export const createDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
-
   // Parse JSON from form-data
   if (req.body.data) {
     req.body = JSON.parse(req.body.data);
   }
   let formattedData = req.body;
-  console.log("📦 Parsed Body:", formattedData);
-
   // Handle file upload
   if (req.files) {
     const imageInfo: any = await handleMulterUpload(req.files);
@@ -35,8 +32,6 @@ export const createDonationProjectController: RequestHandler = catchAsync(async 
   }
   // Generate slug manually (Bangla + English)
   let baseSlug = generateSlug(formattedData.title);
-  console.log("Initial slug:", baseSlug);
-
   // Check for existing title
   const existingTitle = await DonationProject.findOne({ title: formattedData.title });
   if (existingTitle) {
@@ -46,13 +41,8 @@ export const createDonationProjectController: RequestHandler = catchAsync(async 
       message: "A project with this title already exists!",
     });
   }
-
   formattedData.slug = baseSlug;
-  console.log("Final slug:", formattedData.slug);
-
-  // Save to DB
   const result = await createDonationProjectService(formattedData);
-
   sendResponse(res, {
     status: 201,
     success: true,
