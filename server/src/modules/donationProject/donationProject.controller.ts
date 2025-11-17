@@ -13,7 +13,6 @@ import {
 } from './donationProject.service'; // Update with your service path
 import { handleMulterUpload } from '../../utils/uploader/multerHandler';
 import { DonationProject } from './donationProject.model';
-import { generateUniqueId } from '../../utils/generateUniqueId';
 import { generateSlug } from '../../utils/generateSlug';
 
 export const createDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
@@ -34,7 +33,6 @@ export const createDonationProjectController: RequestHandler = catchAsync(async 
       user: (req.user as any)?.userId
     };
   }
-
   // Generate slug manually (Bangla + English)
   let baseSlug = generateSlug(formattedData.title);
   console.log("Initial slug:", baseSlug);
@@ -42,7 +40,11 @@ export const createDonationProjectController: RequestHandler = catchAsync(async 
   // Check for existing title
   const existingTitle = await DonationProject.findOne({ title: formattedData.title });
   if (existingTitle) {
-    baseSlug = `${baseSlug}-${generateUniqueId(5)}`; // make unique
+    return sendResponse(res, {
+      status: 409,
+      success: false,
+      message: "A project with this title already exists!",
+    });
   }
 
   formattedData.slug = baseSlug;
@@ -86,9 +88,9 @@ export const getDonationProjectByIdController: RequestHandler = catchAsync(async
 
 // get donationProject by slug
 export const getDonationProjectBySlugContoller: RequestHandler = catchAsync(async (req, res) => {
-  const {slug} = req.params;
+  const { slug } = req.params;
   const donationProject = await getDonationProjectBySlugService(slug);
-  if(!donationProject){
+  if (!donationProject) {
     sendResponse(res, {
       status: 404,
       success: false,

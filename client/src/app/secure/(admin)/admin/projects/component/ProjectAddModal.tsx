@@ -2,6 +2,7 @@
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import AddForm from "./AddForm"
+import { useState } from "react"
 
 interface ProjectAddModalProps {
   isOpen: boolean
@@ -9,9 +10,9 @@ interface ProjectAddModalProps {
   refetch: () => void
 }
 
-export default function ProjectAddModal({ isOpen, onClose,refetch }: ProjectAddModalProps) {
+export default function ProjectAddModal({ isOpen, onClose, refetch }: ProjectAddModalProps) {
   if (!isOpen) return null
-
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <>
       {/* Overlay */}
@@ -35,7 +36,7 @@ export default function ProjectAddModal({ isOpen, onClose,refetch }: ProjectAddM
 
           {/* FORM */}
           <div className="p-6 flex-1 overflow-y-auto modal-scrollbar">
-          <style>{`
+            <style>{`
             .modal-scrollbar::-webkit-scrollbar {
               width: 6px;
               height: 4px;
@@ -57,13 +58,13 @@ export default function ProjectAddModal({ isOpen, onClose,refetch }: ProjectAddM
               background: #64748b;
             }
           `}</style>
-            <AddForm onClose={onClose} refetch={refetch} />
+            <AddForm onClose={onClose} refetch={refetch} setIsLoading={setIsLoading}/>
           </div>
 
           {/* FOOTER */}
           <div className="sticky bottom-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-4 flex justify-end gap-4">
-            <Button variant="outline" onClick={onClose}>বাতিল করুন</Button>
-            <Button type="submit" form="project-add-form">যোগ করুন</Button>
+            <Button className="cursor-pointer" variant="outline" onClick={onClose}>বাতিল করুন</Button>
+            <Button className="cursor-pointer" type="submit" form="project-add-form" disabled={isLoading}>{isLoading ? "যোগ হচ্ছে..." : "যোগ করুন"}</Button>
           </div>
         </div>
       </div>
