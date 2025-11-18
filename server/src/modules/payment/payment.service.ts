@@ -60,35 +60,48 @@ export const verifyBkashPaymentService = async (query: any) => {
   const { paymentID, status } = query;
 
   if (!paymentID) {
-    throw new Error("paymentID missing in callback URL");
+    return {
+      success: false,
+      message: "Payment ID missing in callback URL",
+    };
   }
 
   // Fetch current payment from DB
   const payment = await Payment.findOne({ paymentId: paymentID });
   if (!payment) {
-    throw new Error("Payment not found");
+    return {
+      success: false,
+      message: "Payment not found",
+      paymentID,
+    };
   }
 
-  // If already success, just return it
+  // If already success, return info
   if (payment.status === "success") {
-    throw new CustomError(502,'Payment Already Successfull')
+    return {
+      success: true,
+      message: "Payment already successful",
+      paymentId: payment.paymentId,
+      trxID: payment.trxID,
+      amount: payment.amount,
+    };
   }
 
-  // 1. If user cancelled or bKash failed
+  // If user cancelled or bKash failed
   if (status !== "success") {
     await Payment.findOneAndUpdate(
-      { paymentId: paymentID, status: { $ne: "success" } }, // Only update if not already success
+      { paymentId: paymentID, status: { $ne: "success" } },
       { status: "failed" }
     );
 
     return {
-      status:403,
-      success:false,
+      success: false,
       message: "Payment failed or cancelled",
+      paymentID,
     };
   }
 
-  // 2. Call bKash Execute Payment API
+  // Call bKash Execute Payment API
   const { data } = await axios.post(
     `${bkashUrl}/checkout/execute`,
     { paymentID },
@@ -102,13 +115,14 @@ export const verifyBkashPaymentService = async (query: any) => {
     }
   );
 
-  // 3. Check execution response
+  // If execution successful
   if (data.statusCode === "0000") {
     await Payment.findOneAndUpdate(
-      { paymentId: paymentID, status: { $ne: "success" } }, // Only update if not already success
+      { paymentId: paymentID, status: { $ne: "success" } },
       {
         status: "success",
         trxID: data.trxID,
+        amount: data.amount,
         bkashResponse: data,
       }
     );
@@ -116,12 +130,13 @@ export const verifyBkashPaymentService = async (query: any) => {
     return {
       success: true,
       message: "Payment successful",
+      paymentID,
       trxID: data.trxID,
       amount: data.amount,
     };
   }
 
-  // 4. Failed execution (but only if not already success)
+  // Execution failed
   await Payment.findOneAndUpdate(
     { paymentId: paymentID, status: { $ne: "success" } },
     {
@@ -133,8 +148,11 @@ export const verifyBkashPaymentService = async (query: any) => {
   return {
     success: false,
     message: "Payment execution failed",
+    paymentID,
+    trxID: data.trxID || "",
   };
 };
+
 
 
 // getAll payment service

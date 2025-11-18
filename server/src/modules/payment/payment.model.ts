@@ -11,7 +11,7 @@ const PaymentSchema = new Schema<IPayment>(
 
     email: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
 

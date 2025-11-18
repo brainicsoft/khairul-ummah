@@ -1,7 +1,8 @@
 import axios from "axios";
 import cron from "node-cron";
+import crypto from "crypto";
 import moment from "moment";
-import { bkashKey, bkashSecret, bkashUrl } from "../../config";
+import { baseUrl, bkashKey, bkashSecret, bkashUrl } from "../../config";
 
 // Token storage (like private variables)
 let idToken: string | null = null;
@@ -96,3 +97,30 @@ export const initBkash = async () => {
 
     console.log("bKash service initialized");
 };
+
+
+
+
+export const generateBkashAutopayHeaders = (method: string, urlPath: string, body: any, appKey: string, appSecret: string, bkashUrl: string) => {
+  const crypto = require("crypto");
+  const host = new URL(bkashUrl).host;
+  const date = new Date().toISOString().replace(/\.\d{3}Z$/, "Z"); // GMT
+  const bodyString = JSON.stringify(body);
+
+  const canonicalHeaders = `content-type:application/json\nhost:${host}\nx-amz-date:${date}\n`;
+  const signedHeaders = "content-type;host;x-amz-date";
+
+  const stringToSign = `${method}\n${urlPath}\n${date}\n${canonicalHeaders}\n${signedHeaders}\n${bodyString}`;
+  const signature = crypto.createHmac("sha256", appSecret).update(stringToSign).digest("base64");
+
+  const authorization = `BKASH1-HMAC-SHA256 Credential=${appKey}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+
+  return {
+    Authorization: authorization,
+    "X-Amz-Date": date,
+    "x-app-key": appKey,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+};
+

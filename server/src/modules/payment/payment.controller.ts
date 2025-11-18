@@ -22,15 +22,28 @@
     });
   });
 
-   export const verifyBkashController: RequestHandler = catchAsync(async (req, res) => {
-    const result = await verifyBkashPaymentService(req.query);
-    sendResponse(res, {
-      status: 201,
-      success: true,
-      message: 'Successfully verified payment',
-      data: result,
-    });
-  });
+export const verifyBkashController: RequestHandler = catchAsync(async (req, res) => {
+  const result = await verifyBkashPaymentService(req.query);
+
+  if (result.success) {
+    // Redirect to frontend payment status page with query params
+    const redirectUrl = new URL("http://localhost:3000/payment-status");
+    redirectUrl.searchParams.append("paymentId", req.query.paymentID as string);
+    redirectUrl.searchParams.append("trxID", result.trxID);
+    redirectUrl.searchParams.append("amount", result.amount?.toString() || "0");
+
+    return res.redirect(redirectUrl.toString());
+  } else {
+    // If failed, redirect with failed status
+    const redirectUrl = new URL("http://localhost:3000/payment-status");
+    redirectUrl.searchParams.append("paymentId", req.query.paymentID as string);
+    redirectUrl.searchParams.append("status", "failed");
+    redirectUrl.searchParams.append("message", result.message);
+
+    return res.redirect(redirectUrl.toString());
+  }
+});
+
 
   // Get All Payment 
 
