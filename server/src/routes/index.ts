@@ -5,6 +5,7 @@ import { volunteerRoutes } from '../modules/volunteer/volunteer.routes';
 import { galleryRoutes } from '../modules/gallery/gallery.routes';
 import { donationProjectRoutes } from '../modules/donationProject/donationProject.routes';
 import { blogRoutes } from '../modules/blog/blog.routes';
+import { paymentRoutes } from '../modules/payment/payment.routes';
 
 type IModulerRoutes = { path: string; route: Router }[];
 
@@ -32,5 +33,8 @@ export const modulerRoutes: IModulerRoutes = [
   {
     path:'/blog',
     route:blogRoutes
+  },{
+    path:'/payment',
+    route:paymentRoutes
   }
 ];

@@ -36,3 +36,10 @@ export const mailPort = 465;
 export const mailUser: string = process.env.MAIL_USER || '';
 export const mailPass: string = process.env.MAIL_PASS || '';
 export const mailService: string = process.env.MAIL_SERVICE || '';
+
+// for payment 
+export const bkashUser:string = process.env.BKASH_USER || ''
+export const bkashPass:string = process.env.BKASH_PASS || ''
+export const bkashKey: string = process.env.BKASH_API_KEY || ''
+export const bkashSecret:string = process.env.BKASH_APP_SECRECT || ''
+export const bkashUrl:string =process.env.BKASH_API_URL || ''
