@@ -40,6 +40,11 @@ const PaymentSchema = new Schema<IPayment>(
       required: true,
       trim: true,
     },
+   method: {
+      type:String,
+      enum:["bkash","ssl-commerz"],
+      default:'bkash',
+    },
 
     donorMessage: {
       type: String,
