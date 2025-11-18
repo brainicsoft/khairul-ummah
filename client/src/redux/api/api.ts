@@ -36,12 +36,7 @@ const baseQueryWithRefreshToken: BaseQueryFn = async (args, api, options) => {
         const data = await response.json();
 
         if (data?.token) {
-          //   setCookie("accessToken", data.token);
-
-          // Retry the original query with the new token
           result = await baseQuery(args, api, options);
-        } else {
-          console.error("No token found in response data");
         }
       } catch (err) {
         console.error("Error during token refresh:", err);
@@ -80,7 +75,6 @@ export const {
         } catch (error: any) {
           dispatch(setLoading(false));
           dispatch(setAuthData({ }));
-          console.error(error);
         } finally {
           dispatch(setLoading(false));
         }

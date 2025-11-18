@@ -22,20 +22,19 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Pagination from "@/components/Pagination"
 import { getProjectColumns } from "./projectColumns"
-
 export interface IProject {
-  id: number
+  _id: string
+  id?: string       
   slug: string
   title: string
   desc: string
-  image: string
-  color: string
-  category: string
-  benefits: string[]
+  image?: string      
+  color?: string     
+  category?: string   
+  benefits?: string[] 
   status: string
-  videoUrl: string
+  videoUrl?: string  
 }
-
 interface ProjectTableProps {
   data: IProject[]
   searchTerm: string
@@ -50,7 +49,6 @@ interface ProjectTableProps {
   onEditDetails?: (project: IProject) => void
   onDelete?: (project: IProject) => void
 }
-
 export default function ProjectTable({
   data,
   limit,
@@ -73,7 +71,6 @@ export default function ProjectTable({
     () => getProjectColumns(onViewDetails, onEditDetails, onDelete),
     [onViewDetails, onEditDetails, onDelete]
   )
-
   const table = useReactTable({
     data,
     columns,
@@ -124,7 +121,6 @@ export default function ProjectTable({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
       {/* TABLE */}
       <div className="overflow-hidden rounded-md border">
         <Table>

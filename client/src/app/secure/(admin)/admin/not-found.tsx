@@ -8,13 +8,14 @@ import {
   ArrowLeft, 
   Shield,
   AlertTriangle,
-  Settings
+  Settings,
+  Users
 } from "lucide-react";
 
 export default function AdminNotFound() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center">
+      <div className="max-w-lg w-full text-center">
         {/* Icon */}
         <div className="mb-8">
           <div className="relative inline-flex">
@@ -29,9 +30,7 @@ export default function AdminNotFound() {
 
         {/* Content */}
         <div className="space-y-4 mb-8">
-          <h1 className="text-4xl font-bold text-gray-900">
-            404
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900">404</h1>
           <div className="space-y-2">
             <h2 className="text-xl font-semibold text-gray-800">
               Admin Resource Not Found
@@ -43,35 +42,7 @@ export default function AdminNotFound() {
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-gray-50 rounded-xl p-6 mb-8 border border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center justify-center gap-2">
-            <Search className="w-4 h-4" />
-            Quick Actions
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Link href="/admin">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full h-12 flex flex-col gap-1"
-              >
-                <Home className="w-4 h-4" />
-                <span className="text-xs">Dashboard</span>
-              </Button>
-            </Link>
-            <Link href="/admin/users">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full h-12 flex flex-col gap-1"
-              >
-                <Shield className="w-4 h-4" />
-                <span className="text-xs">Users</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
+      
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -83,7 +54,7 @@ export default function AdminNotFound() {
             <ArrowLeft className="w-4 h-4" />
             Go Back
           </Button>
-          <Link href="/admin">
+          <Link href="/secure/admin">
             <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
               <Home className="w-4 h-4" />
               Return to Dashboard
