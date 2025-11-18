@@ -91,7 +91,7 @@ export default function DonateTypePage() {
 
       if (formData.paymentMethod === "bkash") {
         const response = await bkashDonation(mappedData).unwrap()
-       window.location.href= response.data.url
+        window.location.href = response.data.url
       } else {
         alert("SSLCommerz selected! Redirect to payment gateway.")
       }
@@ -100,9 +100,7 @@ export default function DonateTypePage() {
       alert("Donation failed. Please try again.")
     }
   }
-
   const amountValue = watch("amount") // Sync buttons and input
-
   return (
     <>
       {/* Hero Section */}
@@ -211,12 +209,16 @@ export default function DonateTypePage() {
                     </div>
                     <input
                       type="number"
-                      {...register("amount", { required: true, min: 50 })}
+                      {...register("amount", { required: true, min: 10 })}
                       placeholder="কাস্টম পরিমাণ"
                       className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                       onChange={(e) => setSelectedAmount("")} // deselect buttons on input
                     />
-                    {errors.amount && <span className="text-red-500 text-sm">সঠিক পরিমাণ দিন</span>}
+                    {/* {errors.amount && <span className="text-red-500 text-sm">সঠিক পরিমাণ দিন</span>} */}
+                    {errors.amount?.type === "min" && (
+                      <p className="text-red-500 text-sm">ন্যূনতম পরিমাণ ১০ টাকা হতে হবে</p>
+                    )}
+
                   </div>
 
                   {/* Donor Info */}
