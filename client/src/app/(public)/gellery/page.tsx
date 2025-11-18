@@ -90,25 +90,35 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
       searchParams={searchParams}
       defaultLimit={1}
     >
-     
-      {(images) => (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {images.map((item, idx) => (
-            <div
-              key={item._id || idx}
-              className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer group"
-            >
-              <Image
-                src={item.image}
-                alt={item.alt || `Gallery ${idx + 1}`}
-                fill
-                className="object-cover group-hover:scale-110 transition duration-300"
-              />
+      {(images) => {
+        if (!images || images.length === 0) {
+          return (
+            <div className="text-center py-10 text-gray-500">
+              No data available
             </div>
-          ))}
-        </div>
-      )}
+          );
+        }
+
+        return (
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {images.map((item, idx) => (
+              <div
+                key={item._id || idx}
+                className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer group"
+              >
+                <Image
+                  src={item.image}
+                  alt={item.alt || `Gallery ${idx + 1}`}
+                  fill
+                  className="object-cover group-hover:scale-110 transition duration-300"
+                />
+              </div>
+            ))}
+          </div>
+        );
+      }}
     </SSRLoadMoreData>
   );
 }
+
 
