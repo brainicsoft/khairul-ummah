@@ -88,7 +88,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
     <SSRLoadMoreData<ImageItem>
       apiUrl={`${apiUrl}/gallery`}
       searchParams={searchParams}
-      defaultLimit={1}
+      defaultLimit={8}
     >
       {(images) => {
         if (!images || images.length === 0) {

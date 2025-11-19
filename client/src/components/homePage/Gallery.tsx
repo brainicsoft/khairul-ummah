@@ -1,27 +1,16 @@
 import Image from "next/image"
-import gellery1 from "@/assets/gellery/gellery1.jpg"
-import gellery2 from "@/assets/gellery/gellery2.jpg"
-import gellery3 from "@/assets/gellery/gellery3.jpg"
-import gellery4 from "@/assets/gellery/gellery4.jpg"
-import gellery5 from "@/assets/gellery/gellery5.jpg"
-import gellery7 from "@/assets/gellery//gellery7.jpg"
 import Link from "next/link"
-
+import { apiUrl } from "@/config/constants"
 
 const galleries = [
   { title: "সাফল্যের গল্প", id: "success" },
   { title: "ইভেন্ট", id: "events" },
 ]
 
-const images = [
-  gellery1,
-  gellery2,
-  gellery3,
-  gellery4,
-  gellery5,
-  gellery7
-
-]
+const res = await fetch(`${apiUrl}/gallery?page=1&limit=6`, { cache: "no-store" });
+const json = await res.json();
+const items = json?.data || [];
+console.log(items)
 
 export function Gallery() {
   return (
@@ -30,13 +19,13 @@ export function Gallery() {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">গ্যালারি</h2>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {images.map((image, idx) => (
+          {items.map((image:any, idx:number) => (
             <div
               key={idx}
               className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer"
             >
               <Image
-                src={image || "/placeholder.svg"}
+                src={image.image || "/placeholder.svg"}
                 alt={`Gallery ${idx + 1}`}
                 fill
                 className="object-cover hover:scale-110 transition duration-300"
