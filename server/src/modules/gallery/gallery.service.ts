@@ -26,7 +26,8 @@
       .paginate()
 
       const result = await galleryQueries.modelQuery;
-      return result ;
+      const meta = await galleryQueries.countTotal();
+      return {result , meta};
 };
 
 // get gallery by Id or single  service
