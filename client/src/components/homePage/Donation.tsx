@@ -1,40 +1,10 @@
-"use client"
 
+import { apiUrl } from "@/config/constants"
 import Image from "next/image"
 import Link from "next/link"
 import Carousel from "react-multi-carousel"
 import "react-multi-carousel/lib/styles.css"
 // import nomuslem1 from "@/assets/donate-section/social-meeting.jpg"
-import korbani from "@/assets/donate-section/korbani.jpg"
-import jakat from "@/assets/donate-section/jakat.jpg"
-import nomuslem2 from "@/assets/donate-section/noumoslim.jpg"
-
-const fundTypes = [
-  {
-    id: "nomuslem",
-    title: "নৌমুসলিম তহবিল",
-    desc: "অমুসলিম পরিবার এবং সংখ্যালঘু সম্প্রদায়ের কল্যাণে ব্যয় করা হয়।",
-    image: nomuslem2,
-  },
-  {
-    id: "qurbani",
-    title: "কোরবানি তহবিল",
-    desc: "কোরবানির গোশত দরিদ্র পরিবারের মধ্যে বিতরণ এবং সাহায্য কর্মসূচি।",
-    image: korbani,
-  },
-  {
-    id: "emergency-flood",
-    title: "জরুরি বন্যা তহবিল",
-    desc: "বন্যা ও প্রাকৃতিক দুর্যোগে ত্রাণ,সাহায্য বিতরণ এবং পুনর্বাসন কার্যক্রম।",
-    image: "/flood-relief-disaster.jpg",
-  },
-  {
-    id: "zakat",
-    title: "জাকাত তহবিল",
-    desc: "ইসলামিক নীতি অনুযায়ী দরিদ্র ও অসহায় মানুষের সেবায় ব্যয় করা সর্বদা।",
-    image: jakat,
-  },
-]
 
 const responsive = {
   desktop: {
@@ -51,6 +21,11 @@ const responsive = {
   },
 }
 
+const loadDataLimit = 10 // for home section carousel
+const res = await fetch(`${apiUrl}/donation?page=1&limit=${loadDataLimit}`, { cache: "no-store" });
+const json = await res.json();
+ const items = json?.data || [];
+console.log(items)
 export function Donation() {
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -71,7 +46,7 @@ export function Donation() {
           // showDots={true}
           removeArrowOnDeviceType={["tablet", "mobile"]}
         >
-          {fundTypes.map((fund) => (
+          {items.map((fund) => (
             <div
               key={fund.id}
               className="bg-white shadow-md mb-3 rounded-xl overflow-hidden flex flex-col mx-2"

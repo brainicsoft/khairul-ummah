@@ -2,11 +2,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { apiUrl } from "@/config/constants"
 
-const galleries = [
-  { title: "সাফল্যের গল্প", id: "success" },
-  { title: "ইভেন্ট", id: "events" },
-]
-
 const res = await fetch(`${apiUrl}/gallery?page=1&limit=6`, { cache: "no-store" });
 const json = await res.json();
 const items = json?.data || [];

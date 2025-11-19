@@ -10,9 +10,11 @@ import { DONATION_TYPES } from "@/data/donationData"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
+import { apiUrl } from "@/config/constants"
+import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProjects/donationProjectApi"
 
 export type DonationType = {
-  id: number
+  _id: number
   slug: string
   title: string
   desc: string
@@ -32,11 +34,13 @@ type FormValues = {
   paymentMethod: "bkash" | "sslCommerz"
 }
 
-export default function DonateTypePage() {
+export default  function DonateTypePage() {
   const params = useParams()
   const slug = params.slug as string
+  const { data, isLoading:donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
+console.log(data)
 
-  const data = DONATION_TYPES.find((type) => type.slug === slug)
+  // const data = DONATION_TYPES.find((type) => type.slug === slug)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const [selectedAmount, setSelectedAmount] = useState<string>("")
 
@@ -53,7 +57,9 @@ export default function DonateTypePage() {
     }
   })
 
-  if (!data) {
+  if(donatTypesLoding) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+
+  if (!data ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -139,7 +145,7 @@ export default function DonateTypePage() {
                   আপনার অবদান সরাসরি এই ধরনের অনুদানের মাধ্যমে সমাজে দৃশ্যমান প্রভাব ফেলে।
                 </p>
                 <ul className="space-y-3">
-                  {data.benefits.map((benefit, idx) => (
+                  {data?.benefits?.map((benefit: string, idx: number) => (
                     <li key={idx} className="flex items-start gap-3">
                       <span className="text-secondary font-bold text-lg mt-1">✓</span>
                       <span className="text-foreground">{benefit}</span>
