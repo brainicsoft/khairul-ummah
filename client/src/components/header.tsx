@@ -15,12 +15,11 @@ export function Header() {
   const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const donationTypes = DonatesTypesMenue()
-
   const fundSubMenu = donationTypes
-    .map((type : any) => ({
+    .map((type: any) => ({
       id: type.id,
-      href: `/donate/${type.slug}`, 
-      label: type.title,
+      href: `/donate/${type.slug}`,
+      label: type.slug,
     }))
 
   const aboutSubMenu = [
@@ -62,7 +61,7 @@ export function Header() {
             priority
           />
         </Link>
-    
+
 
         {/* Desktop Menu */}
         <div className="flex justify-between items-center">
@@ -133,7 +132,7 @@ export function Header() {
               )
             })}
           </nav>
-           <LanguageSwitcher/>
+          <LanguageSwitcher />
 
           <Link href="/donate">
             <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
@@ -216,7 +215,7 @@ export function Header() {
               দান করুন
             </button>
           </Link>
-         
+
         </nav>
       )}
     </header>

@@ -34,8 +34,10 @@ interface AdminLayoutProps {
 const menuItems = [
   { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { name: "User Management", href: "/admin/users", icon: Users },
+  { name: "Commitee Management", href: "/secure/admin/commitee", icon: Users },
   { name: "volunteer Management", href: "/secure/admin/volunteer", icon: Users },
   { name: "Donate-type", href: "/secure/admin/projects", icon: Package },
+  { name: "Activities", href: "/secure/admin/activities", icon: BarChart3 },
   { name: "blogs", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
   { name: "Donations", href: "/secure/admin/donations", icon: DollarSign },
