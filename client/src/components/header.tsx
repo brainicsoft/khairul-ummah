@@ -30,7 +30,7 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "হোম" },
-    { href: "/donation-fund", label: "দানের তহবিল", dropdown: "fund" },
+    { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
     { href: "/activities", label: "আমাদের কার্যক্রম" },
     { href: "/about", label: "আমাদের সম্পর্কে", dropdown: "about" },
     { href: "/running-project", label: "চলমান প্রজেক্ট" },

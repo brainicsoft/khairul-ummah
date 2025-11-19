@@ -80,7 +80,7 @@ export default function BlogCreateModal({ isOpen, onClose, refetch }: BlogCreate
           {/* FOOTER BUTTONS */}
           <div className="sticky bottom-0 bg-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
             <Button className="dark:bg-white" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" form="blog-form">Create</Button>
+            <Button type="submit" form="blog-form"  disabled={isLoading}>{isLoading ? "creating..." : "create"}</Button>
           </div>
         </div>
       </div>
