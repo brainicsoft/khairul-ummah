@@ -34,9 +34,9 @@ export default function ProjectsPage({ searchParams }: donationTypePageProps) {
           </div>
         </section>
         <SSRLoadMoreData<DonationType>
-          apiUrl={`${apiUrl}/donation`}
+          apiUrl={`${apiUrl}/donation/active`}
           searchParams={searchParams}
-          defaultLimit={8}
+          defaultLimit={12}
         >
           {(Projects) => {
             if (!Projects || Projects.length === 0) {

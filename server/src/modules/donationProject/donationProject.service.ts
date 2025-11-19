@@ -18,8 +18,8 @@ export const getAllDonationProjectService = async (query: Record<string, unknown
     .sort()
     .filter()
     .search([
-      'email',
       'title',
+      // 'email',
       // 'description',
       // replace  with proper fields
     ])
@@ -29,6 +29,26 @@ export const getAllDonationProjectService = async (query: Record<string, unknown
   const result = await donationProjectQueries.modelQuery;
   const meta = await donationProjectQueries.countTotal();
   return {result , meta};
+};
+
+//  Only active donation projects (status = "active")
+// ---------------------------
+export const getAllActiveDonationProjectService = async (query: Record<string, unknown>) => {
+  const donationProjectQueries = new QueryBuilder(DonationProject.find({ status: "active" }), query)
+    .sort()
+    .filter()
+    .search([
+      // "title",
+      //  "desc",
+        // "category"
+      ])
+    .fields()
+    .paginate();
+
+  const result = await donationProjectQueries.modelQuery;
+  const meta = await donationProjectQueries.countTotal();
+
+  return { result, meta };
 };
 
 // get donationProject by Id or single  service

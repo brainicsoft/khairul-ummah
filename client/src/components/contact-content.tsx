@@ -96,7 +96,7 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ফোন</h3>
-                  <p className="text-muted-foreground">+৮৮০ ১৭xx-xxxxxx</p>
+                  <p className="text-muted-foreground"> +8801811-448843</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -105,7 +105,7 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ইমেইল</h3>
-                  <p className="text-muted-foreground">contact@asfoundation.org</p>
+                  <p className="text-muted-foreground"> khairulummahfoundation.com</p>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -114,13 +114,23 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ঠিকানা</h3>
-                  <p className="text-muted-foreground">ঢাকা, বাংলাদেশ</p>
+                  <p className="text-muted-foreground"> ময়মনসিংহ, বাংলাদেশ</p>
                 </div>
               </div>
 
               {/* Map */}
-              <div className="mt-8 relative h-64 rounded-lg overflow-hidden border border-border">
-                <Image src="/map-location.png" alt="Map" fill className="object-cover" />
+              {/* Google Map */}
+              <div className="mt-8 rounded-lg overflow-hidden border border-border">
+                <iframe
+                  title="Khairul Ummah Foundation Location"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3650.1234567890!2d90.4234567890!3d24.750123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c1234567890%3A0xabcdef1234567890!2sKhairul%20Ummah%20Foundation!5e0!3m2!1sen!2sbd!4v1699999999999!5m2!1sen!2sbd"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </div>
             </div>
           </div>
