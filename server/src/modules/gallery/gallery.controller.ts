@@ -31,12 +31,13 @@ export const createGalleryController: RequestHandler = catchAsync(async (req, re
 // Get All Gallery 
 
 export const getAllGalleryController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await getAllGalleryService(req.query);
+  const {result,meta} = await getAllGalleryService(req.query);
   sendResponse(res, {
     status: 200,
     success: true,
     message: 'gallery retrived successfully',
     data: result,
+    meta: meta,
   });
 });
 

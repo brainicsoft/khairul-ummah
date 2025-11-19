@@ -1,6 +1,7 @@
 import Image from "next/image"
 import bannerimg from "@/assets/banner.png"
 import { FaHandsHelping, FaHeartbeat, FaSchool } from "react-icons/fa"
+import Link from "next/link"
 export function HeroSection() {
   const heroCards = [
     {
@@ -34,12 +35,17 @@ export function HeroSection() {
           <p className="text-lg md:text-xl mb-8 opacity-90">আমরা সমাজের উন্নয়নে কাজ করি এবং দুর্বল মানুষের সেবা করি।</p>
 
           <div className="flex gap-4 justify-center">
-            <button className="bg-secondary text-secondary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition">
-              আরও জানুন
-            </button>
-            <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition">
-              যোগাযোগ করুন
-            </button>
+            <Link href="/about">
+              <button className="bg-secondary text-secondary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-secondary/90 transition">
+                আরও জানুন
+              </button>
+            </Link>
+            <Link href="/contact">
+              <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition">
+                যোগাযোগ করুন
+              </button>
+            </Link>
+
           </div>
           {/* Icon cards */}
           <div className="grid grid-cols-1 pt-8 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">

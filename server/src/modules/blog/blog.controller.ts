@@ -57,12 +57,13 @@ import { handleMulterUpload } from '../../utils/uploader/multerHandler';
   // Get All Blog 
 
     export const getAllBlogController: RequestHandler = catchAsync(async (req, res) => {
-    const result = await getAllBlogService(req.query);
+    const {result, meta} = await getAllBlogService(req.query);
     sendResponse(res, {
       status: 200,
       success: true,
       message: 'blog retrived successfully',
       data: result,
+      meta: meta,
     });
   });
 

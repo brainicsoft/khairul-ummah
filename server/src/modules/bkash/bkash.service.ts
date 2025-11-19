@@ -11,7 +11,7 @@ let refreshToken: string | null = null;
 /**
  * Generate new bKash ID Token
  */
-export const generateIdToken = async (): Promise<string> => {
+export const generateIdToken = async (): Promise<string |null> => {
     try {
         console.log(moment().toISOString(), "Generating bKash ID Token...");
 
@@ -38,8 +38,9 @@ export const generateIdToken = async (): Promise<string> => {
 
         return idToken!;
     } catch (error: any) {
-        console.error("bKash grant token error:", error.response?.data || error);
-        throw new Error("Failed to generate bKash ID Token");
+        console.error("bKash grant token error:", error || error);
+        // throw new Error("Failed to generate bKash ID Token");
+        return null;
     }
 };
 
