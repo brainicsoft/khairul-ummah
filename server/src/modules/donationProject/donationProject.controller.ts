@@ -9,7 +9,8 @@ import {
   getDonationProjectByIdService,
   updateDonationProjectByIdService,
   deleteDonationProjectByIdService,
-  getDonationProjectBySlugService
+  getDonationProjectBySlugService,
+  getAllDonationSlugsService
 } from './donationProject.service'; // Update with your service path
 import { handleMulterUpload } from '../../utils/uploader/multerHandler';
 import { DonationProject } from './donationProject.model';
@@ -54,12 +55,13 @@ export const createDonationProjectController: RequestHandler = catchAsync(async 
 
 
 export const getAllDonationProjectController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await getAllDonationProjectService(req.query);
+  const {result,meta} = await getAllDonationProjectService(req.query);
   sendResponse(res, {
     status: 200,
     success: true,
     message: 'donationProject retrived successfully',
     data: result,
+    meta: meta,
   });
 });
 
@@ -127,4 +129,15 @@ export const deleteDonationProjectByIdController: RequestHandler = catchAsync(as
   });
 });
 
-
+export const getAllDonationSlugsController: RequestHandler = async (req, res) => {
+  try {
+    const slugs = await getAllDonationSlugsService();
+    res.status(200).json({
+      success: true,
+      data: slugs,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};

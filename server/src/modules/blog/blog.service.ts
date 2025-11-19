@@ -26,7 +26,8 @@
       .paginate()
 
       const result = await blogQueries.modelQuery;
-      return result ;
+      const meta = await blogQueries.countTotal();
+      return {result , meta};
 };
 
 // get blog by Id or single  service

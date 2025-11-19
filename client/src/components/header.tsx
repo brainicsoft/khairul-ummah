@@ -6,18 +6,18 @@ import { usePathname } from "next/navigation"
 import { Menu, X, ChevronDown } from "lucide-react"
 import Image from "next/image"
 import logo from "../assets/logo/logo.png"
-import { DONATION_TYPES } from "@/data/donationData"
 import { LanguageSwitcher } from "@/app/components/LanguageSwitcher"
+import { DonatesTypesMenue } from "./DonatesTypesMenue"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoverDropdown, setHoverDropdown] = useState<string | null>(null)
   const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
+  const donationTypes = DonatesTypesMenue()
 
-  const fundSubMenu = DONATION_TYPES
-    .filter((type) => type.category === "special")
-    .map((type) => ({
+  const fundSubMenu = donationTypes
+    .map((type : any) => ({
       id: type.id,
       href: `/donate/${type.slug}`, 
       label: type.title,
