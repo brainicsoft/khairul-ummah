@@ -17,7 +17,6 @@ interface blogPosts {
   category: string;
   image: string;
 }
-
 interface GalleryPageProps {
   searchParams?: Promise<{ limit?: string }>;
 }
@@ -27,7 +26,7 @@ export default function BlogPage({ searchParams }: GalleryPageProps) {
       <SSRLoadMoreData<blogPosts>
         apiUrl={`${apiUrl}/blog`}
         searchParams={searchParams}
-        defaultLimit={8}
+        defaultLimit={12}
       >
         {(blogPosts) => {
           if (!blogPosts || blogPosts.length === 0) {
