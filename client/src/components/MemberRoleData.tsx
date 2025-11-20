@@ -1,11 +1,8 @@
 import { apiUrl } from "@/config/constants";
-const res = await fetch(`${apiUrl}/donation/slug/all`, { cache: "no-store" });
+const res = await fetch(`${apiUrl}/commitee/roleType/all`, { cache: "no-store" });
 const json = await res.json();
 const items = json?.data || [];
-
-export function DonatesTypesMenue() {
+export function MemberRoleData() {
     return items
     
 }
-
-
