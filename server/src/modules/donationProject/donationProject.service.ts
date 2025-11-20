@@ -87,7 +87,7 @@ export const updateDonationProjectByIdService = async (id: string, payload: Part
 
 // Get only slugs of all donation projects
 export const getAllDonationSlugsService = async () => {
-  const slugs = await DonationProject.find({ status: "active" })
+  const slugs = await DonationProject.find()
     .select("slug -_id") // select only slug, remove _id
     .lean();
 
