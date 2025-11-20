@@ -8,7 +8,8 @@ import {
   getAllActivitiesService,
   getActivitiesByIdService,
   updateActivitiesByIdService,
-  deleteActivitiesByIdService
+  deleteActivitiesByIdService,
+  getActivitiesBySlugService
 } from './activities.service'; // Update with your service path
 import { handleMulterUpload } from '../../utils/uploader/multerHandler';
 import { generateSlug } from '../../utils/generateSlug';
@@ -44,12 +45,13 @@ export const createActivitiesController: RequestHandler = catchAsync(async (req,
 // Get All Activities 
 
 export const getAllActivitiesController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await getAllActivitiesService(req.query);
+  const {result, meta} = await getAllActivitiesService(req.query);
   sendResponse(res, {
     status: 200,
     success: true,
     message: 'activities retrived successfully',
     data: result,
+    meta: meta
   });
 });
 
@@ -98,4 +100,21 @@ export const deleteActivitiesByIdController: RequestHandler = catchAsync(async (
   });
 });
 
-
+export const getActivitiesBySlugController: RequestHandler = catchAsync(async (req, res) => {
+  const { slug } = req.params;
+  const activities = await getActivitiesBySlugService(slug);
+  if (!activities) {
+    sendResponse(res, {
+      status: 404,
+      success: false,
+      message: 'activities not found',
+      data: null,
+    });
+  }
+  sendResponse(res, {
+    status: 200,
+    success: true,
+    message: 'activities retrived successfully',
+    data: activities,
+  });
+});

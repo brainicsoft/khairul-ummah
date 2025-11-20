@@ -1,15 +1,13 @@
 import SSRLoadMoreData from "@/components/SSRLoadMoreData";
 import { TeamCard } from "@/components/TeamCard"
 import { apiUrl } from "@/config/constants";
-import { advisorsData } from "@/data/advisorData"
-import Image from "next/image";
 
 interface TeamMember {
   id: string
   title: string
   name: string
   occupation?: string
-  image: string 
+  image: string
   description?: string
 }
 interface AboutPageProps {
@@ -31,23 +29,11 @@ export default function AdvisorsPage({ searchParams }: AboutPageProps) {
             </div>
           </div>
         </section>
-
-        {/* Team Grid Section */}
-        <section className="py-16 md:py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid gap-8 sm:grid-cols-3 lg:grid-cols-3">
-              {advisorsData.map((advisor) => (
-                <TeamCard key={advisor.id} member={advisor} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-
         <SSRLoadMoreData<TeamMember>
           apiUrl={`${apiUrl}/commitee`}
           searchParams={searchParams}
-          defaultLimit={8}
+          defaultLimit={20}
+          roleType="উপদেষ্টা"
         >
           {(images) => {
             if (!images || images.length === 0) {
@@ -59,21 +45,13 @@ export default function AdvisorsPage({ searchParams }: AboutPageProps) {
             }
 
             return (
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {images.map((item, idx) => (
-                  <div
-                    key={item._id || idx}
-                    className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer group"
-                  >
-                    <Image
-                      src={item.image}
-                      alt={item.alt || `Gallery ${idx + 1}`}
-                      fill
-                      className="object-cover group-hover:scale-110 transition duration-300"
-                    />
-                  </div>
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="grid gap-8 sm:grid-cols-3 lg:grid-cols-3">
+                {images.map((advisor) => (
+                  <TeamCard key={advisor.id} member={advisor} />
                 ))}
               </div>
+            </div>
             );
           }}
         </SSRLoadMoreData>

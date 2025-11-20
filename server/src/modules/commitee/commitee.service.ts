@@ -18,15 +18,16 @@ export const getAllCommiteeService = async (query: Record<string, unknown>) => {
     .filter()
     .search([
       'name',
-      'category',
-      'description',
+      'roleType',
+      // 'description',
       // replace  with proper fields
     ])
     .fields()
     .paginate()
 
   const result = await commiteeQueries.modelQuery;
-  return result;
+  const meta = await commiteeQueries.countTotal();
+  return {result, meta};
 };
 
 // get commitee by Id or single  service

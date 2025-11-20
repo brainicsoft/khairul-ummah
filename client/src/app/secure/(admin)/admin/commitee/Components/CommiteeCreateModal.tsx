@@ -24,7 +24,7 @@ interface CommitteeMember {
     image: string;
     roleType: string;
     occupation: string;
-    title: string;
+    // title: string;
 }
 
 interface CommitteeCreateModalProps {
@@ -34,12 +34,13 @@ interface CommitteeCreateModalProps {
 }
 
 const ROLE_TYPES = [
-    { value: 'chairman', label: 'চেয়ারম্যান' },
-    { value: 'vice-chairman', label: 'ভাইস চেয়ারম্যান' },
-    { value: 'secretary', label: 'সেক্রেটারি' },
-    { value: 'treasurer', label: 'কোষাধ্যক্ষ' },
-    { value: 'member', label: 'সদস্য' },
-    { value: 'adviser', label: 'উপদেষ্টা' },
+    { value: 'চেয়ারম্যান', label: 'চেয়ারম্যান' },
+    { value: 'ভাইস-চেয়ারম্যান', label: 'ভাইস চেয়ারম্যান' },
+    { value: 'সেক্রেটারি', label: 'সেক্রেটারি' },
+    { value: 'কোষাধ্যক্ষ', label: 'কোষাধ্যক্ষ' },
+    { value: 'সদস্য', label: 'সদস্য' },
+    { value: 'উপদেষ্টা', label: 'উপদেষ্টা' },
+    { value: 'পরিচালক', label: 'পরিচালক' },
 ];
 
 export default function CommitteeCreateModal({ open, onOpenChange, refetch }: CommitteeCreateModalProps) {
@@ -53,7 +54,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
         image: '',
         roleType: '',
         occupation: '',
-        title: '',
+        // title: '',
     });
 
     const [preview, setPreview] = useState<string>('');
@@ -93,6 +94,10 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
             toast.error("ভূমিকা নির্বাচন করা বাধ্যতামূলক!");
             return;
         }
+        if (!formData.phone) {
+            toast.error("ফোন নম্বর লিখুন");
+            return;
+        }
 
         const finalData = {
             email: formData.email,
@@ -100,7 +105,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
             phone: formData.phone,
             roleType: formData.roleType,
             occupation: formData.occupation,
-            title: formData.title,
+            // title: formData.title,
         };
 
         const formDataToSend = new FormData();
@@ -119,7 +124,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
                 image: '',
                 roleType: '',
                 occupation: '',
-                title: '',
+                // title: '',
             });
             setPreview("");
             setImage(null);
@@ -204,7 +209,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label>ইমেইল</Label>
+                            <Label>ইমেইল(ঐচ্ছিক)</Label>
                             <Input
                                 type="email"
                                 value={formData.email}
@@ -218,6 +223,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
                         <div className='dark:text-white'>
                             <Label>ফোন নম্বর</Label>
                             <Input
+                                type='number'
                                 value={formData.phone}
                                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                 placeholder="ফোন নম্বর লিখুন"
@@ -255,7 +261,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
                             />
                         </div>
 
-                        <div className='dark:text-white'>
+                        {/* <div className='dark:text-white'>
                             <Label>শিরোনাম</Label>
                             <Input
                                 value={formData.title}
@@ -263,7 +269,7 @@ export default function CommitteeCreateModal({ open, onOpenChange, refetch }: Co
                                 placeholder="শিরোনাম লিখুন"
                                 className="mt-2"
                             />
-                        </div>
+                        </div> */}
                     </form>
 
                     {/* Footer */}

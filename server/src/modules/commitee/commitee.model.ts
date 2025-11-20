@@ -6,7 +6,6 @@ import { ICommitee } from './commitee.interface';
 const commiteeSchema = new Schema<ICommitee>({
   email: {
     type: String,
-    required: true,
     unique: true,
   },
   slug: {
@@ -19,7 +18,8 @@ const commiteeSchema = new Schema<ICommitee>({
   },
   phone: {
     type: String,
-    unique: true,
+    required: true,
+    // unique: true,
   },
   image: {
     type: String,
@@ -32,10 +32,10 @@ const commiteeSchema = new Schema<ICommitee>({
     type: String,
     required: true,
   },
-  title: {
-    type: String,
-    required: true,
-  },
+  // title: {
+  //   type: String,
+  //   required: true,
+  // },
 });
 
 

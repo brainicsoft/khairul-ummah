@@ -27,7 +27,7 @@ interface CommitteeMember {
     image: string;
     roleType: string;
     occupation: string;
-    title: string;
+    // title: string;
 }
 
 export default function CommitteePage() {
@@ -48,7 +48,7 @@ export default function CommitteePage() {
         image: member.image || '/placeholder.svg',
         roleType: member.roleType || 'অন্যান্য',
         occupation: member.occupation || 'পেশা নেই',
-        title: member.title || 'শিরোনাম নেই',
+        // title: member.title || 'শিরোনাম নেই',
     })) || [];
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);

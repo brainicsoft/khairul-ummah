@@ -7,6 +7,7 @@ interface TeamMember {
   occupation?: string
   image: string | StaticImageData
   description?: string
+  roleType?: string
 }
 
 interface TeamCardProps {
@@ -21,7 +22,7 @@ export function TeamCard({ member }: TeamCardProps) {
         <img
           src={typeof member.image === "string" ? member.image : (member.image as any).src}
           alt={member.name}
-          className="max-h-80 w-auto object-cover rounded-md  p-t-2"
+          className="max-h-80 min-h-80 w-auto object-cover rounded-md  p-t-2"
         />
       </div>
 
@@ -29,7 +30,7 @@ export function TeamCard({ member }: TeamCardProps) {
       <div className="space-y-3 p-6 text-center">
         <h3 className="text-xl lg:text-2xl font-bold text-slate-900">{member.name}</h3>
         {
-          member.title && <p className="text-lg font-bold text-black">{member.title}</p>
+          // member.title && <p className="text-lg font-bold text-black">{member.roleType}</p>
         }
         {/* <p className="text-sm font-semibold text-blue-600 uppercase tracking-wide">উপদেষ্টা</p> */}
         <p className="text-sm font-medium text-slate-700">{member.occupation}</p>

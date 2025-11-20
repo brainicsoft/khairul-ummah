@@ -20,7 +20,6 @@ export const createCommiteeController: RequestHandler = catchAsync(async (req, r
     const imageInfo: any = await handleMulterUpload(req.files);
     formattedData = { ...imageInfo, ...req.body, user: (req.user as any)?.userId };
   }
-  console.log("📦 Parsed Body:", formattedData);
 
   // Generate slug manually (Bangla + English)
   let baseSlug = generateSlug(formattedData.name);
@@ -36,12 +35,13 @@ export const createCommiteeController: RequestHandler = catchAsync(async (req, r
 
 // Get All Commitee 
 export const getAllCommiteeController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await getAllCommiteeService(req.query);
+  const {result,meta} = await getAllCommiteeService(req.query);
   sendResponse(res, {
     status: 200,
     success: true,
     message: 'commitee retrived successfully',
     data: result,
+    meta: meta,
   });
 });
 

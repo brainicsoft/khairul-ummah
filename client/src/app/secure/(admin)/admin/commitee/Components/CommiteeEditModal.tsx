@@ -24,7 +24,7 @@ interface CommitteeMember {
     image: string;
     roleType: string;
     occupation: string;
-    title: string;
+    // title: string;
 }
 
 interface CommitteeEditModalProps {
@@ -35,12 +35,13 @@ interface CommitteeEditModalProps {
 }
 
 const ROLE_TYPES = [
-    { value: 'chairman', label: 'চেয়ারম্যান' },
-    { value: 'vice-chairman', label: 'ভাইস চেয়ারম্যান' },
-    { value: 'secretary', label: 'সেক্রেটারি' },
-    { value: 'treasurer', label: 'কোষাধ্যক্ষ' },
-    { value: 'member', label: 'সদস্য' },
-    { value: 'adviser', label: 'উপদেষ্টা' },
+    { value: 'চেয়ারম্যান', label: 'চেয়ারম্যান' },
+    { value: 'ভাইস-চেয়ারম্যান', label: 'ভাইস চেয়ারম্যান' },
+    { value: 'সেক্রেটারি', label: 'সেক্রেটারি' },
+    { value: 'কোষাধ্যক্ষ', label: 'কোষাধ্যক্ষ' },
+    { value: 'সদস্য', label: 'সদস্য' },
+    { value: 'উপদেষ্টা', label: 'উপদেষ্টা' },
+    { value: 'পরিচালক', label: 'পরিচালক' },
 ];
 
 export default function CommitteeEditModal({
@@ -88,7 +89,7 @@ export default function CommitteeEditModal({
             phone: formData.phone,
             roleType: formData.roleType,
             occupation: formData.occupation,
-            title: formData.title,
+            // title: formData.title,
         };
 
         const formDataToSend = new FormData();
@@ -190,7 +191,7 @@ export default function CommitteeEditModal({
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label htmlFor="email-edit">ইমেইল</Label>
+                            <Label htmlFor="email-edit">ইমেইল (ঐচ্ছিক)</Label>
                             <Input
                                 id="email-edit"
                                 type="email"
@@ -206,6 +207,7 @@ export default function CommitteeEditModal({
                         <div className='dark:text-white'>
                             <Label htmlFor="phone-edit">ফোন নম্বর</Label>
                             <Input
+                                type='number'
                                 id="phone-edit"
                                 value={formData.phone}
                                 onChange={(e) =>
@@ -248,7 +250,7 @@ export default function CommitteeEditModal({
                             />
                         </div>
 
-                        <div className='dark:text-white'>
+                        {/* <div className='dark:text-white'>
                             <Label htmlFor="title-edit">শিরোনাম</Label>
                             <Input
                                 id="title-edit"
@@ -259,7 +261,7 @@ export default function CommitteeEditModal({
                                 placeholder="শিরোনাম লিখুন"
                                 className="mt-2"
                             />
-                        </div>
+                        </div> */}
                     </form>
 
                     {/* Footer */}

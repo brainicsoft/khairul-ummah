@@ -13,7 +13,7 @@ interface CommitteeMember {
     image: string;
     roleType: string;
     occupation: string;
-    title: string;
+    // title: string;
 }
 
 interface CommitteeGridProps {
@@ -66,9 +66,9 @@ export default function CommitteeGrid({ members, onEdit, onDelete }: CommitteeGr
                                 <p className="text-md text-muted-foreground">
                                     {member.roleType}
                                 </p>
-                                <p className="text-md text-muted-foreground mb-2">
+                                {/* <p className="text-md text-muted-foreground mb-2">
                                     {member.title}
-                                </p>
+                                </p> */}
                                 {/* <p className="text-xs text-muted-foreground mb-1">
                                     📧 {member.email}
                                 </p>
