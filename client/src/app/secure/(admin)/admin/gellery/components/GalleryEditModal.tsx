@@ -226,12 +226,11 @@ export default function GalleryEditModal({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 dark:bg-white"
+              className="flex-1 dark:bg-white dark:text-black"
             >
               বাতিল
             </Button>
-            <Button onClick={handleSubmit} className="flex-1">
-              সংরক্ষণ করুন
+            <Button onClick={handleSubmit} className="flex-1" disabled={isLoading}>{isLoading ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
             </Button>
           </div>
         </div>

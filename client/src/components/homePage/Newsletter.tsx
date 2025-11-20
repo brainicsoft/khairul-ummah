@@ -1,19 +1,48 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { toast } from "sonner"
+import { apiUrl } from "@/config/constants"
+import React, { useState } from "react"
+import toast from "react-hot-toast"
 
 export function Newsletter() {
   const [email, setEmail] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Newsletter signup:", email)
-    setEmail("")
-    toast.success("আপনার ইমেইল সাবস্ক্রাইব করা হয়েছে!")
-  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const form = e.currentTarget; // ✔️ safe reference
+
+    if (!email || !email.includes("@")) {
+      toast.error("সঠিক ইমেইল দিন");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${apiUrl}/newsletter/request`, {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "সাবস্ক্রাইব করতে ব্যর্থ");
+        return;
+      }
+
+      // ✔️ Success toast
+      toast.success("আপনার ইমেইল সাবস্ক্রাইব করা হয়েছে!");
+
+      // ✔️ Reset the form safely
+      form.reset();
+      setEmail("");
+
+    } catch (err: any) {
+      toast.error("Server Error");
+      console.error(err);
+    }
+  };
 
   return (
     <section className="py-16 md:py-24 bg-primary text-primary-foreground">

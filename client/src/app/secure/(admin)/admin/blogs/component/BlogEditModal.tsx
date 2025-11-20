@@ -83,7 +83,7 @@ export default function BlogEditModal({ blog, isOpen, onClose, refetch, setIsLoa
           {/* Footer */}
           <div className="sticky bottom-0 dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
             <Button className="dark:bg-white" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" form="blog-form">Update</Button>
+            <Button type="submit" form="blog-form"  disabled={isLoading}>{isLoading ? "Updateing..." : "Update"}</Button>
           </div>
         </div>
       </div>

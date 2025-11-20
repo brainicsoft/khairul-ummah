@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,43 +14,46 @@ import {
 } from '@/components/ui/select';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
-import { useCreateGalleryMutation } from '@/redux/features/gallery/galleryApi';
-import { DonatesTypesMenue } from '@/components/DonatesTypesMenue';
+import { useCreateCommiteeMutation } from '@/redux/features/commitee/commiteeApi';
 
-interface GalleryImage {
+
+interface CommitteeMember {
+    email: string;
+    name: string;
+    phone: string;
     image: string;
-    alt: string;
+    roleType: string;
+    occupation: string;
     title: string;
-    purpose: string;
-    date: string;
 }
-interface GalleryCreateModalProps {
+
+interface CommitteeCreateModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     refetch: () => void;
 }
-const donateTypesData = DonatesTypesMenue()
-const PURPOSES = [
-    { value: 'community', label: 'কমিউনিটি' },
-    { value: 'flood', label: 'বন্যা ত্রাণ' },
-    { value: 'meeting', label: 'সভা' },
-    { value: 'gathering', label: 'সমাবেশ' },
-    { value: 'relief', label: 'ত্রাণ' },
-    { value: 'event', label: 'ইভেন্ট' },
-    { value: 'water', label: 'জল ত্রাণ' },
-    { value: 'other', label: ' অন্যান্য' },
+
+const ROLE_TYPES = [
+    { value: 'chairman', label: 'চেয়ারম্যান' },
+    { value: 'vice-chairman', label: 'ভাইস চেয়ারম্যান' },
+    { value: 'secretary', label: 'সেক্রেটারি' },
+    { value: 'treasurer', label: 'কোষাধ্যক্ষ' },
+    { value: 'member', label: 'সদস্য' },
+    { value: 'adviser', label: 'উপদেষ্টা' },
 ];
 
-export default function GalleryCreateModal({ open, onOpenChange, refetch }: GalleryCreateModalProps) {
+export default function CommitteeCreateModal({ open, onOpenChange, refetch }: CommitteeCreateModalProps) {
     if (!open) return null;
-    const [createGallery, { isLoading }] = useCreateGalleryMutation()
+    const [createCommitee, { isLoading }] = useCreateCommiteeMutation()
 
-    const [formData, setFormData] = useState<GalleryImage>({
+    const [formData, setFormData] = useState<CommitteeMember>({
+        email: '',
+        name: '',
+        phone: '',
         image: '',
-        alt: '',
+        roleType: '',
+        occupation: '',
         title: '',
-        purpose: '',
-        date: new Date().toISOString().split('T')[0],
     });
 
     const [preview, setPreview] = useState<string>('');
@@ -81,62 +84,49 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        console.log(image)
         if (!image) {
             toast.error("ছবি আপলোড করা বাধ্যতামূলক");
             return;
         }
-        if (!formData.purpose) {
-            toast.error("বিভাগ নির্বাচন করা বাধ্যতামূলক!");
+        if (!formData.roleType) {
+            toast.error("ভূমিকা নির্বাচন করা বাধ্যতামূলক!");
             return;
         }
 
         const finalData = {
-            alt: formData.alt,
+            email: formData.email,
+            name: formData.name,
+            phone: formData.phone,
+            roleType: formData.roleType,
+            occupation: formData.occupation,
             title: formData.title,
-            purpose: formData.purpose,
-            date: formData.date,
         };
-        console.log(finalData);
 
-        const formdata = new FormData();
-        formdata.append("image", image);
-        formdata.append("data", JSON.stringify(finalData));
-
-        // todo: api call
-
+        const formDataToSend = new FormData();
+        formDataToSend.append("image", image);
+        formDataToSend.append("data", JSON.stringify(finalData));
         try {
-            const response = await createGallery(formdata).unwrap()
-            console.log(response);
+            const response = await createCommitee(formDataToSend).unwrap()
             if (response.status === 201) {
-                toast.success("ছবি যোগ করা হয়েছে!");
+                toast.success("সদস্য যোগ করা হয়েছে!");
             }
             refetch()
             setFormData({
+                email: '',
+                name: '',
+                phone: '',
                 image: '',
-                alt: '',
+                roleType: '',
+                occupation: '',
                 title: '',
-                purpose: '',
-                date: new Date().toISOString().split('T')[0],
             });
             setPreview("");
             setImage(null);
             onOpenChange(false);
         } catch (error: any) {
-            toast.error(error?.data?.message || "Something went wrong.");
+            toast.error(error?.data?.message || "কিছু ভুল হয়েছে।");
         }
-
-        // toast.error(" need to be implemented api call");
-        // setFormData({
-        //     image: '',
-        //     alt: '',
-        //     title: '',
-        //     purpose: '',
-        //     date: new Date().toISOString().split('T')[0],
-        // });
-        // setPreview("");
-        // setImage(null);
-        // onOpenChange(false);
     };
 
     return (
@@ -154,8 +144,8 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                     {/* Header */}
                     <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between bg-white dark:bg-gray-600">
                         <div>
-                            <h2 className="text-2xl font-bold dark:text-white">নতুন ছবি যোগ করুন</h2>
-                            <p className="text-sm text-gray-600">গ্যালারিতে একটি নতুন ছবি যোগ করতে ফর্মটি পূরণ করুন।</p>
+                            <h2 className="text-2xl font-bold dark:text-white">নতুন সদস্য যোগ করুন</h2>
+                            <p className="text-sm text-gray-600">কমিটিতে একজন নতুন সদস্য যোগ করতে ফর্মটি পূরণ করুন।</p>
                         </div>
 
                         <button onClick={() => onOpenChange(false)} className="p-1 rounded-md hover:bg-gray-100">
@@ -179,7 +169,7 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                             {preview && (
                                 <div className="mt-3 relative w-full aspect-[4/3] rounded-md overflow-hidden bg-muted">
                                     <Image
-                                        src={preview}
+                                        src={preview || "/placeholder.svg"}
                                         alt="Preview"
                                         fill
                                         className="object-cover"
@@ -203,40 +193,52 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label>শিরোনাম</Label>
+                            <Label>নাম</Label>
                             <Input
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                placeholder="শিরোনাম লিখুন"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                placeholder="সদস্যের নাম লিখুন"
                                 className="mt-2"
                                 required
                             />
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label>বিকল্প পাঠ্য</Label>
+                            <Label>ইমেইল</Label>
                             <Input
-                                value={formData.alt}
-                                onChange={(e) => setFormData({ ...formData, alt: e.target.value })}
-                                placeholder="ছবির বর্ণনা"
+                                type="email"
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                placeholder="ইমেইল লিখুন"
                                 className="mt-2"
                                 required
                             />
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label>বিভাগ</Label>
+                            <Label>ফোন নম্বর</Label>
+                            <Input
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                placeholder="ফোন নম্বর লিখুন"
+                                className="mt-2"
+                                required
+                            />
+                        </div>
+
+                        <div className='dark:text-white'>
+                            <Label>ভূমিকা</Label>
                             <Select
-                                value={formData.purpose}
-                                onValueChange={(value) => setFormData({ ...formData, purpose: value })}
+                                value={formData.roleType}
+                                onValueChange={(value) => setFormData({ ...formData, roleType: value })}
                             >
                                 <SelectTrigger className="mt-2">
-                                    <SelectValue placeholder="বিভাগ নির্বাচন করুন" />
+                                    <SelectValue placeholder="ভূমিকা নির্বাচন করুন" />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
-                                    {PURPOSES.map((p) => (
-                                        <SelectItem key={p.value} value={p.value}>
-                                            {p.label}
+                                    {ROLE_TYPES.map((role) => (
+                                        <SelectItem key={role.value} value={role.value}>
+                                            {role.label}
                                         </SelectItem>
                                     ))}
                                 </SelectContent>
@@ -244,11 +246,21 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                         </div>
 
                         <div className='dark:text-white'>
-                            <Label>তারিখ</Label>
+                            <Label>পেশা</Label>
                             <Input
-                                type="date"
-                                value={formData.date}
-                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                value={formData.occupation}
+                                onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                                placeholder="পেশা লিখুন"
+                                className="mt-2"
+                            />
+                        </div>
+
+                        <div className='dark:text-white'>
+                            <Label>শিরোনাম</Label>
+                            <Input
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                placeholder="শিরোনাম লিখুন"
                                 className="mt-2"
                             />
                         </div>
@@ -257,8 +269,7 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                     {/* Footer */}
                     <div className="sticky bottom-0 bg-white dark:text-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
                         <Button className="dark:bg-white dark:text-black" variant="outline" onClick={() => onOpenChange(false)}>বাতিল</Button>
-                        {/* show text যোগ hocce when isloading is true */}
-                        <Button onClick={handleSubmit}  disabled={isLoading}>{isLoading ? "যোগ হচ্ছে..." : "যোগ করুন"}</Button>
+                        <Button onClick={handleSubmit} disabled={isLoading}>{isLoading ? "যোগ হচ্ছে..." : "যোগ করুন"}</Button>
                     </div>
                 </div>
             </div>

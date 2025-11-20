@@ -6,6 +6,8 @@ import { galleryRoutes } from '../modules/gallery/gallery.routes';
 import { donationProjectRoutes } from '../modules/donationProject/donationProject.routes';
 import { blogRoutes } from '../modules/blog/blog.routes';
 import { paymentRoutes } from '../modules/payment/payment.routes';
+import { newsletterRoutes } from '../modules/newsletter/newsletter.routes';
+import { commiteeRoutes } from '../modules/commitee/commitee.routes';
 
 type IModulerRoutes = { path: string; route: Router }[];
 
@@ -33,8 +35,17 @@ export const modulerRoutes: IModulerRoutes = [
   {
     path:'/blog',
     route:blogRoutes
-  },{
+  },
+  {
     path:'/payment',
     route:paymentRoutes
+  },
+  {
+    path:'/newsletter',
+    route:newsletterRoutes
+  },
+  {
+    path:'/commitee',
+    route:commiteeRoutes
   }
 ];
