@@ -3,13 +3,15 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import GalleryGrid from './components/GalleryGrid';
 
-import GalleryEditModal from './components/GalleryEditModal';
 import { useDeleteGalleryMutation, useGetGalleryQuery } from '@/redux/features/gallery/galleryApi';
-import GalleryCreateModal from './components/GaleeryCreateModal';
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
+
+
+import GalleryGrid from './components/GalleryGrid';
+import GalleryCreateModal from './components/GaleeryCreateModal';
+import GalleryEditModal from './components/GelleryEditModal';
 
 interface GalleryImage {
     _id: string;

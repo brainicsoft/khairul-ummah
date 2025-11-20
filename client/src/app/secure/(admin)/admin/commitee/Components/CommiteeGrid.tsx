@@ -2,8 +2,8 @@
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import CommitteeDetailsModal from './CommiteeDetailsModal';
 import { useState } from 'react';
+import CommitteeDetailsModal from './CommiteeDetailsModal';
 
 interface CommitteeMember {
     _id: string;
@@ -32,7 +32,7 @@ export default function CommitteeGrid({ members, onEdit, onDelete }: CommitteeGr
     return (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {members.map((member) => (
+                {members?.map((member) => (
                     <>
                         <div
                             key={member._id}

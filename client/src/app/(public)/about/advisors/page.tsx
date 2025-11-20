@@ -1,7 +1,21 @@
+import SSRLoadMoreData from "@/components/SSRLoadMoreData";
 import { TeamCard } from "@/components/TeamCard"
+import { apiUrl } from "@/config/constants";
 import { advisorsData } from "@/data/advisorData"
+import Image from "next/image";
 
-export default function AdvisorsPage() {
+interface TeamMember {
+  id: string
+  title: string
+  name: string
+  occupation?: string
+  image: string 
+  description?: string
+}
+interface AboutPageProps {
+  searchParams?: Promise<{ limit?: string }>;
+}
+export default function AdvisorsPage({ searchParams }: AboutPageProps) {
   return (
     <div>
       <main className="min-h-screen ">
@@ -28,6 +42,41 @@ export default function AdvisorsPage() {
             </div>
           </div>
         </section>
+
+
+        <SSRLoadMoreData<TeamMember>
+          apiUrl={`${apiUrl}/commitee`}
+          searchParams={searchParams}
+          defaultLimit={8}
+        >
+          {(images) => {
+            if (!images || images.length === 0) {
+              return (
+                <div className="text-center py-10 text-gray-500">
+                  No data available
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {images.map((item, idx) => (
+                  <div
+                    key={item._id || idx}
+                    className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer group"
+                  >
+                    <Image
+                      src={item.image}
+                      alt={item.alt || `Gallery ${idx + 1}`}
+                      fill
+                      className="object-cover group-hover:scale-110 transition duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            );
+          }}
+        </SSRLoadMoreData>
       </main>
     </div>
   )

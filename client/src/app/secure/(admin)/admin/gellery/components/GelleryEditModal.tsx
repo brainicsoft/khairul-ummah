@@ -22,7 +22,7 @@ interface GalleryImage {
   purpose: string;
   date: string;
 }
-interface GalleryEditModalProps {
+interface GelleryEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedImage: GalleryImage;
@@ -43,7 +43,7 @@ export default function GalleryEditModal({
   onOpenChange,
   selectedImage,
   refetch
-}: GalleryEditModalProps) {
+}: GelleryEditModalProps) {
   const [formData, setFormData] = useState<GalleryImage>(selectedImage);
   const [preview, setPreview] = useState<string>(selectedImage.image);
   const [image, setImage] = useState<File | null>(null);
