@@ -13,4 +13,5 @@ commiteeRoutes.delete('/:id', deleteCommiteeByIdController);
 commiteeRoutes.patch('/:id',uploader({ image: 'single' }),formValidator, updateCommiteeByIdController);
 commiteeRoutes.get('/roleType/all', getAllRoleYpeController);
 
+
   

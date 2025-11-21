@@ -8,6 +8,7 @@ import { blogRoutes } from '../modules/blog/blog.routes';
 import { paymentRoutes } from '../modules/payment/payment.routes';
 import { newsletterRoutes } from '../modules/newsletter/newsletter.routes';
 import { commiteeRoutes } from '../modules/commitee/commitee.routes';
+import { activitiesRoutes } from '../modules/activities/activities.routes';
 
 type IModulerRoutes = { path: string; route: Router }[];
 
@@ -47,5 +48,9 @@ export const modulerRoutes: IModulerRoutes = [
   {
     path:'/commitee',
     route:commiteeRoutes
+  },
+  {
+    path:'/activities',
+    route:activitiesRoutes
   }
 ];

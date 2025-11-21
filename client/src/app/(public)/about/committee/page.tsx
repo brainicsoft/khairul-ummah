@@ -1,9 +1,20 @@
 import { TeamCard } from "@/components/TeamCard"
 import jobaerimg from "@/assets/commiteeimg/jobaerimg.png"
-import { committeeData } from "@/data/CommiteeData"
 import Image from "next/image"
-
-export default function CommitteePage() {
+import { apiUrl } from "@/config/constants"
+import SSRLoadMoreData from "@/components/SSRLoadMoreData"
+interface TeamMember {
+  id: string
+  title: string
+  name: string
+  occupation?: string
+  image: string
+  description?: string
+}
+interface AboutPageProps {
+  searchParams?: Promise<{ limit?: string }>;
+}
+export default function CommitteePage({ searchParams }: AboutPageProps) {
   return (
     <div>
       <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
@@ -20,7 +31,6 @@ export default function CommitteePage() {
                 বিভাগে দক্ষতা এবং অভিজ্ঞতা নিয়ে কাজ করেন।
               </p>
             </div>
-
             {/* Image Container */}
             <div className="flex justify-center items-center overflow-hidden rounded-t-xl">
               <Image
@@ -29,22 +39,39 @@ export default function CommitteePage() {
                 className="object-cover border-8 border-[#6EC1E4] rounded-md w-full max-w-md "
               />
             </div>
-
           </div>
-
         </section>
 
         {/* Team Grid Section */}
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
-
             <p className="text-4xl font-bold mb-5">পরিচালনা পরিষদ</p>
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {committeeData.map((member) => (
-                <TeamCard key={member.id} member={member} />
-              ))}
-            </div>
+            <SSRLoadMoreData<TeamMember>
+              apiUrl={`${apiUrl}/commitee`}
+              searchParams={searchParams}
+              defaultLimit={20}
+              roleType="পরিচালক"
+            >
+              {(images) => {
+                if (!images || images.length === 0) {
+                  return (
+                    <div className="text-center py-10 text-gray-500">
+                      No data available
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid gap-8 sm:grid-cols-3 lg:grid-cols-3">
+                      {images.map((advisor) => (
+                        <TeamCard key={advisor.id} member={advisor} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              }}
+            </SSRLoadMoreData>
           </div>
         </section>
       </main>

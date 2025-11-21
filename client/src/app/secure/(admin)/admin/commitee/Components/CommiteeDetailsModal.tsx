@@ -17,7 +17,7 @@ interface CommitteeMember {
     image: string;
     roleType: string;
     occupation: string;
-    title: string;
+    // title: string;
 }
 
 interface CommitteeDetailsModalProps {
@@ -58,7 +58,7 @@ export default function CommitteeDetailsModal({ member, isOpen, onClose }: Commi
           <div className="space-y-3 text-sm">
             <div className='flex gap-2 items-center'>
               <p className="text-muted-foreground text-xs font-semibold mb-1">পদবী :</p>
-              <p className="text-card-foreground font-medium">{member.title}</p>
+              <p className="text-card-foreground font-medium">{member.roleType}</p>
             </div>
 
             <div className='flex gap-2 items-center'>
