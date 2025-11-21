@@ -2,7 +2,8 @@ import Link from "next/link";
 
 // components/SSRLoadMoreData.tsx
 interface SSRLoadMoreDataProps<T> {
-  apiUrl: string;                    // API endpoint
+  apiUrl: string;  
+  roleType?: string;                  // API endpoint
   searchParams?: Promise<{ limit?: string }>;
   defaultLimit?: number;
   page?: number;
@@ -11,6 +12,7 @@ interface SSRLoadMoreDataProps<T> {
 
 export default async function SSRLoadMoreData<T>({
   apiUrl,
+  roleType,
   searchParams,
   defaultLimit = 10,
   page = 1,
@@ -20,17 +22,24 @@ export default async function SSRLoadMoreData<T>({
   const currentLimit = parseInt(params?.limit || String(defaultLimit));
   const nextLimit = currentLimit + defaultLimit;
 
-  let items: T[] = [];
-  let totalCount = 0;
-
-  try {
-    const res = await fetch(`${apiUrl}?page=${page}&limit=${currentLimit}`, { cache: "no-store" });
-    const json = await res.json();
-    items = json?.data || [];
-    totalCount = json?.meta?.total || 0;
-  } catch (err) {
-    console.error("Failed to fetch data:", err);
-  }
+   // URL build dynamically
+   const url = new URL(apiUrl, apiUrl);
+   url.searchParams.set("page", String(page));
+   url.searchParams.set("limit", String(currentLimit));
+   if (roleType) url.searchParams.set("roleType", roleType);
+ 
+   let items: T[] = [];
+   let totalCount = 0;
+ 
+   try {
+     const res = await fetch(url.toString(), { cache: "no-store" });
+     const json = await res.json();
+     items = json?.data || [];
+     totalCount = json?.meta?.total || 0;
+   } catch (err) {
+     console.error("Failed to fetch data:", err);
+   }
+ 
 
   return (
     <div className="px-4 py-8 container mx-auto">

@@ -15,6 +15,7 @@ import {
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { useCreateGalleryMutation } from '@/redux/features/gallery/galleryApi';
+import { DonatesTypesMenue } from '@/components/DonatesTypesMenue';
 
 interface GalleryImage {
     image: string;
@@ -28,6 +29,7 @@ interface GalleryCreateModalProps {
     onOpenChange: (open: boolean) => void;
     refetch: () => void;
 }
+const donateTypesData = DonatesTypesMenue()
 const PURPOSES = [
     { value: 'community', label: 'কমিউনিটি' },
     { value: 'flood', label: 'বন্যা ত্রাণ' },
@@ -36,6 +38,7 @@ const PURPOSES = [
     { value: 'relief', label: 'ত্রাণ' },
     { value: 'event', label: 'ইভেন্ট' },
     { value: 'water', label: 'জল ত্রাণ' },
+    { value: 'other', label: ' অন্যান্য' },
 ];
 
 export default function GalleryCreateModal({ open, onOpenChange, refetch }: GalleryCreateModalProps) {
@@ -104,7 +107,6 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
 
         try {
             const response = await createGallery(formdata).unwrap()
-            
             console.log(response);
             if (response.status === 201) {
                 toast.success("ছবি যোগ করা হয়েছে!");
@@ -255,7 +257,8 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                     {/* Footer */}
                     <div className="sticky bottom-0 bg-white dark:text-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
                         <Button className="dark:bg-white dark:text-black" variant="outline" onClick={() => onOpenChange(false)}>বাতিল</Button>
-                        <Button onClick={handleSubmit}>যোগ করুন</Button>
+                        {/* show text যোগ hocce when isloading is true */}
+                        <Button onClick={handleSubmit}  disabled={isLoading}>{isLoading ? "যোগ হচ্ছে..." : "যোগ করুন"}</Button>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Pencil, Trash2 } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import {
@@ -12,6 +12,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useState } from 'react';
+import GelleryDetialsModal from './GelleryDetailsModal';
 
 interface GalleryImage {
   _id: string;
@@ -27,6 +28,16 @@ interface GalleryGridProps {
   onDelete: (_id: string) => void;
 }
 export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridProps) {
+
+  const [SelectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const handleViewDetails = (image: GalleryImage) => {
+    setSelectedImage(image);
+    setIsDetailsOpen(true);
+  };
+
+
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('bn-BD', {
@@ -48,13 +59,18 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
             key={image._id}
             className="bg-card rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-border"
           >
-            <div className="relative w-full h-48 bg-muted overflow-hidden">
+            <div onClick={() => handleViewDetails(image)}
+              className="relative w-full h-48 bg-muted overflow-hidden group cursor-pointer">
               <Image
                 src={image.image || "/placeholder.svg"}
                 alt={image.alt}
                 fill
                 className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
               />
+              {/* Eye Icon Overlay */}
+              <div className="absolute inset-0 flex items-center justify-center bg-black/30 bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
             </div>
 
             <div className="p-4">
@@ -87,7 +103,11 @@ export default function GalleryGrid({ images, onEdit, onDelete }: GalleryGridPro
           </div>
         ))}
       </div>
-
+      <GelleryDetialsModal
+        galleryItem={SelectedImage}
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+      />
     </>
   );
 }

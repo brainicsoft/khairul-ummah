@@ -22,7 +22,7 @@ interface GalleryImage {
   purpose: string;
   date: string;
 }
-interface GalleryEditModalProps {
+interface GelleryEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedImage: GalleryImage;
@@ -43,7 +43,7 @@ export default function GalleryEditModal({
   onOpenChange,
   selectedImage,
   refetch
-}: GalleryEditModalProps) {
+}: GelleryEditModalProps) {
   const [formData, setFormData] = useState<GalleryImage>(selectedImage);
   const [preview, setPreview] = useState<string>(selectedImage.image);
   const [image, setImage] = useState<File | null>(null);
@@ -226,12 +226,11 @@ export default function GalleryEditModal({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="flex-1 dark:bg-white"
+              className="flex-1 dark:bg-white dark:text-black"
             >
               বাতিল
             </Button>
-            <Button onClick={handleSubmit} className="flex-1">
-              সংরক্ষণ করুন
+            <Button onClick={handleSubmit} className="flex-1" disabled={isLoading}>{isLoading ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
             </Button>
           </div>
         </div>

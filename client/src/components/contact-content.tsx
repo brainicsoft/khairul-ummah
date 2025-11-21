@@ -1,10 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Phone, Mail, MapPin } from "lucide-react"
-import Image from "next/image"
 
 export function ContactContent() {
   const [formData, setFormData] = useState({
