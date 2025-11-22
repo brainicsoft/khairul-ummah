@@ -1,9 +1,9 @@
-
 import { apiUrl } from "@/config/constants"
+import dynamic from "next/dynamic";
 import Image from "next/image"
 import Link from "next/link"
-import Carousel from "react-multi-carousel"
-import "react-multi-carousel/lib/styles.css"
+import Carosel from "./Carosel";
+
 // import nomuslem1 from "@/assets/donate-section/social-meeting.jpg"
 
 const responsive = {
@@ -37,44 +37,7 @@ export function Donation() {
           আপনার পছন্দের তহবিলে অবদান রাখুন এবং সমাজের উন্নয়নে সহায়তা করুন
         </p>
 
-        <Carousel
-          responsive={responsive}
-          infinite={true}
-          autoPlay={true}
-          autoPlaySpeed={3000} // প্রতি 3 সেকেন্ডে slide হবে
-          keyBoardControl={true}
-          // showDots={true}
-          removeArrowOnDeviceType={["tablet", "mobile"]}
-        >
-          {items.map((fund) => (
-            <div
-              key={fund.id}
-              className="bg-white shadow-md mb-3 rounded-xl overflow-hidden flex flex-col mx-2"
-            >
-              <div className="relative w-full aspect-[4/3]">
-                <Image
-                  src={fund.image || "/placeholder.svg"}
-                  alt={fund.title}
-                  fill
-                  className="object-cover "
-                />
-              </div>
-
-              <div className="p-6 flex flex-col flex-1 justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-primary mb-2">{fund.title}</h3>
-                  <p className="text-muted-foreground mb-4">{fund.desc}</p>
-                </div>
-
-                <Link href={`/donate/${fund.id}`}>
-                  <button className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition w-full">
-                    দান করুন
-                  </button>
-                </Link>
-              </div>
-            </div>
-          ))}
-        </Carousel>
+      <Carosel responsive={responsive} items={items} />
 
         <div className="mt-12 text-center">
           <Link href="/donate">
