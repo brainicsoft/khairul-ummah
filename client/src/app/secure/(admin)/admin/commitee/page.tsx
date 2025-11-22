@@ -1,5 +1,4 @@
 'use client';
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
@@ -10,7 +9,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-
 import toast from 'react-hot-toast';
 import Swal from 'sweetalert2';
 import CommitteeGrid from './Components/CommiteeGrid';
@@ -18,18 +16,7 @@ import CommitteeEditModal from './Components/CommiteeEditModal';
 import CommitteeCreateModal from './Components/CommiteeCreateModal';
 import { useDeleteCommiteeMutation, useGetAllCommiteesQuery } from '@/redux/features/commitee/commiteeApi';
 import { MemberRoleData } from '@/components/MemberRoleData';
-
-interface CommitteeMember {
-    _id: string;
-    email: string;
-    name: string;
-    phone: string;
-    image: string;
-    roleType: string;
-    occupation: string;
-    // title: string;
-}
-
+import { ICommitteeMember } from '@/@types/CommiteeProps';
 export default function CommitteePage() {
     const [selectedRole, setSelectedRole] = useState('All');
     const { data: committeeData, error, isLoading, refetch } = useGetAllCommiteesQuery({
@@ -38,9 +25,8 @@ export default function CommitteePage() {
         roleType: selectedRole !== 'All' ? selectedRole : undefined,
     });
     const [deleteCommittee] = useDeleteCommiteeMutation()
-
     // API ডাটা ম্যাপ করে CommitteeMember টাইপে ফিক্স করা
-    const committeeMembers: CommitteeMember[] = committeeData?.data.map((member: any) => ({
+    const committeeMembers: ICommitteeMember[] = committeeData?.data.map((member: any) => ({
         _id: member._id,
         email: member.email || '',
         name: member.name || 'নাম নেই',
@@ -50,11 +36,9 @@ export default function CommitteePage() {
         occupation: member.occupation || 'পেশা নেই',
         // title: member.title || 'শিরোনাম নেই',
     })) || [];
-
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
-    const [selectedMember, setSelectedMember] = useState<CommitteeMember | null>(null);
-
+    const [selectedMember, setSelectedMember] = useState<ICommitteeMember | null>(null);
     const handleDelete = (_id: string) => {
         if (!_id) {
             toast.error("সদস্য আইডি খুঁজে পাওয়া যায়নি!")
@@ -78,22 +62,18 @@ export default function CommitteePage() {
                         text: "সদস্য সফলভাবে মুছে ফেলা হয়েছে।",
                         icon: "success",
                     })
-
                 } catch (error: any) {
                     toast.error(error?.data?.message || "কিছু ভুল হয়েছে।")
                 }
             }
         })
     };
-
-    const handleEditOpen = (member: CommitteeMember) => {
+    const handleEditOpen = (member: ICommitteeMember) => {
         setSelectedMember(member);
         setIsEditOpen(true);
     };
     const commiteeRoleTypes = MemberRoleData()
     const rolesWithAll = ['All', ...commiteeRoleTypes];
- 
-
     return (
         <main className="min-h-screen bg-background p-6">
             <div className="max-w-7xl mx-auto">
@@ -135,7 +115,6 @@ export default function CommitteePage() {
                 onOpenChange={setIsCreateOpen}
                 refetch={refetch}
             />
-
             {selectedMember && (
                 <CommitteeEditModal
                     open={isEditOpen}
@@ -144,7 +123,6 @@ export default function CommitteePage() {
                     refetch={refetch}
                 />
             )}
-
             {/* if data is not available */}
             {committeeMembers.length === 0 && (
                 <div className="text-center py-10 text-gray-500">
