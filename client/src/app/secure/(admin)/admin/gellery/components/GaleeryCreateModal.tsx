@@ -2,15 +2,6 @@
 import { useState, useEffect } from 'react';
 import { X } from "lucide-react";
 import { Button } from '@/components/ui/button';
-import { FormInput } from '@/components/form/FormInput';
-import { PhotoUpload } from '@/components/form/photo-upload';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import toast from 'react-hot-toast';
 import { useCreateGalleryMutation } from '@/redux/features/gallery/galleryApi';
 import GalleryForm from './GaleeryForm';
@@ -26,16 +17,6 @@ interface GalleryCreateModalProps {
     onOpenChange: (open: boolean) => void;
     refetch: () => void;
 }
-const PURPOSES = [
-    { value: 'community', label: 'কমিউনিটি' },
-    { value: 'flood', label: 'বন্যা ত্রাণ' },
-    { value: 'meeting', label: 'সভা' },
-    { value: 'gathering', label: 'সমাবেশ' },
-    { value: 'relief', label: 'ত্রাণ' },
-    { value: 'event', label: 'ইভেন্ট' },
-    { value: 'water', label: 'জল ত্রাণ' },
-    { value: 'other', label: 'অন্যান্য' },
-];
 export default function GalleryCreateModal({ open, onOpenChange, refetch }: GalleryCreateModalProps) {
     if (!open) return null;
     const [createGallery, { isLoading }] = useCreateGalleryMutation();
@@ -122,7 +103,7 @@ export default function GalleryCreateModal({ open, onOpenChange, refetch }: Gall
                             <X className="h-5 w-5 dark:text-white cursor-pointer dark:hover:text-gray-800" />
                         </button>
                     </div>
-                    {/* Body */}
+                    {/* Form */}
                    <GalleryForm handleSubmit={handleSubmit} formData={formData} setFormData={setFormData} preview={preview} setPreview={setPreview} handleImageUpload={handleImageUpload} handleRemoveImage={handleRemoveImage} />
                     {/* Footer */}
                     <div className="sticky bottom-0 bg-white dark:bg-gray-600 border-t p-4 flex justify-end gap-2">
