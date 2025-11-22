@@ -190,11 +190,13 @@ export default function CommitteeEditModal({
                                 ভূমিকা <span className="text-red-500">*</span>
                             </label>
                             <Select
-                                value={formData.roleType}
+                                value={ROLE_TYPES.some(r => r.value === formData.roleType) ? formData.roleType : ''}
                                 onValueChange={(value) => setFormData({ ...formData, roleType: value })}
                             >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="ভূমিকা নির্বাচন করুন" />
+                                    <SelectValue>
+                                        {ROLE_TYPES.find(r => r.value === formData.roleType)?.label || 'ভূমিকা নির্বাচন করুন'}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent className="bg-white dark:bg-gray-700">
                                     {ROLE_TYPES.map((role) => (
@@ -204,7 +206,6 @@ export default function CommitteeEditModal({
                                     ))}
                                 </SelectContent>
                             </Select>
-
                         </div>
 
                         <FormInput
