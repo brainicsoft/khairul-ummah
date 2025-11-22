@@ -1,51 +1,41 @@
-import { forwardRef } from "react"
-import { Input } from "../ui/input"
 
-interface FormInputProps {
-  label: string
-  type?: string
-  required?: boolean
-  error?: string
-  placeholder?: string
-  className?: string
+import { forwardRef } from "react";
+import { Input } from "../ui/input";
+
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  required?: boolean;
+  error?: string;
+  className?: string;
 }
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
-  ({ label, type = "text", required = false, error, placeholder, className, ...props }, ref) => {
+  ({ label, required = false, error, className = "", ...props }, ref) => {
     return (
       <div className={className}>
-        {/* Label */}
         <label className="text-sm font-medium text-gray-700 dark:text-white mb-2 block">
           {label} {required && <span className="text-red-500">*</span>}
         </label>
 
-        {/* Input */}
         <Input
           ref={ref}
-          type={type}
-          placeholder={placeholder}
           className={`
-            w-full
-            h-12
-            text-base
-            border border-gray-400
-            px-4
-            rounded-sm
-            focus:border-primary
-            focus:ring-0
+            w-full h-12 text-base border border-gray-400 px-4 rounded-sm
+            focus:border-primary focus:ring-0
+            dark:bg-gray-700 dark:text-white
             ${error ? "border-red-500 focus:border-red-500" : ""}
           `}
-          {...props}
+          {...props} // এখানে সব standard props চলে যাবে, যেমন value, onChange, type, placeholder
         />
 
-        {/* Error */}
         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
       </div>
-    )
+    );
   }
-)
+);
 
-FormInput.displayName = "FormInput"
+FormInput.displayName = "FormInput";
+
 
 // ----------------------------------------------------------------------
 // Textarea Component
