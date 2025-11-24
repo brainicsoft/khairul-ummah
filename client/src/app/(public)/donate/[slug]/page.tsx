@@ -12,6 +12,8 @@ import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
 import { apiUrl } from "@/config/constants"
 import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProjects/donationProjectApi"
+import FAQ from "@/components/FAQ"
+import { DonatesTypesMenue } from "@/components/DonatesTypesMenue"
 
 export type DonationType = {
   _id: number
@@ -34,14 +36,14 @@ type FormValues = {
   paymentMethod: "bkash" | "sslCommerz"
 }
 
-export default  function DonateTypePage() {
+export default function DonateTypePage() {
   const params = useParams()
   const slug = params.slug as string
-  const { data, isLoading:donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
-console.log(data)
-
+  const { data, isLoading: donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
+  console.log(data)
+  const donationTypes = DonatesTypesMenue()
   // const data = DONATION_TYPES.find((type) => type.slug === slug)
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+
   const [selectedAmount, setSelectedAmount] = useState<string>("")
 
   const [bkashDonation, { isLoading }] = useCreateBkashMutation()
@@ -57,9 +59,9 @@ console.log(data)
     }
   })
 
-  if(donatTypesLoding) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  if (donatTypesLoding) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
 
-  if (!data ) {
+  if (!data) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -74,11 +76,7 @@ console.log(data)
     )
   }
 
-  const faqItems = [
-    { q: "আমার দান কোথায় ব্যয় হয়?", a: "আপনার দান সরাসরি আমাদের শিক্ষা, স্বাস্থ্য এবং দক্ষতা উন্নয়ন কর্মসূচিতে ব্যয় করা হয়।" },
-    { q: "আমি নিয়মিত দান করতে পারি কি?", a: "হ্যাঁ, আপনি মাসিক বা বার্ষিক ভিত্তিতে নিয়মিত দান করতে পারেন।" },
-    { q: "আমার ব্যক্তিগত তথ্য কি সুরক্ষিত থাকবে?", a: "সম্পূর্ণভাবে সুরক্ষিত। আমরা আন্তর্জাতিক নিরাপত্তা মান অনুসরণ করি।" },
-  ]
+
 
   const amountOptions = ["50", "100", "200", "500"]
 
@@ -121,7 +119,6 @@ console.log(data)
       <div className="bg-muted py-3 text-center text-sm text-muted-foreground">
         <p>সহায়তার জন্য আমাদের সাথে যোগাযোগ করুন ✉️ contact@khayrulummah.org</p>
       </div>
-
       <main className="py-12 md:py-16 bg-background">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Video & Benefits */}
@@ -155,7 +152,6 @@ console.log(data)
               </div>
             </div>
           </div>
-
           {/* Description */}
           <div className="bg-card rounded-xl p-8 mb-16 border border-border shadow-md">
             <h2 className="text-2xl font-bold text-primary mb-4">আমাদের কাজে অবদান রাখুন</h2>
@@ -183,11 +179,12 @@ console.log(data)
                       className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     >
                       <option value="">নির্বাচন করুন</option>
-                      <option value="education">শিক্ষা</option>
-                      <option value="health">স্বাস্থ্য</option>
-                      <option value="skill">দক্ষতা উন্নয়ন</option>
-                      <option value="relief">দুর্যোগ ত্রাণ</option>
-                      <option value="general">সাধারণ</option>
+                      {donationTypes.map((type) => (
+                        <option key={type._id} value={type.slug}>
+                          {type.slug}
+                        </option>
+                      ))}
+
                     </select>
                     {errors.category && <span className="text-red-500 text-sm">ক্যাটাগরি অবশ্যক</span>}
                   </div>
@@ -284,7 +281,6 @@ console.log(data)
                       )}
                     />
                   </div>
-
                   {/* Submit */}
                   <button
                     type="submit"
@@ -296,7 +292,6 @@ console.log(data)
                 </form>
               </div>
             </div>
-
             {/* Sidebar */}
             <div className="flex flex-col gap-6">
               <div className="bg-secondary/15 rounded-xl p-6 border-l-4 border-secondary shadow-md">
@@ -318,25 +313,8 @@ console.log(data)
               </Link>
             </div>
           </div>
-
           {/* FAQ */}
-          <div className="mt-16">
-            <h2 className="text-3xl font-bold text-primary mb-8 text-center">প্রায়শ জিজ্ঞাসিত প্রশ্ন</h2>
-            <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-4 max-w-4xl mx-auto">
-              {faqItems.map((item, idx) => (
-                <div key={idx} className="border border-border rounded-xl overflow-hidden shadow-sm">
-                  <button
-                    onClick={() => setExpandedFaq(expandedFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between p-4 hover:bg-muted transition text-left"
-                  >
-                    <span className="font-semibold text-foreground">{item.q}</span>
-                    <ChevronDown className={`w-5 h-5 text-primary transition-transform ${expandedFaq === idx ? "rotate-180" : ""}`} />
-                  </button>
-                  {expandedFaq === idx && <div className="px-4 py-3 bg-muted border-t border-border text-foreground/80">{item.a}</div>}
-                </div>
-              ))}
-            </div>
-          </div>
+          <FAQ />
         </div>
       </main>
     </>
