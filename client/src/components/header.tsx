@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -132,20 +131,22 @@ export function Header() {
               )
             })}
           </nav>
-          <LanguageSwitcher />
-
-          <Link href="/donate">
-            <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
-              দান করুন
-            </button>
-          </Link>
+          <div className="flex items-center gap-2 ">
+            <div className="hidden lg:flex">
+              <LanguageSwitcher />
+            </div>
+            <Link href="/donate">
+              <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
+                দান করুন
+              </button>
+            </Link>
+          </div>
         </div>
-
-
         {/* Mobile Menu */}
         <div className="flex lg:hidden items-center gap-2">
+          <LanguageSwitcher />
           <Link href="/donate">
-            <button className="bg-primary text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-primary/90 transition text-xs sm:text-sm font-semibold">
+            <button className="bg-primary cursor-pointer text-white px-3 sm:px-4 py-1.5 rounded-lg hover:bg-primary/90 transition text-xs sm:text-sm font-semibold">
               দান করুন
             </button>
           </Link>
