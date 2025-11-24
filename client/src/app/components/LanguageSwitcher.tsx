@@ -48,7 +48,6 @@ export function LanguageSwitcher() {
       }, 100)
     }
   }
-
   const toggleLanguage = () => {
     const newLang = currentLanguage === 'bn' ? 'en' : 'bn'
     switchLanguage(newLang)
@@ -56,16 +55,15 @@ export function LanguageSwitcher() {
 
   if (!isInitialized) {
     return (
-      <button className="px-4 py-2 border border-primary text-primary rounded-lg opacity-50">
+      <button className="px-4 py-1.5 border border-primary text-primary rounded-lg opacity-50">
         Loading...
       </button>
     )
   }
-
   return (
     <button
       onClick={toggleLanguage}
-      className="px-4 py-2 text-sm font-semibold border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition whitespace-nowrap"
+      className="px-4 py-1.5 cursor-pointer text-sm font-semibold border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition whitespace-nowrap"
     >
       {currentLanguage === 'bn' ? 'English' : 'বাংলা'}
     </button>
