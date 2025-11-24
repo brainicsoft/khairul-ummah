@@ -1,16 +1,23 @@
 "use client";
-
-import { 
-  Users, 
-  DollarSign, 
-  TrendingUp, 
+import { useGetAllActivitiesQuery } from "@/redux/features/activites/activitesApi";
+import { useGetAllBlogsQuery } from "@/redux/features/blogs/blogApi";
+import { useGetAllCommiteesQuery } from "@/redux/features/commitee/commiteeApi";
+import { useGetAllDonationProjectsQuery } from "@/redux/features/donationProjects/donationProjectApi";
+import { useGetAllVolunteersQuery } from "@/redux/features/volunteers/volunteersApi";
+import {
+  Users,
+  DollarSign,
+  TrendingUp,
   Package,
-  Activity
+  Activity,
+  BookOpen
 } from "lucide-react";
+
+
 
 const stats = [
   {
-    title: "Total Users",
+    title: "Total volunters",
     value: "1,234",
     change: "+12%",
     trend: "up",
@@ -26,7 +33,7 @@ const stats = [
     color: "green"
   },
   {
-    title: "Active Projects",
+    title: "Running Projects",
     value: "24",
     change: "+2",
     trend: "up",
@@ -34,21 +41,39 @@ const stats = [
     color: "purple"
   },
   {
-    title: "Growth Rate",
-    value: "18.2%",
-    change: "+2.4%",
+    title: "Total blog posts",
+    value: "42",
+    change: "+5",
     trend: "up",
-    icon: TrendingUp,
-    color: "orange"
+    icon: BookOpen,
+    color: "green"
   }
 ];
 
 export default function AdminDashboard() {
+  const { data: volunteers, error, isLoading, refetch } = useGetAllVolunteersQuery({})
+  const { data: donateType } = useGetAllDonationProjectsQuery({})
+  const { data: activites } = useGetAllActivitiesQuery({})
+  const { data: blogs } = useGetAllBlogsQuery({})
+  const { data:advisor } = useGetAllCommiteesQuery({
+    roleType: 'উপদেষ্টা',
+  });
+  const { data:Commitee } = useGetAllCommiteesQuery({
+    roleType: 'পরিচালক',
+  });
+  console.log("total volunteers", volunteers?.meta?.total)
+  console.log("total donateType", donateType?.meta?.total)
+  console.log("total activites", activites?.meta?.total)
+  console.log("total blogs", blogs?.meta?.total)
+  console.log("total advisor", advisor?.meta?.total)
+  console.log("total Commitee", Commitee?.meta?.total)
+
+  
   return (
     <div className="p-6">
       {/* Welcome Section */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-foreground mb-2">
+        <h1 className="text-4xl font-bold text-foreground mb-2">
           Welcome back, Admin
         </h1>
         <p className="text-muted-foreground">
@@ -63,8 +88,8 @@ export default function AdminDashboard() {
           const trendColor = stat.trend === "up" ? "text-accent" : "text-destructive";
           const bgColor = `bg-${stat.color}-50`; // For light fallback
           return (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="bg-card p-6 rounded-xl border border-border shadow-sm"
             >
               <div className="flex items-center justify-between mb-4">
@@ -95,8 +120,8 @@ export default function AdminDashboard() {
           </h3>
           <div className="space-y-4">
             {[1, 2, 3].map((item) => (
-              <div 
-                key={item} 
+              <div
+                key={item}
                 className="flex items-center gap-4 p-3 hover:bg-card-foreground/10 rounded-lg"
               >
                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
