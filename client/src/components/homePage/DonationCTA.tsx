@@ -133,7 +133,7 @@ export function DonationCTA() {
                 >
                   <option value="">Select Fund</option>
                   {donationTypes.map((type: any) => (
-                    <option key={type.id} value={type.slug}>
+                    <option key={type._id} value={type.slug}>
                       {type.slug}
                     </option>
                   ))}

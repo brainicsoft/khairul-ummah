@@ -25,7 +25,6 @@ export function Header() {
     { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
     { href: "/about/committee", label: "পরিচালনা পরিষদ" },
   ]
-
   const navLinks = [
     { href: "/", label: "হোম" },
     { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
