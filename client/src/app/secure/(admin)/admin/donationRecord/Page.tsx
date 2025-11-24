@@ -10,6 +10,7 @@ import DonationTable from "../donationRecord/components/DonationTable"
 import DonationDetailModal from "../donationRecord/components/DonationDetailsModal"
 import DonationEditModal from "../donationRecord/components/DonationEditModal"
 import DonationAddModal from "../donationRecord/components/DonationAddModal"
+import { useGetAllPaymentRecordsQuery } from "@/redux/features/payment/paymentApi"
 
 
 // TODO: Replace with actual API calls
@@ -53,7 +54,7 @@ const DUMMY_DONATIONS = [
 ]
 
 export default function DonationRecordsPage() {
-  const [donations, setDonations] = useState(DUMMY_DONATIONS)
+
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("")
   const [filterDonationType, setFilterDonationType] = useState("")
@@ -65,6 +66,15 @@ export default function DonationRecordsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
 
+  // get all donation records
+  const { data: donationsRecords, isLoading, refetch } = useGetAllPaymentRecordsQuery({
+    page: currentPage,
+    limit: "25",
+    status: filterStatus,
+    donationType: filterDonationType,
+  });
+  console.log(donationsRecords)
+  const [donations, setDonations] = useState(donationsRecords?.data || []);
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
     setCurrentPage(1)
@@ -74,7 +84,7 @@ export default function DonationRecordsPage() {
     return donations.filter((donation) => {
       const matchesSearch =
         donation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        donation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        donation?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         donation.phone.includes(searchTerm)
 
       const matchesStatus = !filterStatus || donation.status === filterStatus
@@ -144,7 +154,7 @@ export default function DonationRecordsPage() {
 
       <Card>
         <CardHeader>
-          <CardDescription>মোট ডোনেশন: {filteredDonations.length}</CardDescription>
+          <CardDescription>মোট ডোনেশন: {donationsRecords?.meta.total}</CardDescription>
         </CardHeader>
         <CardContent>
           <DonationTable

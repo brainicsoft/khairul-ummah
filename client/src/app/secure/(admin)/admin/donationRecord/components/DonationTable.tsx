@@ -24,17 +24,20 @@ import Pagination from "@/components/Pagination"
 import { getDonationColumns } from "./DonationColumns"
 
 export interface IDonation {
-  _id: string
-  name: string
-  email: string
-  phone: string
-  amount: number
-  paymentId: string
-  status: string
-  donationType: string
-  createdAt: string
-  updatedAt: string
+  id?: string;
+  _id?: string;
+  name: string;
+  email?: string; // make it optional
+  phone: string;
+  amount: number;
+  paymentId: string;
+  status: "success" | "failed" | "pending";
+  donationType: string;
+  createdAt?: string;
+  updatedAt?: string;
+  __v?: number;
 }
+
 
 interface DonationTableProps {
   data: IDonation[]

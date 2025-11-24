@@ -171,7 +171,11 @@ export const getAllPaymentService = async (query: Record<string, unknown>) => {
     .paginate()
 
   const result = await paymentQueries.modelQuery;
-  return result;
+  const meta = await paymentQueries.countTotal();
+  return {
+    result,
+    meta
+  };
 };
 
 // get payment by Id or single  service
