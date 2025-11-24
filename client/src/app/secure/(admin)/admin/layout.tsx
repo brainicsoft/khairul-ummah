@@ -40,7 +40,7 @@ const menuItems = [
   { name: "Activities", href: "/secure/admin/activities", icon: BarChart3 },
   { name: "blogs-management", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
-  // { name: "Donations", href: "/secure/admin/donations", icon: DollarSign },
+  { name: "Donations", href: "/secure/admin/donationRecord", icon: DollarSign },
   // { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },
   // { name: "Content", href: "/admin/content", icon: FileText },
   // { name: "Events", href: "/secure/admin/events", icon: Calendar },
