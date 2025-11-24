@@ -49,7 +49,7 @@ export function BlogSection() {
 
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground line-clamp-2">{post.description}</p>
-                <Link href={`/blog/${post.id}`}>
+                <Link href={`/blog/${post.slug}`}>
                   <Button variant="outline" className="w-full hover:bg-primary">
                     সম্পূর্ণ পড়ুন
                   </Button>
