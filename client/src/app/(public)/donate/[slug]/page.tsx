@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
 import Image, { StaticImageData } from "next/image"
@@ -37,11 +37,21 @@ type FormValues = {
 }
 
 export default function DonateTypePage() {
+  // state for donation types
+  const [donationTypes, setDonationTypes] = useState<any[]>([]);
   const params = useParams()
   const slug = params.slug as string
   const { data, isLoading: donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
   console.log(data)
-  const donationTypes = DonatesTypesMenue()
+   // fetch donation types on mount
+   useEffect(() => {
+    async function fetchDonationTypes() {
+      const data = await DonatesTypesMenue();
+      setDonationTypes(data);
+    }
+    fetchDonationTypes();
+  }, []);
+
   // const data = DONATION_TYPES.find((type) => type.slug === slug)
 
   const [selectedAmount, setSelectedAmount] = useState<string>("")

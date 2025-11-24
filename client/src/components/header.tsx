@@ -13,13 +13,22 @@ export function Header() {
   const [hoverDropdown, setHoverDropdown] = useState<string | null>(null)
   const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
-  const donationTypes = DonatesTypesMenue()
-  const fundSubMenu = donationTypes
-    .map((type: any) => ({
-      id: type.id,
-      href: `/donate/${type.slug}`,
-      label: type.slug,
-    }))
+  const [donationTypes, setDonationTypes] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchDonationTypes() {
+      const data = await DonatesTypesMenue(); // await async function
+      setDonationTypes(data); // state update
+    }
+
+    fetchDonationTypes();
+  }, []); // only once on mount
+
+  const fundSubMenu = donationTypes.map((type: any) => ({
+    id: type.id,
+    href: `/donate/${type.slug}`,
+    label: type.slug,
+  }));
 
   const aboutSubMenu = [
     { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },

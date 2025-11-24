@@ -1,11 +1,14 @@
 import { apiUrl } from "@/config/constants";
-const res = await fetch(`${apiUrl}/donation/slug/all`, { cache: "no-store" });
-const json = await res.json();
-const items = json?.data || [];
 
-export function DonatesTypesMenue() {
-    return items
-    
+export async function DonatesTypesMenue() {
+  try {
+    const res = await fetch(`${apiUrl}/donation/slug/all`, { cache: "no-store" });
+    if (!res.ok) return []; // API error → empty array
+
+    const json = await res.json();
+    return json?.data || [];
+  } catch (error) {
+    console.error("Failed to fetch donation types:", error);
+    return []; // server off → empty array
+  }
 }
-
-

@@ -11,7 +11,7 @@ export function DonationCTA() {
   const [bkashDonation, { isLoading }] = useCreateBkashMutation()
   const [showModal, setShowModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"bkash" | "ssl" | "">("");
-
+  const [donationTypes, setDonationTypes] = useState<any[]>([]);
   const [formValues, setFormValues] = useState({
     name: "",
     phone: "",
@@ -20,7 +20,14 @@ export function DonationCTA() {
     email: "",
   });
 
-  const donationTypes = DonatesTypesMenue();
+ // fetch donation types once on mount
+ useEffect(() => {
+  async function fetchDonationTypes() {
+    const data = await DonatesTypesMenue();
+    setDonationTypes(data);
+  }
+  fetchDonationTypes();
+}, []);
 
   // 🚫 STOP BACKGROUND SCROLL WHEN MODAL OPEN
   useEffect(() => {

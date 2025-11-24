@@ -4,10 +4,18 @@ import Image from "next/image"
 import { Button } from "../ui/button"
 import { apiUrl } from "@/config/constants";
 
-const res = await fetch(`${apiUrl}/blog?page=1&limit=3`, { cache: "no-store" });
-const json = await res.json();
-const items = json?.data || [];
-console.log(items)
+let items: any[] = [];
+
+try {
+  const res = await fetch(`${apiUrl}/blog?page=1&limit=3`, { cache: "no-store" });
+  if (res.ok) {
+    const json = await res.json();
+    items = json?.data || [];
+  }
+} catch (error) {
+  console.error("Blog fetch failed:", error);
+  items = []; // server off → empty array
+}
 
 export function BlogSection() {
   return (
