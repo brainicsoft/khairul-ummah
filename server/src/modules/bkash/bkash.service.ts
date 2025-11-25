@@ -47,7 +47,7 @@ export const generateIdToken = async (): Promise<string |null> => {
 /**
  * Refresh bKash token
  */
-export const refreshBkashToken = async (): Promise<string> => {
+export const refreshBkashToken = async (): Promise<string | null> => {
     try {
         console.log(moment().toISOString(), "Refreshing bKash Token...");
 
@@ -76,7 +76,9 @@ export const refreshBkashToken = async (): Promise<string> => {
         return idToken!;
     } catch (error: any) {
         console.error("bKash refresh token error:", error.response?.data || error);
-        throw new Error("Failed to refresh bKash token");
+        // throw new Error("Failed to refresh bKash token");
+        // ❗IMPORTANT: Throw করবেন না, safe fallback return দিন:
+        return null;  
     }
 };
 
