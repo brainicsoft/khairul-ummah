@@ -69,7 +69,7 @@ export default function DonationRecordsPage() {
   // get all donation records
   const { data: donationsRecords, isLoading, refetch } = useGetAllPaymentRecordsQuery({
     page: currentPage,
-    limit: "25",
+    limit: limit.toString(),
     status: filterStatus,
     donationType: filterDonationType,
   });

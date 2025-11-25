@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Pagination from "@/components/Pagination"
 import { getDonationColumns } from "./DonationColumns"
+import { DonatesTypesMenue } from "@/components/DonatesTypesMenue"
 
 export interface IDonation {
   id?: string;
@@ -80,6 +81,16 @@ export default function DonationTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [donationTypes, setDonationTypes] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    async function fetchDonationTypes() {
+      const data = await DonatesTypesMenue(); // await async function
+      setDonationTypes(data); // state update
+    }
+
+    fetchDonationTypes();
+  }, []); // only once on mount
 
   const columns = React.useMemo(
     () => getDonationColumns(onViewDetails, onEditDetails, onDelete),
@@ -133,9 +144,11 @@ export default function DonationTable({
             className="border rounded-md px-3 py-2 text-sm"
           >
             <option value="">সকল ধরন</option>
-            <option value="qurbani">কুরবানী</option>
-            <option value="general">সাধারণ</option>
-            <option value="emergency">জরুরি</option>
+            {donationTypes.map((type) => (
+              <option key={type._id} value={type.slug}>
+                {type.slug}
+              </option>
+            ))}
           </select>
 
           <DropdownMenu>
