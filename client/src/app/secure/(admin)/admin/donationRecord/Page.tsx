@@ -10,48 +10,10 @@ import DonationTable from "../donationRecord/components/DonationTable"
 import DonationDetailModal from "../donationRecord/components/DonationDetailsModal"
 import DonationEditModal from "../donationRecord/components/DonationEditModal"
 import DonationAddModal from "../donationRecord/components/DonationAddModal"
-import { useGetAllPaymentRecordsQuery } from "@/redux/features/payment/paymentApi"
+import { useGetAllPaymentRecordsQuery, useGetPaymentSummaryQuery } from "@/redux/features/payment/paymentApi"
 
 
 // TODO: Replace with actual API calls
-const DUMMY_DONATIONS = [
-  {
-    _id: "691c493496e9b4729423cb2a",
-    name: "Mahamodul Hasan Moon",
-    email: "",
-    phone: "01734921621",
-    amount: 50,
-    paymentId: "TR0011iBAM0dv1763461428326",
-    status: "success",
-    donationType: "qurbani",
-    createdAt: "2025-11-18T10:23:48.400Z",
-    updatedAt: "2025-11-18T10:25:12.882Z",
-  },
-  {
-    _id: "691c493496e9b4729423cb2b",
-    name: "Ahmed Hassan",
-    email: "ahmed@example.com",
-    phone: "01700000001",
-    amount: 100,
-    paymentId: "TR0012iBAM0dv1763461428327",
-    status: "success",
-    donationType: "general",
-    createdAt: "2025-11-17T14:30:00.000Z",
-    updatedAt: "2025-11-17T14:35:00.000Z",
-  },
-  {
-    _id: "691c493496e9b4729423cb2c",
-    name: "Fatima Islam",
-    email: "fatima@example.com",
-    phone: "01700000002",
-    amount: 75,
-    paymentId: "TR0013iBAM0dv1763461428328",
-    status: "pending",
-    donationType: "qurbani",
-    createdAt: "2025-11-16T09:15:00.000Z",
-    updatedAt: "2025-11-16T09:20:00.000Z",
-  },
-]
 
 export default function DonationRecordsPage() {
 
@@ -65,6 +27,7 @@ export default function DonationRecordsPage() {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const { data:paymentSummary } = useGetPaymentSummaryQuery();
 
   // get all donation records
   const { data: donationsRecords, isLoading, refetch } = useGetAllPaymentRecordsQuery({
@@ -150,7 +113,7 @@ export default function DonationRecordsPage() {
       </div>
 
       {/* Summary Cards */}
-      <SummaryCards donations={donations} />
+      <SummaryCards summary={paymentSummary?.data} />
 
       <Card>
         <CardHeader>

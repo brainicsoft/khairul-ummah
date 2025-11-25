@@ -204,3 +204,123 @@ export const updatePaymentByIdService = async (id: string, payload: Partial<IPay
 };
 
 
+// =============================
+// Get Payment Summary Service
+// =============================
+
+// export const getPaymentSummaryService = async () => {
+
+//   // 1) Total Amount
+//   const totalAmountResult = await Payment.aggregate([
+//     {
+//       $group: {
+//         _id: null,
+//         totalAmount: { $sum: "$amount" }
+//       }
+//     }
+//   ]);
+
+//   const totalAmount = totalAmountResult[0]?.totalAmount || 0;
+
+//   // 2) Donation Type Wise Total
+//   const donationTypeTotals = await Payment.aggregate([
+//     {
+//       $group: {
+//         _id: "$donationType",
+//         totalAmount: { $sum: "$amount" },
+//         count: { $sum: 1 }
+//       }
+//     }
+//   ]);
+
+//   // 3) Status Counts
+//   const statusCounts = await Payment.aggregate([
+//     {
+//       $group: {
+//         _id: "$status",
+//         count: { $sum: 1 }
+//       }
+//     }
+//   ]);
+
+//   // Make clean status count object
+//   const statusMap: Record<string, number> = {
+//     success: 0,
+//     pending: 0,
+//     failed: 0,
+//   };
+
+//   statusCounts.forEach(item => {
+//     statusMap[item._id] = item.count;
+//   });
+
+//   return {
+//     totalAmount,
+//     donationTypeTotals,
+//     status: statusMap,
+//   };
+// };
+
+export const getPaymentSummaryService = async () => {
+  // 1) Get all donation types from DB
+  const allTypes = await Payment.distinct("donationType");
+
+  // 2) Aggregate successful payments
+  const successPayments = await Payment.aggregate([
+    { $match: { status: "success" } },
+    {
+      $group: {
+        _id: "$donationType",
+        totalAmount: { $sum: "$amount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  // Map results to a dictionary
+  const donationMap: Record<string, { totalAmount: number; count: number }> = {};
+  successPayments.forEach(item => {
+    donationMap[item._id] = {
+      totalAmount: item.totalAmount,
+      count: item.count,
+    };
+  });
+
+  // Ensure all types are present
+  const donationTypeTotals = allTypes.map(type => ({
+    _id: type,
+    totalAmount: donationMap[type]?.totalAmount || 0,
+    count: donationMap[type]?.count || 0,
+  }));
+
+  // Total amount across all successful payments
+  const totalAmount = donationTypeTotals.reduce(
+    (sum, item) => sum + item.totalAmount,
+    0
+  );
+
+  // Status counts (all payments)
+  const statusCounts = await Payment.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const statusMap: Record<string, number> = {
+    success: 0,
+    pending: 0,
+    failed: 0,
+  };
+  statusCounts.forEach(item => {
+    statusMap[item._id] = item.count;
+  });
+
+  return {
+    totalAmount,
+    donationTypeTotals,
+    status: statusMap,
+  };
+};

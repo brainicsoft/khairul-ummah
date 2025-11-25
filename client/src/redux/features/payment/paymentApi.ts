@@ -33,6 +33,7 @@ export const {
     useGetAllPaymentRecordsQuery,
     useUpdatePaymentRecordMutation,
     useDeletePaymentRecordMutation,
+    useGetPaymentSummaryQuery,
     endpoints: paymentInpoints
 } = injectEndpoints({
     endpoints: ({ query, mutation }) => ({
@@ -85,6 +86,16 @@ export const {
             transformResponse: (response: any) => response?.data,
             transformErrorResponse: (response: any) => response?.data,
         }),
+        // GET PAYMENT SUMMARY
+        getPaymentSummary: query<any, void>({
+            query: () => ({
+                url: "/payment/summary",
+                method: "GET",
+            }),
+            transformResponse: (response: any) => response,
+            transformErrorResponse: (response: any) => response?.data,
+        }),
+
 
     }),
 });
