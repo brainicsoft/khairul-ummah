@@ -21,11 +21,25 @@ const responsive = {
   },
 }
 
-const loadDataLimit = 10 // for home section carousel
-const res = await fetch(`${apiUrl}/donation?page=1&limit=${loadDataLimit}`, { cache: "no-store" });
-const json = await res.json();
- const items = json?.data || [];
-console.log(items)
+// Safe fetch for donations
+let items: any[] = [];
+const loadDataLimit = 10;
+
+try {
+  const res = await fetch(`${apiUrl}/donation?page=1&limit=${loadDataLimit}`, {
+    cache: "no-store"
+  });
+
+  if (res.ok) {
+    const json = await res.json();
+    items = json?.data || [];
+  }
+
+} catch (error) {
+  console.error("Donation fetch failed:", error);
+  items = []; // server off → no crash
+}
+
 export function Donation() {
   return (
     <section className="py-16 md:py-24 bg-white">

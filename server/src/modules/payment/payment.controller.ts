@@ -48,12 +48,13 @@ export const verifyBkashController: RequestHandler = catchAsync(async (req, res)
   // Get All Payment 
 
     export const getAllPaymentController: RequestHandler = catchAsync(async (req, res) => {
-    const result = await getAllPaymentService(req.query);
+    const {result,meta} = await getAllPaymentService(req.query);
     sendResponse(res, {
       status: 200,
       success: true,
       message: 'payment retrived successfully',
       data: result,
+      meta: meta
     });
   });
 

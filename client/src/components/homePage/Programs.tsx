@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import meeting1 from "@/assets/opinion-meetimg/meet1.jpg"
 import meeting2 from "@/assets/opinion-meetimg/meet2.jpg"
+import { useGetAllActivitiesQuery } from "@/redux/features/activites/activitesApi"
 
 export function Programs() {
   const programs = [
@@ -26,6 +27,10 @@ export function Programs() {
       image: meeting1,
     },
   ]
+  const { data, error, isLoading, refetch } = useGetAllActivitiesQuery({
+    page: 1,
+    limit: "3",
+  })
 
   return (
     <section className="py-16 md:py-24 bg-muted">
@@ -33,9 +38,9 @@ export function Programs() {
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">আমাদের কার্যক্রম সমূহ</h2>
 
         <div className="grid md:grid-cols-3 gap-8 mb-12">
-          {programs.map((program) => (
+          {data?.data?.map((program) => (
             <div
-              key={program.id}
+              key={program._id}
               className="bg-white rounded-lg overflow-hidden shadow-sm transition flex flex-col"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -52,26 +57,27 @@ export function Programs() {
                   <h3 className="text-xl font-semibold mb-2 text-primary">
                     {program.title}
                   </h3>
-                  <p className="text-muted-foreground mb-4">{program.desc}</p>
+                  <p className="text-muted-foreground mb-4 line-clamp-3">{program.description}</p>
                 </div>
-
+                <Link href={`/activities/${program.slug}`}>
                 <button className="text-primary font-semibold hover:text-primary/80 transition mt-auto">
                   আরও জানুন →
                 </button>
-              </div>
+              </Link>
+            </div>
             </div>
           ))}
-        </div>
-
-
-        <div className="text-center">
-          <Link href="/activities">
-            <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
-              সকল কার্যক্রম দেখুন
-            </button>
-          </Link>
-        </div>
       </div>
-    </section>
+
+
+      <div className="text-center">
+        <Link href="/activities">
+          <button className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition">
+            সকল কার্যক্রম দেখুন
+          </button>
+        </Link>
+      </div>
+    </div>
+    </section >
   )
 }
