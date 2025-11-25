@@ -40,7 +40,7 @@ export default function AutopayPage() {
     const phoneValue = watch("phone")
 
     const [bkashDonation, { isLoading }] = useCreateBkashMutation()
-    const { data, isLoading: donatTypesLoading } = useGetDonationProjectBySlugQuery({ slug: "regular" })
+    const { data, isLoading: donatTypesLoading } = useGetDonationProjectBySlugQuery({ slug: "নিয়মিত-অনুদান" })
     console.log(data)
     const summaryDetails = useMemo(() => {
         if (autopayMode === "daily") {
@@ -123,8 +123,42 @@ export default function AutopayPage() {
                 </div>
             </div>
 
+            {/* Video & Benefits */}
+            <div className="container mx-auto px-4 max-w-6xl mt-12">
+                <div className="grid md:grid-cols-2 gap-12 mb-16">
+                    <div className="flex flex-col justify-center">
+                        <div className="bg-black rounded-xl overflow-hidden aspect-video shadow-lg">
+                            <iframe
+                                className="w-full h-full"
+                                src={data.videoUrl}
+                                title="Donation Video"
+                                allowFullScreen
+                                loading="lazy"
+                            ></iframe>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col justify-center">
+                        <div className="bg-secondary/20 rounded-xl p-8 border-l-4 border-secondary shadow-inner">
+                            <h2 className="text-2xl font-bold text-primary mb-4">আপনি কী পাবেন?</h2>
+                            <p className="text-foreground/80 mb-6 leading-relaxed">
+                                আপনার অবদান সরাসরি এই ধরনের অনুদানের মাধ্যমে সমাজে দৃশ্যমান প্রভাব ফেলে।
+                            </p>
+                            <ul className="space-y-3">
+                                {data?.benefits?.map((benefit: string, idx: number) => (
+                                    <li key={idx} className="flex items-start gap-3">
+                                        <span className="text-secondary font-bold text-lg mt-1">✓</span>
+                                        <span className="text-foreground">{benefit}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <main className="py-8 md:py-12 bg-white">
-                <div className="container mx-auto px-4 max-w-5xl">
+                <div className="container mx-auto px-4 max-w-6xl">
                     <div className="flex gap-0 mb-8 border-b border-gray-200">
                         <button
                             onClick={() => setAutopayMode("daily")}
