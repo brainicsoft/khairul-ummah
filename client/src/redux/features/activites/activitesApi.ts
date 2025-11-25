@@ -10,6 +10,7 @@ export interface IActivity {
   date?: string;
   createdAt?: string;
   updatedAt?: string;
+  slug: string;
 }
 
 interface Meta {

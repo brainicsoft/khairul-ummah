@@ -4,10 +4,18 @@ import Image from "next/image"
 import { Button } from "../ui/button"
 import { apiUrl } from "@/config/constants";
 
-const res = await fetch(`${apiUrl}/blog?page=1&limit=3`, { cache: "no-store" });
-const json = await res.json();
-const items = json?.data || [];
-console.log(items)
+let items: any[] = [];
+
+try {
+  const res = await fetch(`${apiUrl}/blog?page=1&limit=3`, { cache: "no-store" });
+  if (res.ok) {
+    const json = await res.json();
+    items = json?.data || [];
+  }
+} catch (error) {
+  console.error("Blog fetch failed:", error);
+  items = []; // server off → empty array
+}
 
 export function BlogSection() {
   return (
@@ -41,7 +49,7 @@ export function BlogSection() {
 
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground line-clamp-2">{post.description}</p>
-                <Link href={`/blog/${post.id}`}>
+                <Link href={`/blog/${post.slug}`}>
                   <Button variant="outline" className="w-full hover:bg-primary">
                     সম্পূর্ণ পড়ুন
                   </Button>

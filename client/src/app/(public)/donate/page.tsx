@@ -1,8 +1,5 @@
-"use client"
-import { useState } from "react"
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
-import { DONATION_TYPES } from "@/data/donationData"
 import Image, { StaticImageData } from "next/image"
 import DonationType from "@/assets/donateTypeImg/donate.jpg"
 import SSRLoadMoreData from "@/components/SSRLoadMoreData"
@@ -19,28 +16,10 @@ type DonationType = {
   color: string
   category: "regular" | "special" | "donor-type"
 }
-
 interface GalleryPageProps {
   searchParams?: Promise<{ limit?: string }>;
 }
-
 export default function DonationTypesPage({ searchParams }: GalleryPageProps) {
-  // const getDonationTypesArray = (): DonationType[] => {
-  //   return DONATION_TYPES
-  // }
-  // const donationTypes = getDonationTypesArray()
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
-
-  const benefitsList = [
-    "খাইরুল উম্মাহ ফাউন্ডেশনের সাথে সমাজ সেবায় অংশীদার হন",
-    "স্বচ্ছতার সাথে আপনার অবদানের হিসাব পান",
-    "বিশেষ সুবিধা এবং সার্টিফিকেট পান",
-    "আপনার পরিবার এবং প্রিয়জনদের জন্য দোয়া পান",
-    "নিয়মিত অগ্রগতি প্রতিবেদন সহ আপডেট পান",
-  ]
-
-
-
   return (
     <>
       {/* Hero Section */}

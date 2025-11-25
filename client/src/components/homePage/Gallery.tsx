@@ -2,11 +2,18 @@ import Image from "next/image"
 import Link from "next/link"
 import { apiUrl } from "@/config/constants"
 
-const res = await fetch(`${apiUrl}/gallery?page=1&limit=6`, { cache: "no-store" });
-const json = await res.json();
-const items = json?.data || [];
-console.log(items)
+let items: any[] = [];
 
+try {
+  const res = await fetch(`${apiUrl}/gallery?page=1&limit=6`, { cache: "no-store" });
+  if (res.ok) {
+    const json = await res.json();
+    items = json?.data || [];
+  }
+} catch (error) {
+  console.error("Gallery fetch failed:", error);
+  items = []; // server off → empty array, no crash
+}
 export function Gallery() {
   return (
     <section className="py-16 md:py-24 bg-white">

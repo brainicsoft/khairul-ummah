@@ -4,12 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Settings, 
-  FileText, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  Users,
+  Settings,
+  FileText,
+  BarChart3,
   DollarSign,
   Calendar,
   MessageSquare,
@@ -32,20 +32,20 @@ interface AdminLayoutProps {
 }
 
 const menuItems = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "User Management", href: "/admin/users", icon: Users },
+  { name: "Dashboard", href: "/secure/admin", icon: LayoutDashboard },
+  // { name: "User Management", href: "/admin/users", icon: Users },
   { name: "Commitee Management", href: "/secure/admin/commitee", icon: Users },
   { name: "volunteer Management", href: "/secure/admin/volunteer", icon: Users },
-  { name: "Donate-type", href: "/secure/admin/projects", icon: Package },
+  { name: "Donate-Projects", href: "/secure/admin/projects", icon: Package },
   { name: "Activities", href: "/secure/admin/activities", icon: BarChart3 },
-  { name: "blogs", href: "/secure/admin/blogs", icon: FileText },
+  { name: "blogs-management", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
-  { name: "Donations", href: "/secure/admin/donations", icon: DollarSign },
-  { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },
+  { name: "Donations", href: "/secure/admin/donationRecord", icon: DollarSign },
+  // { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },
   // { name: "Content", href: "/admin/content", icon: FileText },
-  { name: "Events", href: "/secure/admin/events", icon: Calendar },
-  { name: "Messages", href: "/secure/admin/messages", icon: MessageSquare },
-  { name: "Settings", href: "/secure/admin/settings", icon: Settings },
+  // { name: "Events", href: "/secure/admin/events", icon: Calendar },
+  // { name: "Messages", href: "/secure/admin/messages", icon: MessageSquare },
+  // { name: "Settings", href: "/secure/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
@@ -72,7 +72,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     <div className={`flex h-screen ${darkMode ? "dark" : ""} ${bgContent}`}>
       {/* Mobile Sidebar Backdrop */}
       {mobileSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={closeMobileSidebar}
         />
@@ -95,7 +95,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           <button onClick={closeMobileSidebar}
-           className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
+            className="lg:hidden p-1 rounded-lg hover:bg-gray-800 text-gray-400">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -191,7 +191,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 overflow-auto dark:bg-[#1A2328] py-6">
           <div className="lg:container mx-auto">
             <div className={`${bgCard} rounded-xl shadow-lg overflow-hidden border`}>
-            <Toaster position="top-right" reverseOrder={false} />
+              <Toaster position="top-right" reverseOrder={false} />
               {children}
             </div>
           </div>
