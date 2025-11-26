@@ -1,8 +1,10 @@
 import axios from "axios";
 import cron from "node-cron";
 import crypto from "crypto";
+import { v4 as uuidv4 } from "uuid";
 import moment from "moment";
 import { baseUrl, bkashKey, bkashSecret, bkashUrl } from "../../config";
+import { CustomError } from "../../errors/CustomError";
 
 // Token storage (like private variables)
 let idToken: string | null = null;
@@ -101,6 +103,36 @@ export const initBkash = async () => {
     console.log("bKash service initialized");
 };
 
+
+// bkash payment creation
+
+export const createBkashPayment = async (payload: any) => {
+     const { name, email, phone, amount, donationType, donorMessage,method='bkash' } = payload;
+  const bkashResponse = await axios.post(
+    `${bkashUrl}/checkout/create`,
+    {
+      mode: "0011",
+      payerReference: phone || "donor",
+      callbackURL: `${baseUrl}/api/v1/payment/verify`,
+      amount,
+      currency: "BDT",
+      intent: "sale",
+      merchantInvoiceNumber: "Inv" + uuidv4().slice(-5),
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        authorization: getBkashIdToken(),
+        "x-app-key": bkashKey,
+      },
+    }
+  );
+  console.log(bkashResponse.data,"bkashResponse");
+  const data = bkashResponse.data;
+  if (!data.bkashURL) throw new CustomError(data.statusCode || 500, data.errorMessage || 'internal server error ')
+    return data
+}
 
 
 
