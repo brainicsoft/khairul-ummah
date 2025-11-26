@@ -2,7 +2,7 @@
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import { baseUrl, bkashKey, bkashUrl } from "../../config";
 import { CustomError } from "../../errors/CustomError";
-import { createBkashPayment, getBkashIdToken } from "../bkash/bkash.service";
+import { createBkashPayment, getBkashIdToken } from "../paymentGetway/bkash.service";
 import { IPayment } from "./payment.interface";
 import Payment from "./payment.model";
 import axios from "axios";

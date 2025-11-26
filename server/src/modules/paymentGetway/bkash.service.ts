@@ -128,7 +128,6 @@ export const createBkashPayment = async (payload: any) => {
       },
     }
   );
-  console.log(bkashResponse.data,"bkashResponse");
   const data = bkashResponse.data;
   if (!data.bkashURL) throw new CustomError(data.statusCode || 500, data.errorMessage || 'internal server error ')
     return data

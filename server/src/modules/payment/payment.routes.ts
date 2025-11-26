@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import { createPaymentController, getAllPaymentController, getPaymentSummaryController, verifyBkashController } from './payment.controller';
 import axios from 'axios';
-import { generateBkashAutopayHeaders, getBkashIdToken } from '../bkash/bkash.service';
+import { generateBkashAutopayHeaders, getBkashIdToken } from '../paymentGetway/bkash.service';
 import { baseUrl, bkashKey, bkashSecret, bkashUrl } from '../../config';
 
 export const paymentRoutes: Router = Router();
