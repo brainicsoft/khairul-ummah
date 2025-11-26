@@ -23,8 +23,9 @@ export const createPaymentService = async (payload: any) => {
      paymentUrl = paymentResponse.bkashURL;
   } else if (method === 'sslcommerz') {
     // Step 2: Create SSLCOMMERZ payment
+    console.log("method", method)
     paymentResponse = await createSslcommerzPayment(payload);
-    paymentUrl = paymentResponse.bkashURL;
+    paymentUrl = paymentResponse.GatewayPageURL;
   } else {
     throw new Error(`Payment method ${method} is not supported`);
   }

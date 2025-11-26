@@ -18,30 +18,28 @@ interface SslcommerzResponse {
 export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<SslcommerzResponse> => {
   const { name, email, phone, amount, donationType = "", donorMessage = "" } = payload;
 
-  // SSLCOMMERZ API credentials
-  const store_id = process.env.SSLC_STORE_ID!;
-  const store_passwd = process.env.SSLC_STORE_PASSWORD!;
-  const isSandbox = true; // set false for production
+  // Direct credentials for sandbox
+  const store_id = "brain6926ce1cd2eb3";
+  const store_passwd = "brain6926ce1cd2eb3@ssl";
 
-  const sslcommerzUrl = isSandbox
-    ? "https://sandbox.sslcommerz.com/gwprocess/v4/api.php"
-    : "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
+  // Sandbox URL
+  const sslcommerzUrl = "https://sandbox.sslcommerz.com/gwprocess/v3/api.php";
 
-  // Payload for SSLCOMMERZ
-  const data = {
+  // v3 API expects URL-encoded body
+  const params = new URLSearchParams({
     store_id,
     store_passwd,
-    total_amount: amount,
+    total_amount: amount.toString(),
     currency: "BDT",
-    tran_id: `tran_${Date.now()}`, // unique transaction ID
-    success_url: `${process.env.FRONTEND_URL}/payment-success`,
-    fail_url: `${process.env.FRONTEND_URL}/payment-fail`,
-    cancel_url: `${process.env.FRONTEND_URL}/payment-cancel`,
+    tran_id: `tran_${Date.now()}`,
+    success_url: "http://localhost:3000/payment-success",
+    fail_url: "http://localhost:3000/payment-fail",
+    cancel_url: "http://localhost:3000/payment-cancel",
     cus_name: name,
     cus_email: email,
-    cus_add1: "", // optional
-    cus_city: "", // optional
-    cus_postcode: "", // optional
+    cus_add1: "",
+    cus_city: "",
+    cus_postcode: "",
     cus_country: "Bangladesh",
     cus_phone: phone,
     shipping_method: "NO",
@@ -49,22 +47,24 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
     product_category: "Donation",
     product_profile: "general",
     value_a: donorMessage,
-  };
+  });
 
   try {
-    const response = await axios.post(sslcommerzUrl, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    const response = await axios.post(sslcommerzUrl, params.toString(), {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
 
+    console.log("SSLCOMMERZ Full Response:", JSON.stringify(response.data, null, 2));
+
     if (response.data && response.data.GatewayPageURL) {
+      console.log("Gateway URL:", response.data.GatewayPageURL);
       return response.data;
     } else {
+      console.error("SSLCOMMERZ response missing GatewayPageURL", response.data);
       throw new Error("SSLCOMMERZ: Gateway URL not found in response");
     }
   } catch (error: any) {
-    console.error("SSLCOMMERZ Payment Error:", error.message);
+    console.error("SSLCOMMERZ Payment Error:", error.response?.data || error.message);
     throw new Error("Failed to create SSLCOMMERZ payment");
   }
 };

@@ -26,10 +26,19 @@ interface GetAllPaymentRecordsResponse {
     data: IPaymentRecord[];
     meta: Meta;
 }
-
+export interface CreatePaymentPayload {
+    name: string;
+    email?: string;
+    phone: string;
+    amount: number;
+    donationType?: string;
+    donorMessage?: string;
+    method: "bkash" | "sslcommerz"; // required now
+}
 
 export const {
     useCreateBkashMutation,
+    useCreatePaymentMutation,
     useGetAllPaymentRecordsQuery,
     useUpdatePaymentRecordMutation,
     useDeletePaymentRecordMutation,
@@ -49,7 +58,16 @@ export const {
             transformErrorResponse: (response: any) => response?.data,
         }),
 
-
+        // CREATE PAYMENT (SSLCommerz)
+        createPayment: mutation<any, CreatePaymentPayload>({
+            query: (formData) => ({
+                url: '/payment/create',
+                method: 'POST',
+                body: formData,
+            }),
+            transformResponse: (response: any) => response,
+            transformErrorResponse: (response: any) => response?.data,
+        }),
         // GET ALL PAYMENT RECORDS (with optional pagination and filtering)
         getAllPaymentRecords: query<GetAllPaymentRecordsResponse, { page?: number; limit?: string; status?: string; donationType?: string }>({
             query: ({ page, limit, status, donationType }) => {
