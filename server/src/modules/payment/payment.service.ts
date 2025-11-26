@@ -3,6 +3,7 @@ import { QueryBuilder } from "../../builder/QueryBuilder";
 import { baseUrl, bkashKey, bkashUrl } from "../../config";
 import { CustomError } from "../../errors/CustomError";
 import { createBkashPayment, getBkashIdToken } from "../paymentGetway/bkash.service";
+import { createSslcommerzPayment } from "../paymentGetway/sslcommerz.service";
 import { IPayment } from "./payment.interface";
 import Payment from "./payment.model";
 import axios from "axios";
@@ -11,16 +12,21 @@ import axios from "axios";
 // Create New payment service
 
 export const createPaymentService = async (payload: any) => {
-  const { name, email, phone, amount, donationType, donorMessage,method='bkash' } = payload;
+  const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
 
-  // Step 1: Create bKash payment
-  if(method==='bkash'){
-    
-    const bkashResponse = await createBkashPayment(payload);
-    return bkashResponse;
+  let paymentResponse;
+
+  // Step 1: Choose payment method
+  if (method === 'bkash') {
+    paymentResponse = await createBkashPayment(payload);
+  } else if (method === 'sslcommerz') {
+    // Step 2: Create SSLCOMMERZ payment
+    paymentResponse = await createSslcommerzPayment(payload);
+  } else {
+    throw new Error(`Payment method ${method} is not supported`);
   }
 
-  // Step 2: Save initial payment data
+  // Step 3: Save initial payment data (optional)
   // await Payment.create({
   //   name,
   //   email,
@@ -28,14 +34,13 @@ export const createPaymentService = async (payload: any) => {
   //   amount,
   //   donationType,
   //   donorMessage,
-  //   trxID: "",
-  //   paymentId: data.paymentID,
+  //   trxID: paymentResponse.trxID || "",
+  //   paymentId: paymentResponse.paymentID || "",
   //   status: "pending",
   // });
 
-  return payload
-  // Step 3: Return redirect URL
-  // return { url: bkashResponse.bkashURL };
+  // Step 4: Return the payment response (could include redirect URL)
+  return paymentResponse;
 };
 
 // verifypayment
