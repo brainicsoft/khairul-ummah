@@ -15,32 +15,34 @@ export const createPaymentService = async (payload: any) => {
   const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
 
   let paymentResponse;
+  let paymentUrl;
 
   // Step 1: Choose payment method
   if (method === 'bkash') {
     paymentResponse = await createBkashPayment(payload);
+     paymentUrl = paymentResponse.bkashURL;
   } else if (method === 'sslcommerz') {
     // Step 2: Create SSLCOMMERZ payment
     paymentResponse = await createSslcommerzPayment(payload);
+    paymentUrl = paymentResponse.bkashURL;
   } else {
     throw new Error(`Payment method ${method} is not supported`);
   }
 
-  // Step 3: Save initial payment data (optional)
-  // await Payment.create({
-  //   name,
-  //   email,
-  //   phone,
-  //   amount,
-  //   donationType,
-  //   donorMessage,
-  //   trxID: paymentResponse.trxID || "",
-  //   paymentId: paymentResponse.paymentID || "",
-  //   status: "pending",
-  // });
+  await Payment.create({
+    name,
+    email,
+    phone,
+    amount,
+    donationType,
+    donorMessage,
+    trxID: paymentResponse.trxID || "",
+    paymentId: paymentResponse.paymentID || "",
+    status: "pending",
+  });
+  
 
-  // Step 4: Return the payment response (could include redirect URL)
-  return paymentResponse;
+ return { url: paymentUrl }
 };
 
 // verifypayment
