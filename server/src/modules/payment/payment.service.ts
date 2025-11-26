@@ -2,42 +2,33 @@
 import { QueryBuilder } from "../../builder/QueryBuilder";
 import { baseUrl, bkashKey, bkashUrl } from "../../config";
 import { CustomError } from "../../errors/CustomError";
-import { getBkashIdToken } from "../bkash/bkash.service";
+import { createBkashPayment, getBkashIdToken } from "../paymentGetway/bkash.service";
+import { createSslcommerzPayment } from "../paymentGetway/sslcommerz.service";
 import { IPayment } from "./payment.interface";
 import Payment from "./payment.model";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
+
 
 // Create New payment service
 
 export const createPaymentService = async (payload: any) => {
-  const { name, email, phone, amount, donationType, donorMessage } = payload;
+  const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
 
-  // Step 1: Create bKash payment
-  const bkashResponse = await axios.post(
-    `${bkashUrl}/checkout/create`,
-    {
-      mode: "0011",
-      payerReference: phone || "donor",
-      callbackURL: `${baseUrl}/api/v1/payment/verify`,
-      amount,
-      currency: "BDT",
-      intent: "sale",
-      merchantInvoiceNumber: "Inv" + uuidv4().slice(-5),
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        authorization: getBkashIdToken(),
-        "x-app-key": bkashKey,
-      },
-    }
-  );
-  const data = bkashResponse.data;
-  if (!data.bkashURL) throw new CustomError(data.statusCode || 500, data.errorMessage || 'internal server error ')
+  let paymentResponse;
+  let paymentUrl;
 
-  // Step 2: Save initial payment data
+  // Step 1: Choose payment method
+  if (method === 'bkash') {
+    paymentResponse = await createBkashPayment(payload);
+     paymentUrl = paymentResponse.bkashURL;
+  } else if (method === 'sslcommerz') {
+    // Step 2: Create SSLCOMMERZ payment
+    paymentResponse = await createSslcommerzPayment(payload);
+    paymentUrl = paymentResponse.bkashURL;
+  } else {
+    throw new Error(`Payment method ${method} is not supported`);
+  }
+
   await Payment.create({
     name,
     email,
@@ -45,13 +36,13 @@ export const createPaymentService = async (payload: any) => {
     amount,
     donationType,
     donorMessage,
-    trxID: "",
-    paymentId: data.paymentID,
+    trxID: paymentResponse.trxID || "",
+    paymentId: paymentResponse.paymentID || "",
     status: "pending",
   });
+  
 
-  // Step 3: Return redirect URL
-  return { url: data.bkashURL };
+ return { url: paymentUrl }
 };
 
 // verifypayment
