@@ -40,7 +40,25 @@ export default function AutopayPage() {
     const phoneValue = watch("phone")
 
     const [bkashDonation, { isLoading }] = useCreateBkashMutation()
-    const { data, isLoading: donatTypesLoading } = useGetDonationProjectBySlugQuery({ slug: "নিয়মিত-অনুদান" })
+    const data  ={
+        "_id": {
+          "$oid": "691d6d093a00188160765215"
+        },
+        "slug": "নিয়মিত-অনুদান",
+        "title": " নিয়মিত অনুদান",
+        "desc": "নিয়মিত অনুদান ফাউন্ডেশনকে টিকিয়ে রাখতে সবচেয়ে বেশি সাহায্য করে।",
+        "image": "https://res.cloudinary.com/daftymluv/image/upload/v1763536137/general-1763536133551.webp",
+        "category": "general",
+        "benefits": [
+          "সর্বোচ্চ প্রয়োজনের ক্ষেত্রে ব্যয়",
+          "নমনীয় সহায়তা প্রোগ্রাম",
+          "জরুরি পরিস্থিতিতে দ্রুত সাহায্য",
+          "সম্প্রদায়ের বৃহত্তর উন্নয়ন"
+        ],
+        "status": "active",
+        "videoUrl": "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
+     
+      }
     console.log(data)
     const summaryDetails = useMemo(() => {
         if (autopayMode === "daily") {
@@ -68,7 +86,7 @@ export default function AutopayPage() {
         }
     }, [autopayMode, amountValue])
 
-    if (donatTypesLoading)
+    if (!data)
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div>লোড হচ্ছে...</div>
