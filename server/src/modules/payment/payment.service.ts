@@ -11,40 +11,93 @@ import axios from "axios";
 
 // Create New payment service
 
+// export const createPaymentService = async (payload: any) => {
+//   const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
+
+//   let paymentResponse;
+//   let paymentUrl;
+
+//   // Step 1: Choose payment method
+//   if (method === 'bkash') {
+//     paymentResponse = await createBkashPayment(payload);
+//      paymentUrl = paymentResponse.bkashURL;
+//   } else if (method === 'sslcommerz') {
+//     // Step 2: Create SSLCOMMERZ payment
+//     console.log("method", method)
+//     paymentResponse = await createSslcommerzPayment(payload);
+//     paymentUrl = paymentResponse.GatewayPageURL;
+//   } else {
+//     throw new Error(`Payment method ${method} is not supported`);
+//   }
+
+//   await Payment.create({
+//     name,
+//     email,
+//     phone,
+//     amount,
+//     donationType,
+//     donorMessage,
+//     trxID: paymentResponse.trxID || "",
+//     paymentId: paymentResponse.paymentID || "",
+//     status: "pending",
+//   });
+
+
+//  return { url: paymentUrl }
+// };
+
+
+
+
+
+
 export const createPaymentService = async (payload: any) => {
   const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
 
-  let paymentResponse;
-  let paymentUrl;
+  let paymentResponse: any;
+  let paymentUrl: string;
+  let redirectUrl: string | undefined;
 
   // Step 1: Choose payment method
   if (method === 'bkash') {
     paymentResponse = await createBkashPayment(payload);
-     paymentUrl = paymentResponse.bkashURL;
+    paymentUrl = paymentResponse.bkashURL;  // User redirect URL
   } else if (method === 'sslcommerz') {
-    // Step 2: Create SSLCOMMERZ payment
-    console.log("method", method)
     paymentResponse = await createSslcommerzPayment(payload);
-    paymentUrl = paymentResponse.GatewayPageURL;
+
+    // SSLCOMMERZ URLs
+    paymentUrl = paymentResponse.GatewayPageURL;      // Frontend redirect
+    redirectUrl = paymentResponse.redirectGatewayURL; // Optional, internal use
+
+    console.log("SSLCOMMERZ GatewayPageURL:", paymentUrl);
+    console.log("SSLCOMMERZ redirectGatewayURL:", redirectUrl);
   } else {
     throw new Error(`Payment method ${method} is not supported`);
   }
 
-  await Payment.create({
+  // Step 2: Save payment in database
+  const payment = await Payment.create({
     name,
     email,
     phone,
     amount,
     donationType,
     donorMessage,
-    trxID: paymentResponse.trxID || "",
-    paymentId: paymentResponse.paymentID || "",
+    trxID: paymentResponse.trxID || "",           // Bkash trxID or empty
+    paymentId: paymentResponse.paymentID || "",   // Bkash/SSLCOMMERZ paymentId
     status: "pending",
+    gatewayUrl: paymentUrl,                       // optional: save for reference
+    redirectUrl: redirectUrl,                     // optional: save for reference
+    method,                                       // save payment method
   });
-  
 
- return { url: paymentUrl }
+  // Step 3: Return the URL to frontend
+  return {
+    url: paymentUrl
+  };
 };
+
+
 
 // verifypayment
 
