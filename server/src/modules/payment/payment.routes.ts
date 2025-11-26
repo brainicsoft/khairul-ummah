@@ -1,7 +1,7 @@
 // payment.routes.ts
 
 import { Router } from 'express';
-import { createPaymentController, getAllPaymentController, getPaymentSummaryController, verifyBkashController } from './payment.controller';
+import { createPaymentController, getAllPaymentController, getPaymentSummaryController, verifyBkashController, verifySslcommerzController } from './payment.controller';
 import axios from 'axios';
 import { generateBkashAutopayHeaders, getBkashIdToken } from '../paymentGetway/bkash.service';
 import { baseUrl, bkashKey, bkashSecret, bkashUrl } from '../../config';
@@ -12,6 +12,7 @@ paymentRoutes.post('/create',createPaymentController);
 paymentRoutes.get('/verify',verifyBkashController)
 paymentRoutes.get('/',getAllPaymentController)
 paymentRoutes.get('/summary',getPaymentSummaryController)
+paymentRoutes.post('/verify/sslcommerz', verifySslcommerzController);
 
 // paymentRoutes.get("/autopay", async (req, res) => {
 //   try {

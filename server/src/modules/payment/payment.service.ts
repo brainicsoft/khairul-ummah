@@ -48,58 +48,99 @@ import axios from "axios";
 
 
 
+// --- Bkash Payment Function ---
+const handleBkashPayment = async (payload: any) => {
+  const paymentResponse = await createBkashPayment(payload);
 
+  if (!paymentResponse?.bkashURL) {
+    throw new Error("Bkash URL missing in response");
+  }
 
+  // Save to DB
+  const payment = await Payment.create({
+    name: payload.name,
+    email: payload.email,
+    phone: payload.phone,
+    amount: payload.amount,
+    donationType: payload.donationType,
+    donorMessage: payload.donorMessage,
+    trxID: paymentResponse.trxID || "",
+    paymentId: paymentResponse.paymentID || "",
+    status: "pending",
+    gatewayUrl: paymentResponse.bkashURL,
+    method: "bkash",
+  });
 
+  return { url: paymentResponse.bkashURL, payment };
+};
+
+// --- SSLCOMMERZ Payment Function ---
+const handleSslcommerzPayment = async (payload: any) => {
+  const paymentResponse = await createSslcommerzPayment(payload);
+
+  if (!paymentResponse?.GatewayPageURL) {
+    throw new Error("SSLCOMMERZ GatewayPageURL missing");
+  }
+
+  const paymentId = `ssl_${Date.now()}`; // unique id
+
+  const payment = await Payment.create({
+    name: payload.name,
+    email: payload.email,
+    phone: payload.phone,
+    amount: payload.amount,
+    donationType: payload.donationType,
+    donorMessage: payload.donorMessage,
+    trxID: "", // updated after payment success
+    paymentId,
+    status: "pending",
+    gatewayUrl: paymentResponse.GatewayPageURL,
+    redirectUrl: paymentResponse.redirectGatewayURL,
+    method: "sslcommerz",
+  });
+
+  return { url: paymentResponse.GatewayPageURL, payment };
+};
+
+// --- Main Payment Service ---
 export const createPaymentService = async (payload: any) => {
-  const { name, email, phone, amount, donationType, donorMessage, method = 'bkash' } = payload;
+  const { method = "bkash" } = payload;
 
-  let paymentResponse: any;
-  let paymentUrl: string;
-  let redirectUrl: string | undefined;
-
-  // Step 1: Choose payment method
-  if (method === 'bkash') {
-    paymentResponse = await createBkashPayment(payload);
-    paymentUrl = paymentResponse.bkashURL;  // User redirect URL
-  } else if (method === 'sslcommerz') {
-    paymentResponse = await createSslcommerzPayment(payload);
-
-    // SSLCOMMERZ URLs
-    paymentUrl = paymentResponse.GatewayPageURL;      // Frontend redirect
-    redirectUrl = paymentResponse.redirectGatewayURL; // Optional, internal use
-
-    console.log("SSLCOMMERZ GatewayPageURL:", paymentUrl);
-    console.log("SSLCOMMERZ redirectGatewayURL:", redirectUrl);
+  if (method === "bkash") {
+    return handleBkashPayment(payload);
+  } else if (method === "sslcommerz") {
+    return handleSslcommerzPayment(payload);
   } else {
     throw new Error(`Payment method ${method} is not supported`);
   }
+};
 
-  // Step 2: Save payment in database
-  const payment = await Payment.create({
-    name,
-    email,
-    phone,
-    amount,
-    donationType,
-    donorMessage,
-    trxID: paymentResponse.trxID || "",           // Bkash trxID or empty
-    paymentId: paymentResponse.paymentID || "",   // Bkash/SSLCOMMERZ paymentId
-    status: "pending",
-    gatewayUrl: paymentUrl,                       // optional: save for reference
-    redirectUrl: redirectUrl,                     // optional: save for reference
-    method,                                       // save payment method
-  });
+// -------------------------
+// Verify SSLCOMMERZ Payment
+// -------------------------
+export const verifySslcommerzPaymentService = async (payload: any) => {
+  const { tran_id, val_id, status, amount } = payload; // SSLCOMMERZ POST fields
 
-  // Step 3: Return the URL to frontend
-  return {
-    url: paymentUrl
-  };
+  // Find payment by tran_id or custom paymentId
+  const payment = await Payment.findOne({ paymentId: tran_id });
+  if (!payment) return { success: false, message: 'Payment not found' };
+
+  if (status === 'VALID') {
+    payment.status = 'success';
+    payment.trxID = val_id;
+    payment.amount = amount;
+    await payment.save();
+    return { success: true };
+  } else {
+    payment.status = 'failed';
+    await payment.save();
+    return { success: false };
+  }
 };
 
 
-
-// verifypayment
+// -------------------------
+// verifypayment 
 
 export const verifyBkashPaymentService = async (query: any) => {
   const { paymentID, status } = query;

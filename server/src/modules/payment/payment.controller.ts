@@ -10,7 +10,8 @@ import {
   updatePaymentByIdService,
   deletePaymentByIdService,
   verifyBkashPaymentService,
-  getPaymentSummaryService
+  getPaymentSummaryService,
+  verifySslcommerzPaymentService
 } from './payment.service'; // Update with your service path
 import Payment from './payment.model';
 
@@ -44,9 +45,21 @@ export const verifyBkashController: RequestHandler = catchAsync(async (req, res)
 
     return res.redirect(redirectUrl.toString());
   }
+
+
 });
 
 
+export const verifySslcommerzController: RequestHandler = catchAsync(async (req, res) => {
+  const result = await verifySslcommerzPaymentService(req.body);
+
+  // SSLCOMMERZ expects a response text "OK" to acknowledge IPN
+  if (result.success) {
+    res.status(200).send('OK');
+  } else {
+    res.status(400).send('FAILED');
+  }
+});
 // Get All Payment 
 
 export const getAllPaymentController: RequestHandler = catchAsync(async (req, res) => {
