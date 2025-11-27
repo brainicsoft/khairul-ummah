@@ -1,107 +1,186 @@
-import axios from "axios";
-import Payment from "../payment/payment.model";
+import axios from "axios"
+import Payment from "../payment/payment.model"
+
+const STORE_ID = "brain6926ce1cd2eb3"
+const STORE_PASSWORD = "brain6926ce1cd2eb3@ssl"
+const SSL_API_URL = "https://sandbox.sslcommerz.com/gwprocess/v3/api.php"
+const SSL_VALIDATION_URL = "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
 
 interface PaymentPayload {
-  name: string;
-  email: string;
-  phone: string;
-  amount: number;
-  donationType?: string;
-  donorMessage?: string;
-  method?: string;
+  name: string
+  email: string
+  phone: string
+  amount: number
+  donationType?: string
+  donorMessage?: string
 }
 
 interface SslcommerzResponse {
-  GatewayPageURL: string;
-  [key: string]: any;
+  status: string
+  GatewayPageURL?: string
+  redirectGatewayURL?: string
+  [key: string]: any
 }
 
-// 1️⃣ Payment Initiate + Save transaction
-export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<SslcommerzResponse> => {
-  const { name, email, phone, amount, donationType = "Donation", donorMessage = "" } = payload;
+export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<{ GatewayPageURL: string }> => {
+  const { name, email, phone, amount, donationType = "Donation", donorMessage = "" } = payload
 
-  const transactionId = `tran_${Date.now()}`;
+  // Generate unique transaction ID
+  const tran_id = `tran_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  // Create a transaction record first
-  const transaction = await Payment.create({
-    transactionId,
-    name,
-    email,
-    phone,
-    amount,
-    donationType,
-    status: "pending",
-  });
+  console.log("[v0] Creating SSLCommerz payment with tran_id:", tran_id)
 
-  const store_id = "brain6926ce1cd2eb3";
-  const store_passwd = "brain6926ce1cd2eb3@ssl";
-  const sslcommerzUrl = "https://sandbox.sslcommerz.com/gwprocess/v3/api.php";
-
+  // Prepare SSL request parameters
   const params = new URLSearchParams({
-    store_id,
-    store_passwd,
+    store_id: STORE_ID,
+    store_passwd: STORE_PASSWORD,
     total_amount: amount.toString(),
     currency: "BDT",
-    tran_id: transactionId,
-    success_url: `http://localhost:3000/api/payment-success?tran_id=${transactionId}`,
-    fail_url: `http://localhost:3000/api/payment-fail?tran_id=${transactionId}`,
-    cancel_url: `http://localhost:3000/api/payment-cancel?tran_id=${transactionId}`,
+    tran_id: tran_id,
+    success_url: "http://localhost:8080/api/v1/payment/sslcommerz/success",
+    fail_url: "http://localhost:8080/api/v1/payment/sslcommerz/fail",
+    cancel_url: "http://localhost:8080/api/v1/payment/sslcommerz/cancel",
+    ipn_url: "http://localhost:8080/api/v1/payment/sslcommerz/ipn",
+    
     cus_name: name,
     cus_email: email,
-    cus_add1: "",
-    cus_city: "",
-    cus_postcode: "",
-    cus_country: "Bangladesh",
     cus_phone: phone,
+    cus_add1: "Dhaka",
+    cus_city: "Dhaka",
+    cus_postcode: "1000",
+    cus_country: "Bangladesh",
     shipping_method: "NO",
     product_name: donationType,
     product_category: "Donation",
     product_profile: "general",
-    value_a: donorMessage,
-  });
+    value_a: donorMessage || "No message",
+  })
 
   try {
-    const response = await axios.post<SslcommerzResponse>(sslcommerzUrl, params.toString(), {
+    console.log("[v0] Sending request to SSL API")
+    const response = await axios.post<SslcommerzResponse>(SSL_API_URL, params.toString(), {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    });
+    })
 
-    if (!response.data || !response.data.GatewayPageURL) {
-      throw new Error("SSLCOMMERZ: Gateway URL not found in response");
+    console.log("[v0] SSL Response:", response.data)
+
+    if (!response.data.GatewayPageURL) {
+      throw new Error("SSLCOMMERZ: GatewayPageURL not found in response")
     }
 
-    return response.data;
+    // Save payment to database with tran_id
+    const payment = await Payment.create({
+      name,
+      email,
+      phone,
+      amount,
+      donationType,
+      donorMessage,
+      paymentId: tran_id, // Store transaction ID as paymentId
+      status: "pending",
+      method: "sslcommerz",
+    })
+
+    console.log("[v0] Payment saved to DB:", payment)
+
+    return {
+      GatewayPageURL: response.data.GatewayPageURL,
+    }
   } catch (error: any) {
-    console.error("SSLCOMMERZ Payment Error:", error.response?.data || error.message);
-    throw new Error("Failed to create SSLCOMMERZ payment");
+    console.error("[v0] SSLCommerz Payment Error:", error.response?.data || error.message)
+    throw new Error(`Failed to create SSLCommerz payment: ${error.message}`)
   }
-};
+}
 
-// 2️⃣ Payment Validate + Update DB
-export const validateSslcommerzPayment = async (tran_id: string, val_id: string) => {
+export const validateSslcommerzPayment = async (data: any): Promise<{ success: boolean; message: string }> => {
+  const { tran_id, val_id, status, amount } = data
+
+  console.log("[v0] Validating payment - tran_id:", tran_id, "val_id:", val_id, "status:", status)
+
   if (!tran_id || !val_id) {
-    throw new Error("Missing tran_id or val_id for validation");
+    console.error("[v0] Missing tran_id or val_id")
+    return { success: false, message: "Missing tran_id or val_id" }
   }
-
-  const store_id = "brain6926ce1cd2eb3";
-  const store_passwd = "brain6926ce1cd2eb3@ssl";
-  const validationUrl = `https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php?val_id=${val_id}&store_id=${store_id}&store_passwd=${store_passwd}&v=1&format=json`;
 
   try {
-    const response = await axios.get(validationUrl);
-    console.log("SSLCommerz Validation Response:", response.data);
+    // Call SSLCommerz validation API
+    const validationUrl = `${SSL_VALIDATION_URL}?val_id=${val_id}&store_id=${STORE_ID}&store_passwd=${STORE_PASSWORD}&v=1&format=json`
 
-    // Update transaction in DB
-    const status = response.data.status === "VALID" ? "success" : "failed";
-    console.log("status", status);
-    await Payment.updateOne(
-      { transactionId: tran_id },
-      { status, paymentGatewayData: response.data },
-      { runValidators: true }
-    );
+    console.log("[v0] Calling validation URL")
+    const response = await axios.get(validationUrl)
 
-    return status;
+    console.log("[v0] Validation response:", response.data)
+
+    // Update payment status based on validation
+    if (response.data.status === "VALID") {
+      await Payment.findOneAndUpdate(
+        { paymentId: tran_id },
+        {
+          status: "success",
+          trxID: val_id,
+          amount: response.data.amount,
+          sslResponse: response.data,
+        },
+        { new: true },
+      )
+
+      console.log("[v0] Payment marked as SUCCESS")
+      return { success: true, message: "Payment validated successfully" }
+    } else {
+      await Payment.findOneAndUpdate(
+        { paymentId: tran_id },
+        {
+          status: "failed",
+          sslResponse: response.data,
+        },
+        { new: true },
+      )
+
+      console.log("[v0] Payment marked as FAILED - Status:", response.data.status)
+      return { success: false, message: `Payment validation failed: ${response.data.status}` }
+    }
   } catch (error: any) {
-    console.error("Payment Validation Error:", error.response?.data || error.message);
-    throw new Error(`Payment validation failed: ${error.message}`);
+    console.error("[v0] Validation error:", error.response?.data || error.message)
+
+    // Mark as failed if validation fails
+    await Payment.findOneAndUpdate({ paymentId: tran_id }, { status: "failed" }, { new: true })
+
+    return { success: false, message: `Validation error: ${error.message}` }
   }
-};
+}
+
+export const handleSslSuccess = async (tran_id: string): Promise<any> => {
+  console.log("[v0] SSL Success - tran_id:", tran_id)
+
+  const payment = await Payment.findOne({ paymentId: tran_id })
+
+  if (!payment) {
+    return { success: false, message: "Payment record not found" }
+  }
+
+  return {
+    success: true,
+    payment: {
+      id: payment._id,
+      amount: payment.amount,
+      status: payment.status,
+      trxID: payment.trxID,
+    },
+  }
+}
+
+export const handleSslFail = async (tran_id: string): Promise<any> => {
+  console.log("[v0] SSL Fail - tran_id:", tran_id)
+
+  await Payment.findOneAndUpdate({ paymentId: tran_id }, { status: "failed" }, { new: true })
+
+  return { success: false, message: "Payment failed" }
+}
+
+export const handleSslCancel = async (tran_id: string): Promise<any> => {
+  console.log("[v0] SSL Cancel - tran_id:", tran_id)
+
+  await Payment.findOneAndUpdate({ paymentId: tran_id }, { status: "failed" }, { new: true })
+
+  return { success: false, message: "Payment cancelled by user" }
+}

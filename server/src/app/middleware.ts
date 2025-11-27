@@ -8,6 +8,7 @@ import passport from 'passport';
 const allowedOrigins = [
    "http://localhost:3000",
    "https://a.khairulummahfoundation.org"
+   
 
 ];
 const middleware = [
