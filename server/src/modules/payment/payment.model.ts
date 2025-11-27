@@ -25,7 +25,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     paymentId: {
       type: String,
-      required: true,
+      // required: true,
       unique:true
     },
 
@@ -42,7 +42,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
    method: {
       type:String,
-      enum:["bkash","ssl-commerz"],
+      enum:["bkash","sslcommerz"],
       default:'bkash',
     },
 

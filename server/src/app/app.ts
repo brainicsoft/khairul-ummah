@@ -7,7 +7,7 @@ import YAML from 'yamljs';
 import swaggerUI from 'swagger-ui-express';
 import { errorHandler } from './errors';
 import { notFoundHandler } from '../errors/notFoundError';
-import { initBkash } from '../modules/bkash/bkash.service';
+import { initBkash } from '../modules/paymentGetway/bkash.service';
 const app: Application = express();
 // const doc = YAML.load(`${process.cwd()}/src/docs/swagger.yaml`);
 // app.use('/docs', swaggerUI.serve, swaggerUI.setup(doc));
