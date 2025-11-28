@@ -29,7 +29,6 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
   // Generate unique transaction ID
   const tran_id = `tran_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-  console.log("[v0] Creating SSLCommerz payment with tran_id:", tran_id)
 
   // Prepare SSL request parameters
   const params = new URLSearchParams({

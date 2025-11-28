@@ -137,7 +137,6 @@ export const verifyBkashPaymentService = async (query: any) => {
  */
 export const processSslcommerzIPNService = async (payload: any) => {
   try {
-    console.log("[Payment Service] Processing SSLCommerz IPN:", payload);
     const result = await validateSslcommerzPayment(payload);
     return result;
   } catch (error: any) {
