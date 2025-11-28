@@ -22,7 +22,7 @@ export type  AppDispatch = typeof store.dispatch;
 
 
  const initializeApp = async() =>{ 
-    // await (store.dispatch as AppDispatch)((endpoints as any).refresh.initiate({},{forceRefetch: true}))
+    await (store.dispatch as AppDispatch)((endpoints as any).refresh.initiate({},{forceRefetch: true}))
    await (store.dispatch as AppDispatch)((endpoints as any).getUser.initiate({},{forceRefetch: true}))
 
 }

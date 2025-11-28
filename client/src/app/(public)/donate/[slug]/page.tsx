@@ -9,7 +9,7 @@ import { ChevronDown } from "lucide-react"
 import { DONATION_TYPES } from "@/data/donationData"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
-import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
+import { useCreateBkashMutation, useCreatePaymentMutation } from "@/redux/features/payment/paymentApi"
 import { apiUrl } from "@/config/constants"
 import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProjects/donationProjectApi"
 import FAQ from "@/components/FAQ"
@@ -33,7 +33,7 @@ type FormValues = {
   name: string
   email?: string
   phone: string
-  paymentMethod: "bkash" | "sslCommerz"
+  paymentMethod: "bkash" | "sslcommerz" // lowercase
 }
 
 export default function DonateTypePage() {
@@ -57,7 +57,7 @@ export default function DonateTypePage() {
   const [selectedAmount, setSelectedAmount] = useState<string>("")
 
   const [bkashDonation, { isLoading }] = useCreateBkashMutation()
-
+  const [createPayment] = useCreatePaymentMutation()
   const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       category: "",
@@ -98,7 +98,9 @@ export default function DonateTypePage() {
         email: formData.email || "",
         phone: formData.phone,
         amount: Number(formData.amount),
-        donationType: data.slug
+        donationType: data.slug,
+        method: formData.paymentMethod, // include method
+        
       }
 
       console.log("Submitting donation:", mappedData)
@@ -107,6 +109,8 @@ export default function DonateTypePage() {
         const response = await bkashDonation(mappedData).unwrap()
         window.location.href = response.data.url
       } else {
+        const response = await createPayment(mappedData).unwrap()
+        window.location.href = response.data.url
         alert("SSLCommerz selected! Redirect to payment gateway.")
       }
     } catch (error) {
@@ -271,7 +275,7 @@ export default function DonateTypePage() {
                       name="paymentMethod"
                       render={({ field }) => (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {[{ id: "bkash", logo: bkash }, { id: "sslCommerz", logo: sslcommerz }].map((method) => (
+                          {[{ id: "bkash", logo: bkash }, { id: "sslcommerz", logo: sslcommerz }].map((method) => (
                             <label
                               key={method.id}
                               className={`flex items-center gap-3 p-3 rounded-lg border-2 transition cursor-pointer hover:shadow-lg

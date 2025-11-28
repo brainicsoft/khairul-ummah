@@ -26,13 +26,23 @@ interface GetAllPaymentRecordsResponse {
     data: IPaymentRecord[];
     meta: Meta;
 }
-
+export interface CreatePaymentPayload {
+    name: string;
+    email?: string;
+    phone: string;
+    amount: number;
+    donationType?: string;
+    donorMessage?: string;
+    method: "bkash" | "sslcommerz"; // required now
+}
 
 export const {
     useCreateBkashMutation,
+    useCreatePaymentMutation,
     useGetAllPaymentRecordsQuery,
     useUpdatePaymentRecordMutation,
     useDeletePaymentRecordMutation,
+    useGetPaymentSummaryQuery,
     endpoints: paymentInpoints
 } = injectEndpoints({
     endpoints: ({ query, mutation }) => ({
@@ -48,7 +58,16 @@ export const {
             transformErrorResponse: (response: any) => response?.data,
         }),
 
-
+        // CREATE PAYMENT (SSLCommerz)
+        createPayment: mutation<any, CreatePaymentPayload>({
+            query: (formData) => ({
+                url: '/payment/create',
+                method: 'POST',
+                body: formData,
+            }),
+            transformResponse: (response: any) => response,
+            transformErrorResponse: (response: any) => response?.data,
+        }),
         // GET ALL PAYMENT RECORDS (with optional pagination and filtering)
         getAllPaymentRecords: query<GetAllPaymentRecordsResponse, { page?: number; limit?: string; status?: string; donationType?: string }>({
             query: ({ page, limit, status, donationType }) => {
@@ -85,6 +104,16 @@ export const {
             transformResponse: (response: any) => response?.data,
             transformErrorResponse: (response: any) => response?.data,
         }),
+        // GET PAYMENT SUMMARY
+        getPaymentSummary: query<any, void>({
+            query: () => ({
+                url: "/payment/summary",
+                method: "GET",
+            }),
+            transformResponse: (response: any) => response,
+            transformErrorResponse: (response: any) => response?.data,
+        }),
+
 
     }),
 });

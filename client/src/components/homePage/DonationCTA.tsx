@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 export function DonationCTA() {
   const [bkashDonation, { isLoading }] = useCreateBkashMutation()
   const [showModal, setShowModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<"bkash" | "ssl" | "">("");
+  const [paymentMethod, setPaymentMethod] = useState<"bkash" | "sslcommerz" | "">("");
   const [donationTypes, setDonationTypes] = useState<any[]>([]);
   const [formValues, setFormValues] = useState({
     name: "",
@@ -71,16 +71,13 @@ export function DonationCTA() {
       phone: formValues.phone,
       amount: Number(formValues.amount) || 0,
       donationType: formValues.donateType,
+      method:paymentMethod
     };
 
     try {
-      if (paymentMethod === "bkash") {
-        const response = await bkashDonation(mappedData).unwrap();
+      const response = await bkashDonation(mappedData).unwrap();
         window.location.href = response.data.url;
-      } else {
-        toast("SSLCommerz selected! Redirecting...");
-        window.location.href = "/ssl-payment";
-      }
+     
     } catch (err) {
       console.error(err);
       toast.error("Payment failed. Try again.");

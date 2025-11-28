@@ -1,41 +1,33 @@
-// payment.routes.ts
+import { Router } from "express"
+import {
+  createPaymentController,
+  getAllPaymentController,
+  getPaymentSummaryController,
+  verifyBkashController,
+  sslcommerzSuccessController,
+  sslcommerzCancelController,
+  sslcommerzIPNController,
+  getPaymentStatusController,
+} from "./payment.controller"
+import auth from "../../middlewares/auth"
 
-import { Router } from 'express';
-import { createPaymentController, getAllPaymentController, verifyBkashController } from './payment.controller';
-import axios from 'axios';
-import { generateBkashAutopayHeaders, getBkashIdToken } from '../bkash/bkash.service';
-import { baseUrl, bkashKey, bkashSecret, bkashUrl } from '../../config';
+export const paymentRoutes: Router = Router()
 
-export const paymentRoutes: Router = Router();
+// Create payment (bKash or SSLCommerz)
+paymentRoutes.post("/create", createPaymentController)
+// Get all payments
+paymentRoutes.get("/",auth('admin'), getAllPaymentController)
+// Get payment summary
+paymentRoutes.get("/summary",auth('admin'), getPaymentSummaryController)
+// Get specific payment status
+paymentRoutes.get("/:id/status", getPaymentStatusController)
+// bKash verification (callback)
+paymentRoutes.get("/verify", verifyBkashController)
 
-paymentRoutes.post('/create',createPaymentController);
-paymentRoutes.get('/verify',verifyBkashController)
-paymentRoutes.get('/',getAllPaymentController)
 
-// paymentRoutes.get("/autopay", async (req, res) => {
-//   try {
-//     const body = {
-//       payerReference: "125436",
-//       amount: 10,
-//       interval: "DAILY",
-//       currency: "BDT",
-//       callbackURL: `${baseUrl}/autopay/execute`,
-//     };
 
-//     const headers = await generateBkashAutopayHeaders(
-//       "POST",
-//       "/autopay/mandate/create",
-//       body,
-//       bkashKey,
-//       bkashSecret,
-//       bkashUrl
-//     );
 
-//     const { data: autopayData } = await axios.post(`${bkashUrl}/autopay/mandate/create`, body, { headers });
 
-//     return res.json(autopayData);
-//   } catch (error: any) {
-//     console.error("Autopay mandate error:", error.response?.data || error.message);
-//     return res.status(500).json({ message: "Failed to create autopay mandate" });
-//   }
-// });
+paymentRoutes.post("/sslcommerz/success", sslcommerzSuccessController)
+paymentRoutes.post("/sslcommerz/cancel", sslcommerzCancelController)
+paymentRoutes.post("/sslcommerz/ipn", sslcommerzIPNController)
