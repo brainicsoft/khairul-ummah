@@ -25,7 +25,7 @@ const PayMethohdModal = ({ showModal, handlePayment, paymentMethod, setPaymentMe
                             </button>
 
                             <button
-                                onClick={() => setPaymentMethod("ssl")}
+                                onClick={() => setPaymentMethod("sslcommerz")}
                                 className={`px-4 flex justify-center py-3 rounded-lg border cursor-pointer ${paymentMethod === "ssl"
                                     ? "bg-primary text-white"
                                     : "bg-gray-100"
