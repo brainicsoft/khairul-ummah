@@ -10,6 +10,9 @@ import { useLoginUserMutation } from "@/redux/features/auth/authApi";
 import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2, AlertCircle } from "lucide-react";
+import { useAppDispatch } from "@/redux/hooks";
+import Cookies from "js-cookie";
+import { setAuthData } from "@/redux/features/auth/authSlice";
 
 interface LoginFormValues {
   email: string;
@@ -18,6 +21,8 @@ interface LoginFormValues {
 
 export default function AdminLogin() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const [message, setMessage] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
 
@@ -34,17 +39,35 @@ export default function AdminLogin() {
     setSuccess(false);
 
     try {
-      const res: any = await loginUser(data).unwrap();
-      console.log("Login Response:", res);
+      const response: any = await loginUser(data).unwrap();
 
-      if (res?.data) {
-        setSuccess(true);
-        setMessage("Login successful!");
+      if (response?.success) {
+        // Save token
+        if (response?.token) {
+          localStorage.setItem("access_token", response.token);
 
-        // Delay redirect for smooth UI
-        setTimeout(() => {
-          router.push("/admin/dashboard");
-        }, 800);
+          Cookies.set("auth_token", response.token, {
+            path: "/",
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+          });
+
+          // Store redux auth data
+          dispatch(setAuthData(response));
+
+          // Show success message
+          setMessage("Login successful!");
+          setSuccess(true);
+
+          // Smooth redirect
+          setTimeout(() => {
+            router.push("/secure/admin");
+          }, 700);
+        } else {
+          setMessage("Token not received!");
+        }
+      } else {
+        setMessage("Login failed!");
       }
     } catch (error: any) {
       const errorMsg =
@@ -57,7 +80,7 @@ export default function AdminLogin() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center bg-background text-foreground transition-colors">
       <div className="w-full max-w-md rounded-2xl bg-card p-10 shadow-lg border border-border animate-fadeIn">
-        
+
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <Image src={logo} alt="Khairul Ummah Foundation" height={200} />
@@ -80,7 +103,9 @@ export default function AdminLogin() {
               <AlertCircle className="h-5 w-5 text-red-600" />
             )}
 
-            <AlertTitle className={success ? "text-green-700" : "text-red-700"}>
+            <AlertTitle
+              className={success ? "text-green-700" : "text-red-700"}
+            >
               {success ? "Success" : "Error"}
             </AlertTitle>
             <AlertDescription
@@ -92,7 +117,6 @@ export default function AdminLogin() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          
           {/* Email */}
           <div>
             <label className="block text-sm mb-1 text-muted-foreground">
