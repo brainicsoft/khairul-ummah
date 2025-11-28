@@ -12,7 +12,6 @@ import {
   processSslcommerzIPNService,
   getPaymentStatusService,
   handleSslSuccessService,
-  handleSslFailService,
   handleSslCancelService,
 } from "./payment.service"
 
@@ -47,12 +46,18 @@ export const verifyBkashController: RequestHandler = catchAsync(async (req, res)
 })
 
 export const sslcommerzSuccessController: RequestHandler = catchAsync(async (req, res) => {
-  const { tran_id, val_id } = req.query
+  console.log("[v0] SSLCommerz Success Callback - req.body:", req.body)
+  // POST body or GET query থেকে data নাও
+  const tran_id = req.body.tran_id || req.query.tran_id;
+  const val_id = req.body.val_id || req.query.val_id;
 
-  console.log("[v0] SSLCommerz Success Callback - tran_id:", tran_id, "val_id:", val_id)
+  console.log("[v0] SSLCommerz Success Callback - tran_id:", tran_id, "val_id:", val_id);
 
   if (!tran_id) {
-    return res.redirect("http://localhost:3000/payment-status?status=failed&message=Transaction%20ID%20missing")
+    // tran_id missing হলে browser redirect
+    return res.redirect(
+      "http://localhost:3000/payment-status?status=failed&message=Transaction%20ID%20missing"
+    );
   }
 
   try {
@@ -62,38 +67,31 @@ export const sslcommerzSuccessController: RequestHandler = catchAsync(async (req
         tran_id,
         val_id,
         status: "VALID",
-      })
+      });
     }
 
-    const result = await handleSslSuccessService(tran_id as string)
+    const result = await handleSslSuccessService(tran_id as string);
 
     if (result.success) {
-      const redirectUrl = new URL("http://localhost:3000/payment-status")
-      redirectUrl.searchParams.append("tran_id", tran_id as string)
-      redirectUrl.searchParams.append("val_id", (val_id as string) || "")
-      redirectUrl.searchParams.append("status", "success")
-      redirectUrl.searchParams.append("amount", result.payment.amount.toString())
-      return res.redirect(redirectUrl.toString())
+      const redirectUrl = new URL("http://localhost:3000/payment-status");
+      redirectUrl.searchParams.append("tran_id", tran_id as string);
+      redirectUrl.searchParams.append("val_id", (val_id as string) || "");
+      redirectUrl.searchParams.append("status", "success");
+      redirectUrl.searchParams.append("amount", result.payment.amount.toString());
+
+      return res.redirect(redirectUrl.toString());
     } else {
-      return res.redirect(`http://localhost:3000/payment-status?status=failed&message=${result.message}`)
+      return res.redirect(
+        `http://localhost:3000/payment-status?status=failed&message=${encodeURIComponent(result.message)}`
+      );
     }
   } catch (error) {
-    console.error("[v0] SSLCommerz Success Error:", error)
-    return res.redirect("http://localhost:3000/payment-status?status=error&message=Payment%20processing%20error")
+    console.error("[v0] SSLCommerz Success Error:", error);
+    return res.redirect(
+      "http://localhost:3000/payment-status?status=error&message=Payment%20processing%20error"
+    );
   }
-})
-
-export const sslcommerzFailController: RequestHandler = catchAsync(async (req, res) => {
-  const { tran_id } = req.query
-
-  console.log("[v0] SSLCommerz Fail Callback - tran_id:", tran_id)
-
-  if (tran_id) {
-    await handleSslFailService(tran_id as string)
-  }
-
-  return res.redirect(`http://localhost:3000/payment-status?status=failed&message=Payment%20failed&tran_id=${tran_id}`)
-})
+});
 
 export const sslcommerzCancelController: RequestHandler = catchAsync(async (req, res) => {
   const { tran_id } = req.query
