@@ -12,7 +12,6 @@ import {
   processSslcommerzIPNService,
   getPaymentStatusService,
   handleSslSuccessService,
-  handleSslFailService,
   handleSslCancelService,
 } from "./payment.service"
 
@@ -47,6 +46,7 @@ export const verifyBkashController: RequestHandler = catchAsync(async (req, res)
 })
 
 export const sslcommerzSuccessController: RequestHandler = catchAsync(async (req, res) => {
+  console.log("[v0] SSLCommerz Success Callback - req.body:", req.body)
   // POST body or GET query থেকে data নাও
   const tran_id = req.body.tran_id || req.query.tran_id;
   const val_id = req.body.val_id || req.query.val_id;

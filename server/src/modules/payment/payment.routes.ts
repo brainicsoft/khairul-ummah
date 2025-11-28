@@ -28,6 +28,5 @@ paymentRoutes.get("/verify", verifyBkashController)
 
 
 paymentRoutes.post("/sslcommerz/success", sslcommerzSuccessController)
-// paymentRoutes.post("/sslcommerz/fail", sslcommerzFailController)
 paymentRoutes.post("/sslcommerz/cancel", sslcommerzCancelController)
 paymentRoutes.post("/sslcommerz/ipn", sslcommerzIPNController)

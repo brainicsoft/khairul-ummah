@@ -153,7 +153,7 @@ export const handleSslSuccess = async (tran_id: string): Promise<any> => {
   console.log("[v0] SSL Success - tran_id:", tran_id)
 
   const payment = await Payment.findOne({ paymentId: tran_id })
-
+console.log("payment", payment);
   if (!payment) {
     return { success: false, message: "Payment record not found" }
   }
@@ -164,7 +164,8 @@ export const handleSslSuccess = async (tran_id: string): Promise<any> => {
       id: payment._id,
       amount: payment.amount,
       status: payment.status,
-      trxID: payment.trxID,
+      transactionId: payment.paymentId,
+      paymentId: payment.paymentId,
     },
   }
 }
