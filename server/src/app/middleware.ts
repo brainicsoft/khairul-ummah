@@ -1,51 +1,51 @@
-import express, { urlencoded } from 'express';
-import cookieParser from 'cookie-parser';
-import morgan from 'morgan';
-import cors from 'cors';
-import session from 'express-session';
-import { corsOrigin } from '../config';
-import passport from 'passport';
-const allowedOrigins = [
-   "http://localhost:3000",
-   "https://a.khairulummahfoundation.org"
-   
+import express, { urlencoded } from "express";
+import cookieParser from "cookie-parser";
+import morgan from "morgan";
+import cors from "cors";
+import session from "express-session";
+import passport from "passport";
 
-];
 const middleware = [
-  morgan('dev'),
+  morgan("dev"),
+
+  // ✅ Allow ALL origins manually (credentials এর সাথে compatible)
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+
+    next();
+  },
+
+  // NOTE: cors() নিচে দিতে পারো, blocking করবে না
   cors({
-    origin: (origin, callback) => {
-      // allow requests with no origin (like Postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS not allowed"));
-      }
-    },
-    credentials: true, // ✅ important for cookies/sessions
+    origin: true,
+    credentials: true,
   }),
-  // cors({
-  //   origin:'*'
-  // }),
+
   cookieParser(),
   express.static("docs"),
-  express.json({ limit: '50mb' }),
+  express.json({ limit: "50mb" }),
   urlencoded({ extended: true }),
 
-
   session({
-    secret: 'hello', // Replace with a strong secret in production
+    secret: "hello",
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', // Set secure cookies in production
-      maxAge: 1000 * 60 * 60 * 24 // 1 day
-    }
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 86400000,
+    },
   }),
+
   passport.initialize(),
   passport.session(),
-  passport.authenticate('session'),
-  
-
+  passport.authenticate("session"),
 ];
+
 export default middleware;
