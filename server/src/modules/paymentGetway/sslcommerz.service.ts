@@ -1,5 +1,6 @@
 import axios from "axios"
 import Payment from "../payment/payment.model"
+import { baseUrl } from "../../config"
 
 const STORE_ID = "brain6926ce1cd2eb3"
 const STORE_PASSWORD = "brain6926ce1cd2eb3@ssl"
@@ -37,10 +38,10 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
     total_amount: amount.toString(),
     currency: "BDT",
     tran_id: tran_id,
-    success_url: "http://localhost:8080/api/v1/payment/sslcommerz/success",
-    fail_url: "http://localhost:8080/api/v1/payment/sslcommerz/fail",
-    cancel_url: "http://localhost:8080/api/v1/payment/sslcommerz/cancel",
-    ipn_url: "http://localhost:8080/api/v1/payment/sslcommerz/ipn",
+    success_url: `${baseUrl}/payment/sslcommerz/success`,
+    fail_url: `${baseUrl}/payment/sslcommerz/fail`,
+    cancel_url: `${baseUrl}/payment/sslcommerz/cancel`,
+    ipn_url: `${baseUrl}/payment/sslcommerz/ipn`,
     
     cus_name: name,
     cus_email: email,
