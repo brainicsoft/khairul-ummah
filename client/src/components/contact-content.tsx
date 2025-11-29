@@ -3,8 +3,11 @@
 import type React from "react"
 import { useState } from "react"
 import { Phone, Mail, MapPin } from "lucide-react"
+import { useCreateContactMutation } from "@/redux/features/contacts/contactApi";
+import toast from "react-hot-toast";
 
 export function ContactContent() {
+  const [createContact, { isLoading }] = useCreateContactMutation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,11 +20,22 @@ export function ContactContent() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-    setFormData({ name: "", email: "", subject: "", message: "" })
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const res: any = await createContact(formData).unwrap();
+
+      console.log("Contact created:", res);
+
+      toast.success("আপনার বার্তা সফলভাবে পাঠানো হয়েছে!");
+
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error: any) {
+      console.error("Failed to submit contact:", error);
+      toast.error("দুঃখিত! বার্তা পাঠানো যায়নি। আবার চেষ্টা করুন।");
+    }
+  };
 
   return (
     <div className="bg-white py-16 md:py-24">
