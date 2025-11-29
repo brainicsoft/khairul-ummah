@@ -10,6 +10,7 @@ import { newsletterRoutes } from '../modules/newsletter/newsletter.routes';
 import { commiteeRoutes } from '../modules/commitee/commitee.routes';
 import { activitiesRoutes } from '../modules/activities/activities.routes';
 import { contactRoutes } from '../modules/contact/contact.routes';
+import { massegeRoutes } from '../modules/massege/massege.routes';
 type IModulerRoutes = { path: string; route: Router }[];
 export const modulerRoutes: IModulerRoutes = [
   {
@@ -21,39 +22,39 @@ export const modulerRoutes: IModulerRoutes = [
     route: authRoutes,
   },
   {
-    path:'/volunteer',
-    route:volunteerRoutes
+    path: '/volunteer',
+    route: volunteerRoutes
   },
   {
-    path:'/gallery',
-    route:galleryRoutes
+    path: '/gallery',
+    route: galleryRoutes
   },
   {
-    path:'/donation',
-    route:donationProjectRoutes
+    path: '/donation',
+    route: donationProjectRoutes
   },
   {
-    path:'/blog',
-    route:blogRoutes
+    path: '/blog',
+    route: blogRoutes
   },
   {
-    path:'/payment',
-    route:paymentRoutes
+    path: '/payment',
+    route: paymentRoutes
   },
   {
-    path:'/newsletter',
-    route:newsletterRoutes
+    path: '/newsletter',
+    route: newsletterRoutes
   },
   {
-    path:'/commitee',
-    route:commiteeRoutes
+    path: '/commitee',
+    route: commiteeRoutes
   },
   {
-    path:'/activities',
-    route:activitiesRoutes
+    path: '/activities',
+    route: activitiesRoutes
   },
   {
-    path:'/contact',
-    route:contactRoutes
+    path: '/massege',
+    route: massegeRoutes
   }
 ];

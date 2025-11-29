@@ -22,7 +22,9 @@ import {
   Package,
   Moon,
   Sun,
-  ImageIcon
+  ImageIcon,
+  Contact,
+  NotebookIcon
 } from "lucide-react";
 import logo from '@/assets/logo/logo-round.jpg';
 import Image from "next/image";
@@ -41,6 +43,7 @@ const menuItems = [
   { name: "blogs-management", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
   { name: "Donations", href: "/secure/admin/donation-record", icon: DollarSign },
+  { name: "massages", href: "/secure/admin/masseges", icon:NotebookIcon },
   // { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },
   // { name: "Content", href: "/admin/content", icon: FileText },
   // { name: "Events", href: "/secure/admin/events", icon: Calendar },

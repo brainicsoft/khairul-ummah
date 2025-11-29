@@ -3,11 +3,11 @@
 import type React from "react"
 import { useState } from "react"
 import { Phone, Mail, MapPin } from "lucide-react"
-import { useCreateContactMutation } from "@/redux/features/contacts/contactApi";
+import {useCreateMessageMutation } from "@/redux/features/contacts/massegeApi";
 import toast from "react-hot-toast";
 
 export function ContactContent() {
-  const [createContact, { isLoading }] = useCreateContactMutation();
+  const [createMessage, { isLoading }] = useCreateMessageMutation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,7 +24,7 @@ export function ContactContent() {
     e.preventDefault();
 
     try {
-      const res: any = await createContact(formData).unwrap();
+      const res: any = await createMessage(formData).unwrap();
 
       console.log("Contact created:", res);
 
