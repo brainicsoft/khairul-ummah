@@ -6,8 +6,6 @@ import { toast } from "sonner"
 import MassegeTable from "./components/MassegeTable"
 import MassegeDetailModal from "./components/MassegeDetails"
 import { useDeleteMessageMutation, useGetAllMessagesQuery } from "@/redux/features/contacts/massegeApi"
-
-
 interface IMessage {
     _id: string
     email: string
@@ -16,8 +14,6 @@ interface IMessage {
     subject: string
     message: string
 }
-
-
 
 export default function MessageManagementPage() {
     const [currentPage, setCurrentPage] = useState(1)
@@ -35,7 +31,6 @@ export default function MessageManagementPage() {
     })
     console.log(data)
     const allMessages = data?.data || []
-
     const filteredMessages = Array.isArray(allMessages)
         ? allMessages.filter(
             (message) =>
@@ -44,8 +39,6 @@ export default function MessageManagementPage() {
                 (message.subject ?? "").toLowerCase().includes(searchTerm.toLowerCase())
         )
         : []
-
-    const paginatedMessages = filteredMessages.slice((currentPage - 1) * limit, currentPage * limit)
 
     const totalPages = Math.ceil(filteredMessages.length / limit)
 
@@ -58,29 +51,6 @@ export default function MessageManagementPage() {
         setSelectedMessage(message)
         setIsModalOpen(true)
     }
-
-    // const handleDeleteMessage = (message: IMessage) => {
-    //     Swal.fire({
-    //         title: "Are you sure?",
-    //         text: "You won't be able to revert this!",
-    //         icon: "warning",
-    //         showCancelButton: true,
-    //         confirmButtonColor: "#3085d6",
-    //         cancelButtonColor: "#d33",
-    //         confirmButtonText: "Yes, delete it!",
-    //     }).then((result) => {
-    //         if (result.isConfirmed) {
-    //             deleteMessage(message._id)
-    //                 .then(() => {
-    //                     refetch()
-    //                     toast.success(`Message from ${message.name} deleted successfully!`)
-    //                 })
-    //                 .catch((error) => {
-    //                     toast.error(`Failed to delete message: ${error.message}`)
-    //                 })
-    //         }
-    //     })
-    // }
 
     const handleDeleteMessage = (message: IMessage) => {
         Swal.fire({

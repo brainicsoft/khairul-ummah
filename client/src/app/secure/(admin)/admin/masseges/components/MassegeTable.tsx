@@ -87,7 +87,7 @@ export default function MassegeTable({
       {/* Search + Column Toggle */}
       <div className="flex items-center justify-between gap-4">
         <Input
-          placeholder="Search messages..."
+          placeholder="Search by email..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="max-w-sm"
