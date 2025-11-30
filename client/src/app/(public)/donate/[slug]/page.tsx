@@ -5,8 +5,6 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import Image, { StaticImageData } from "next/image"
 import { useForm, Controller } from "react-hook-form"
-import { ChevronDown } from "lucide-react"
-import { DONATION_TYPES } from "@/data/donationData"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateBkashMutation, useCreatePaymentMutation } from "@/redux/features/payment/paymentApi"
@@ -14,6 +12,7 @@ import { apiUrl } from "@/config/constants"
 import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProjects/donationProjectApi"
 import FAQ from "@/components/FAQ"
 import { DonatesTypesMenue } from "@/components/DonatesTypesMenue"
+import toast from "react-hot-toast"
 
 export type DonationType = {
   _id: number
@@ -111,11 +110,11 @@ export default function DonateTypePage() {
       } else {
         const response = await createPayment(mappedData).unwrap()
         window.location.href = response.data.url
-        alert("SSLCommerz selected! Redirect to payment gateway.")
+        toast.success("SSLCommerz selected! Redirect to payment gateway.")
       }
     } catch (error) {
       console.error(error)
-      alert("Donation failed. Please try again.")
+      toast.error("Donation failed. Please try again.")
     }
   }
   const amountValue = watch("amount") // Sync buttons and input

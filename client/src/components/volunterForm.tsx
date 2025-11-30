@@ -118,17 +118,7 @@ export function VolunteerForm() {
 
       // 3. Append the JSON string as "data" field
       formData.append("data", JSON.stringify(volunteerData))
-
-      // Debug: Check FormData contents
-      console.log("FormData contents:")
-      for (let [key, value] of formData.entries()) {
-        if (key === "avatar") {
-          console.log("avatar:", (value as File).name)
-        } else if (key === "data") {
-          console.log("data:", value)
-        }
-      }
-
+   
       // Use Redux mutation
       const response = await volunteerRequest(formData).unwrap() as ApiResponse
 

@@ -55,7 +55,7 @@ export function DonationCTA() {
       return;
     }
     if (!formValues.amount || Number(formValues.amount) < 10) {
-      toast.error("Please enter a valid amount!");
+      toast.error("Please enter a valid(minimum 10) amount!");
       return;
     }
     
@@ -153,6 +153,7 @@ export function DonationCTA() {
                   type="number"
                   placeholder="টাকার পরিমাণ (ঐচ্ছিক)"
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white"
+                  min={10}
                   onChange={(e) =>
                     setFormValues({ ...formValues, amount: e.target.value })
                   }
