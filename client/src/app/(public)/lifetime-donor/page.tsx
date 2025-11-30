@@ -6,9 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useCreateLifetimeDonorMutation } from "@/redux/features/lifetimeDonor/lifetimedonorApi"
 import toast from "react-hot-toast"
+import { useCreateBkashMutation, useCreatePaymentMutation } from "@/redux/features/payment/paymentApi"
+import PayMethohdModal from "@/components/homePage/PayMethohdModal"
+import { se } from "date-fns/locale"
 
 export default function LifetimeDonorPage() {
+    const [createPayment] = useCreatePaymentMutation()
+    const [bkashDonation] = useCreateBkashMutation()
     const [createLifetimeDonor, { isLoading }] = useCreateLifetimeDonorMutation();
+    const [showModal, setShowModal] = useState(false)
+    const [paymentMethod, setPaymentMethod] = useState<"sslcommerz" | "bkash">("sslcommerz")
     const [formData, setFormData] = useState({
         amount: "10000",
         name: "",
@@ -17,8 +24,8 @@ export default function LifetimeDonorPage() {
         address: "",
         email: "",
         termsAccepted: false,
+        paymentMethod: "sslcommerz" as "sslcommerz" | "bkash",
     })
-
     const [errors, setErrors] = useState<Record<string, string>>({})
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -39,44 +46,86 @@ export default function LifetimeDonorPage() {
         }
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        // check if checkbox is checked
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault()
+    //     // check if checkbox is checked
+    //     if (!formData.termsAccepted) {
+    //         toast.error("Please accept the terms and conditions before submitting the form.");
+    //         return;
+    //     }
+    //     const finalData = {
+    //         name: formData.name,
+    //         email: formData.email,
+    //         phone: formData.phone,
+    //         amount: Number(formData.amount),
+    //         occupation: formData.profession,
+    //         address: formData.address,
+    //         termsAccepted: formData.termsAccepted,
+    //     }
+    //     try {
+    //         const res: any = await createLifetimeDonor(finalData).unwrap();
+    //         if (res.status === 201) {
+    //             toast.success("your lifetime donation has been submitted successfully!");
+    //             setFormData({
+    //                 amount: "10000",
+    //                 name: "",
+    //                 phone: "",
+    //                 profession: "",
+    //                 address: "",
+    //                 email: "",
+    //                 termsAccepted: false,
+    //             });
+    //         } else {
+    //             toast.error("your lifetime donation has been failed. Please try again.");
+    //         }
+    //     } catch (error: any) {
+    //         console.error("Failed to submit contact:", error);
+    //         toast.error("your lifetime donation has been failed. Please try again.");
+    //     }
+    // }
+    const handlePayment = async (e: React.FormEvent) => {
+        e.preventDefault();
+
         if (!formData.termsAccepted) {
-            toast.error("Please accept the terms and conditions before submitting the form.");
+            toast.error("Please accept the terms and conditions.");
             return;
         }
-        const finalData = {
+        const paymentData = {
             name: formData.name,
-            email: formData.email,
+            email: formData.email || "",
+            phone: formData.phone,
+            amount: Number(formData.amount),
+            donationType: "lifetime",
+            method: formData.paymentMethod, // include method
+
+        }
+
+        const payload = {
+            name: formData.name,
+            email: formData.email || "",
             phone: formData.phone,
             amount: Number(formData.amount),
             occupation: formData.profession,
             address: formData.address,
-            termsAccepted: formData.termsAccepted,
-        }
+            termsAccepted: formData.termsAccepted, // Always go as true from user
+        };
+
         try {
-            const res: any = await createLifetimeDonor(finalData).unwrap();
-            if (res.status === 201) {
-                toast.success("your lifetime donation has been submitted successfully!");
-                setFormData({
-                    amount: "10000",
-                    name: "",
-                    phone: "",
-                    profession: "",
-                    address: "",
-                    email: "",
-                    termsAccepted: false,
-                });
+            const res: any = await createLifetimeDonor(payload).unwrap();
+            console.log("Lifetime Donor Response:", res);
+            if (formData.paymentMethod === "bkash") {
+                const response = await bkashDonation(payload).unwrap()
+                window.location.href = response.data.url
             } else {
-                toast.error("your lifetime donation has been failed. Please try again.");
+                const response = await createPayment(paymentData).unwrap()
+                window.location.href = response.data.url
+                toast.success("SSLCommerz selected! Redirect to payment gateway.")
             }
         } catch (error: any) {
-            console.error("Failed to submit contact:", error);
-            toast.error("your lifetime donation has been failed. Please try again.");
+            console.error("Failed:", error);
+            toast.error(error?.data?.message || "Something went wrong!");
         }
-    }
-
+    };
     return (
         <div className="min-h-screen bg-white">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -120,7 +169,7 @@ export default function LifetimeDonorPage() {
 
                     {/* Right Column - Form */}
                     <div className="lg:col-span-1 border p-3 rounded-lg border-border">
-                        <form onSubmit={handleSubmit} className="space-y-4">
+                        <form onSubmit={handlePayment} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-semibold text-primary mb-2">সদস্যপদ প্যাকেজ</label>
                                 <div className="bg-primary text-white rounded-lg p-3 text-center font-semibold">আজীবন সদস্য</div>
@@ -229,6 +278,7 @@ export default function LifetimeDonorPage() {
                             <Button
                                 type="submit"
                                 className="w-full bg-primary hover:bg-primary/80 text-white font-semibold py-2 rounded-lg text-sm"
+                                onClick={() => setShowModal(true)}
                             >
                                 দান করুন →
                             </Button>
@@ -243,6 +293,7 @@ export default function LifetimeDonorPage() {
                     </div>
                 </div>
             </div>
+            <PayMethohdModal showModal={showModal} handlePayment={handlePayment} paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} setShowModal={setShowModal} />
         </div>
     )
 }
