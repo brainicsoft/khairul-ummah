@@ -1,7 +1,7 @@
-// contact.validation.ts
+// lifetimeDonor.validation.ts
 
 import { z } from 'zod';
-export const contactValidationSchema = z.object({
+export const lifetimeDonorValidationSchema = z.object({
   body: z.object({
     email: z.string(),
     name: z.string(),

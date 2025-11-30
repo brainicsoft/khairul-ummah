@@ -9,8 +9,8 @@ import { paymentRoutes } from '../modules/payment/payment.routes';
 import { newsletterRoutes } from '../modules/newsletter/newsletter.routes';
 import { commiteeRoutes } from '../modules/commitee/commitee.routes';
 import { activitiesRoutes } from '../modules/activities/activities.routes';
-import { contactRoutes } from '../modules/contact/contact.routes';
 import { massegeRoutes } from '../modules/massege/massege.routes';
+import { lifetimeDonorRoutes } from '../modules/lifetimeDonor/lifetimeDonor.routes';
 type IModulerRoutes = { path: string; route: Router }[];
 export const modulerRoutes: IModulerRoutes = [
   {
@@ -56,5 +56,9 @@ export const modulerRoutes: IModulerRoutes = [
   {
     path: '/massege',
     route: massegeRoutes
+  },
+  {
+    path: '/lifetimeDonor',
+    route: lifetimeDonorRoutes
   }
 ];

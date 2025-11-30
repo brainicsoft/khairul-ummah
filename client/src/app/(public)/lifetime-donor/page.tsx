@@ -4,8 +4,11 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useCreateLifetimeDonorMutation } from "@/redux/features/lifetimeDonor/lifetimedonorApi"
+import toast from "react-hot-toast"
 
 export default function LifetimeDonorPage() {
+    const [createLifetimeDonor, { isLoading }] = useCreateLifetimeDonorMutation();
     const [formData, setFormData] = useState({
         amount: "10000",
         name: "",
@@ -36,21 +39,42 @@ export default function LifetimeDonorPage() {
         }
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        const newErrors: Record<string, string> = {}
-
-        if (!formData.name.trim()) newErrors.name = "নাম প্রয়োজন"
-        if (!formData.phone.trim()) newErrors.phone = "ফোন নম্বর প্রয়োজন"
-        if (!formData.email.trim()) newErrors.email = "ইমেইল প্রয়োজন"
-        if (!formData.termsAccepted) newErrors.terms = "শর্তাবলী গ্রহণ করুন"
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors)
-            return
+        // check if checkbox is checked
+        if (!formData.termsAccepted) {
+            toast.error("Please accept the terms and conditions before submitting the form.");
+            return;
         }
-
-        console.log("Lifetime donor form submitted:", formData)
+        const finalData = {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            amount: Number(formData.amount),
+            occupation: formData.profession,
+            address: formData.address,
+            termsAccepted: formData.termsAccepted,
+        }
+        try {
+            const res: any = await createLifetimeDonor(finalData).unwrap();
+            if (res.status === 201) {
+                toast.success("your lifetime donation has been submitted successfully!");
+                setFormData({
+                    amount: "10000",
+                    name: "",
+                    phone: "",
+                    profession: "",
+                    address: "",
+                    email: "",
+                    termsAccepted: false,
+                });
+            } else {
+                toast.error("your lifetime donation has been failed. Please try again.");
+            }
+        } catch (error: any) {
+            console.error("Failed to submit contact:", error);
+            toast.error("your lifetime donation has been failed. Please try again.");
+        }
     }
 
     return (
