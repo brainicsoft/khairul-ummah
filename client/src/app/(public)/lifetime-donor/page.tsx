@@ -99,7 +99,6 @@ export default function LifetimeDonorPage() {
             method: formData.paymentMethod, // include method
 
         }
-
         const payload = {
             name: formData.name,
             email: formData.email || "",
@@ -107,7 +106,7 @@ export default function LifetimeDonorPage() {
             amount: Number(formData.amount),
             occupation: formData.profession,
             address: formData.address,
-            termsAccepted: formData.termsAccepted, // Always go as true from user
+            termsAccepted: false, // Always go as false from user
         };
 
         try {
@@ -123,7 +122,7 @@ export default function LifetimeDonorPage() {
             }
         } catch (error: any) {
             console.error("Failed:", error);
-            toast.error(error?.data?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!");
         }
     };
     return (

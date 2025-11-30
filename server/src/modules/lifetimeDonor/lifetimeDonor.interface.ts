@@ -13,5 +13,3 @@ export interface ILifetimeDonor {
 
   // update your content here 
 }
-
-  

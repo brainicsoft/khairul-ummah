@@ -3,17 +3,16 @@
 import { injectEndpoints } from "../../api/api";
 
 export interface ILifetimeDonor {
-  _id?: string;
+  _id: string;
   name: string;
   email: string;
   phone?: string;
   amount: number;
-  occupation?: string;
-  address?: string;
+  profession?: string;
+  address: string;
   message?: string;
-  termsAccepted?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  termsAccepted: boolean;
+  slug?: string;
 }
 
 interface Meta {
@@ -86,7 +85,7 @@ export const {
     // ============================
     // UPDATE LIFETIME DONOR
     // ============================
-    updateLifetimeDonor: mutation<any, { id: string; data: ILifetimeDonor }>({
+    updateLifetimeDonor: mutation<any, { id: string; data: any }>({
       query: ({ id, data }) => ({
         url: `/lifetimeDonor/${id}`,
         method: "PATCH",
