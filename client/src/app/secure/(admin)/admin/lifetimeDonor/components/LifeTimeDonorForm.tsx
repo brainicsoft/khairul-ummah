@@ -99,7 +99,7 @@ export default function LifetimeDonorForm({ donor, onSubmit }: LifetimeDonorForm
         </div>
         <div className="space-y-2">
           <label htmlFor="amount" className="block text-sm font-medium">
-            Amount ($)
+            Amount
           </label>
           <Input
             id="amount"

@@ -49,7 +49,7 @@ export const getLifetimeDonorColumns = (
     header: "Amount",
     cell: ({ row }) => {
       const amount = row.getValue("amount") as number
-      return <span className="font-semibold text-green-600">${amount.toLocaleString()}</span>
+      return <span className="font-semibold text-green-600">{amount.toLocaleString()}</span>
     },
   },
   {
