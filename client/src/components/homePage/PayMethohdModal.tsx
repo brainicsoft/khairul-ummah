@@ -15,23 +15,27 @@ const PayMethohdModal = ({ showModal, handlePayment, paymentMethod, setPaymentMe
                             <button
                                 onClick={() => setPaymentMethod("bkash")}
                                 className={`px-4 py-3 rounded-lg border cursor-pointer ${paymentMethod === "bkash"
-                                    ? "bg-primary text-white"
+                                    ? "bg-primary/20 text-white"
                                     : "bg-gray-100"
                                     } flex justify-center`}
                             >
-                                <Image src={BkashLogo} alt="bkash" width={40} height={40} />
+                                <Image
+                                    className="object-contain w-full h-[40px]"
+                                    src={BkashLogo} alt="bkash" width={120} height={80} />
 
                                 {/* বিকাশ (bKash) */}
                             </button>
 
                             <button
                                 onClick={() => setPaymentMethod("sslcommerz")}
-                                className={`px-4 flex justify-center py-3 rounded-lg border cursor-pointer ${paymentMethod === "ssl"
-                                    ? "bg-primary text-white"
+                                className={`px-4 flex justify-center py-3 rounded-lg border cursor-pointer ${paymentMethod === "sslcommerz"
+                                    ? "bg-primary/20 text-white"
                                     : "bg-gray-100"
                                     }`}
                             >
-                                <Image src={sslLogo} alt="bkash" width={80} height={80} />
+                                <Image
+                                    className="object-cover w-full h-[40px]"
+                                    src={sslLogo} alt="sslcommerz" width={120} height={80} />
                             </button>
                         </div>
 
