@@ -1,71 +1,86 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Cookies from 'js-cookie'
 
 const COOKIE_NAME = 'googtrans'
 
+const LANGUAGES = [
+  { code: 'bn', label: 'বাং', name: 'বাংলা' },
+  { code: 'en', label: 'EN', name: 'English' },
+]
+
 export function LanguageSwitcher() {
   const [currentLanguage, setCurrentLanguage] = useState<string>('bn')
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
 
+  // Get current language from cookie on mount
   useEffect(() => {
-    // Get current language from cookie
     const cookieValue = Cookies.get(COOKIE_NAME)
-    let languageValue = 'bn' // default
-
     if (cookieValue) {
       const parts = cookieValue.split('/')
       if (parts.length > 2) {
-        languageValue = parts[2]
+        setCurrentLanguage(parts[2])
       }
     }
+  }, [])
 
-    setCurrentLanguage(languageValue)
-    setIsInitialized(true)
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
   const switchLanguage = (lang: string) => {
-    if (!isInitialized) return
+    if (lang === currentLanguage) {
+      setIsOpen(false)
+      return
+    }
 
-    // Set the Google Translate cookie
-    Cookies.set(COOKIE_NAME, `/auto/${lang}`, { 
-      path: '/',
-      expires: 365 // 1 year
-    })
+    // Set cookies for Google Translate (both root and domain-level)
+    Cookies.set(COOKIE_NAME, `/auto/${lang}`, { path: '/' })
+    // Also set without domain for compatibility
+    document.cookie = `${COOKIE_NAME}=/auto/${lang};path=/`
 
     setCurrentLanguage(lang)
+    setIsOpen(false)
 
-    // Force Google Translate to change language
+    // Try to trigger via Google Translate select element
     const select = document.querySelector<HTMLSelectElement>('.goog-te-combo')
     if (select) {
       select.value = lang
-      select.dispatchEvent(new Event('change'))
+      select.dispatchEvent(new Event('change', { bubbles: true }))
     } else {
-      // If select not found, reload the page
-      setTimeout(() => {
-        window.location.reload()
-      }, 100)
+      // Reload as fallback if Google Translate widget not ready
+      setTimeout(() => window.location.reload(), 100)
     }
   }
-  const toggleLanguage = () => {
-    const newLang = currentLanguage === 'bn' ? 'en' : 'bn'
-    switchLanguage(newLang)
-  }
 
-  if (!isInitialized) {
-    return (
-      <button className="px-4 py-1.5 border border-primary text-primary rounded-lg opacity-50">
-        Loading...
-      </button>
-    )
-  }
+  const currentLang = LANGUAGES.find(l => l.code === currentLanguage) || LANGUAGES[0]
+
   return (
-    <button
-      onClick={toggleLanguage}
-      className="px-4 py-1.5 cursor-pointer text-sm font-semibold border border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition whitespace-nowrap"
-    >
-      {currentLanguage === 'bn' ? 'English' : 'বাংলা'}
-    </button>
+    <div ref={containerRef} className="relative">
+      <div className="flex items-center gap-1">
+        {LANGUAGES.map((lang) => (
+          <button
+            key={lang.code}
+            onClick={() => switchLanguage(lang.code)}
+            className={`px-3 py-1.5 cursor-pointer text-sm font-semibold rounded-lg transition whitespace-nowrap ${
+              currentLanguage === lang.code
+                ? 'bg-primary text-white'
+                : 'border border-primary text-primary hover:bg-primary hover:text-white'
+            }`}
+          >
+            {lang.label}
+          </button>
+        ))}
+      </div>
+    </div>
   )
 }

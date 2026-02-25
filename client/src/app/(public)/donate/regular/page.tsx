@@ -1,124 +1,159 @@
 "use client"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useForm, Controller } from "react-hook-form"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
-import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProjects/donationProjectApi"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogClose,
+} from "@/components/ui/dialog"
 
 type FormValues = {
     category: string
     amount: string
     name: string
     phone: string
+    email: string
+    donorName: string
     paymentMethod: "bkash" | "sslCommerz"
 }
 
+type AutopayMode = "daily" | "weekly" | "monthly"
+
+const PRESET_AMOUNTS_DAILY = [10, 20, 30, 50, 100] as const
+const PRESET_AMOUNTS_WEEKLY = [50, 100, 200, 300, 500] as const
+const PRESET_AMOUNTS_MONTHLY = [200, 500, 1000, 2000, 5000] as const
+
 export default function AutopayPage() {
-    const [autopayMode, setAutopayMode] = useState<"daily" | "monthly">("daily")
+    const [autopayMode, setAutopayMode] = useState<AutopayMode>("daily")
+    const [selectedPreset, setSelectedPreset] = useState<number | null>(20)
+    const [isCustomAmount, setIsCustomAmount] = useState(false)
+    const [showTermsModal, setShowTermsModal] = useState(false)
+    const [termsAccepted, setTermsAccepted] = useState(false)
+    const [donateForOther, setDonateForOther] = useState(false)
 
     const {
         register,
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<FormValues>({
         defaultValues: {
             category: "regular",
-            amount: "",
+            amount: "20",
             name: "",
             phone: "",
+            email: "",
+            donorName: "",
             paymentMethod: "bkash",
         },
     })
 
     const amountValue = watch("amount")
-    const nameValue = watch("name")
-    const phoneValue = watch("phone")
+
+    const currentPresets = autopayMode === "daily" ? PRESET_AMOUNTS_DAILY : autopayMode === "weekly" ? PRESET_AMOUNTS_WEEKLY : PRESET_AMOUNTS_MONTHLY
+
+    const handleModeChange = useCallback((mode: AutopayMode) => {
+        setAutopayMode(mode)
+        const defaultAmount = mode === "daily" ? 20 : mode === "weekly" ? 50 : 200
+        setSelectedPreset(defaultAmount)
+        setIsCustomAmount(false)
+        setValue("amount", defaultAmount.toString())
+    }, [setValue])
 
     const [bkashDonation, { isLoading }] = useCreateBkashMutation()
+
     const data = {
-        "_id": {
-            "$oid": "691d6d093a00188160765215"
-        },
-        "slug": "নিয়মিত-অনুদান",
-        "title": " নিয়মিত অনুদান",
-        "desc": "নিয়মিত অনুদান ফাউন্ডেশনকে টিকিয়ে রাখতে সবচেয়ে বেশি সাহায্য করে।",
-        "image": "https://res.cloudinary.com/daftymluv/image/upload/v1763536137/general-1763536133551.webp",
-        "category": "general",
-        "benefits": [
+        slug: "নিয়মিত-অনুদান",
+        title: "নিয়মিত অনুদান",
+        desc: "নিয়মিত অনুদান ফাউন্ডেশনকে টিকিয়ে রাখতে সবচেয়ে বেশি সাহায্য করে। নিয়মিত দানের অর্থই মূলত কল্যাণমুখী কার্যক্রম পরিচালিত হয়। নিয়মিত দানের জন্য কোনো একটি নির্দিষ্ট নেই, যে কোনো পরিমাণ দান করা যায়। আর যে কোনো ভালো কাজ অনিয়মিতভাবে বেশি করার চেয়ে নিয়মিতভাবে অল্প করা উত্তম।",
+        videoUrl: "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
+        benefits: [
             "সর্বোচ্চ প্রয়োজনের ক্ষেত্রে ব্যয়",
             "নমনীয় সহায়তা প্রোগ্রাম",
             "জরুরি পরিস্থিতিতে দ্রুত সাহায্য",
-            "সম্প্রদায়ের বৃহত্তর উন্নয়ন"
+            "সম্প্রদায়ের বৃহত্তর উন্নয়ন",
         ],
-        "status": "active",
-        "videoUrl": "https://www.youtube.com/embed/zxhiwFcf_8I?si=nGs8DdkdQesC8Wg-",
-
+        hadith: "আল্লাহর কাছে সর্বাধিক প্রিয় আমল হলো, যা সদাসর্বদা নিয়মিত করা হয়, যদিও তা অল্প হয়। (সহীহ বুখারী, হাদীস ৬৪৬৪)",
+        infoText: "অনেকে নিয়মিত দান করতে চান, কিন্তু মনে থাকে না বলে দান করা হয়ে ওঠে না। এখন থেকে বিকাশ-নগদ এবং ভিসা-মাস্টারকার্ড ব্যবহারকারীরা আস-সুন্নাহ ফাউন্ডেশনের ওয়েবসাইট থেকে স্বয়ংক্রিয় পদ্ধতি চালু করে নিয়মিত দান করতে পারবেন। দৈনিক কিংবা মাসিক অপশন সিলেক্ট করে টাকার পরিমাণ সেট করে দিন। আপনার ভুলে গেলেও আপনার নির্ধারিত সময়ে নির্ধারিত পরিমাণ টাকা ফাউন্ডেশনের অ্যাকাউন্টে জমা হবে। চাইলে এই পদ্ধতিটি যেকোনো সময় বন্ধও করতে পারবেন।",
     }
-    console.log(data)
+
+    const handlePresetClick = useCallback((amount: number) => {
+        setSelectedPreset(amount)
+        setIsCustomAmount(false)
+        setValue("amount", amount.toString())
+    }, [setValue])
+
+    const handleCustomClick = useCallback(() => {
+        setSelectedPreset(null)
+        setIsCustomAmount(true)
+        setValue("amount", "")
+    }, [setValue])
+
     const summaryDetails = useMemo(() => {
+        const amt = Number(amountValue) || 0
         if (autopayMode === "daily") {
-            const totalDays = 365
-            const totalAmount = (Number(amountValue) || 0) * totalDays
             return {
                 frequency: "প্রতিদিন",
                 startDate: "আগামীকাল",
                 endDate: "১ বছর পরে",
-                totalPayments: totalDays,
-                totalAmount,
+                totalPayments: 365,
+                totalAmount: amt * 365,
                 modeLabel: "দৈনিক",
+                perLabel: "দিনে",
+            }
+        } else if (autopayMode === "weekly") {
+            return {
+                frequency: "প্রতি সপ্তাহে",
+                startDate: "আগামী সপ্তাহ",
+                endDate: "১ বছর পরে",
+                totalPayments: 52,
+                totalAmount: amt * 52,
+                modeLabel: "সাপ্তাহিক",
+                perLabel: "সপ্তাহে",
             }
         } else {
-            const totalMonths = 12
-            const totalAmount = (Number(amountValue) || 0) * totalMonths
             return {
                 frequency: "প্রতি মাসে একবার",
                 startDate: "আগামী মাস",
                 endDate: "১ বছর পরে",
-                totalPayments: totalMonths,
-                totalAmount,
+                totalPayments: 12,
+                totalAmount: amt * 12,
                 modeLabel: "মাসিক",
+                perLabel: "মাসে",
             }
         }
     }, [autopayMode, amountValue])
 
-    if (!data)
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div>লোড হচ্ছে...</div>
-            </div>
-        )
-
-    if (!data) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-foreground mb-4">তহবিল খুঁজে পাওয়া যায়নি</h1>
-                    <Link href="/donate">
-                        <button className="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition">
-                            ফিরে যান
-                        </button>
-                    </Link>
-                </div>
-            </div>
-        )
+    const handleDonateClick = () => {
+        setShowTermsModal(true)
     }
 
     const onSubmit = async (formData: FormValues) => {
+        if (!termsAccepted) {
+            setShowTermsModal(true)
+            return
+        }
         try {
             const mappedData = {
                 name: formData.name,
                 phone: formData.phone,
+                email: formData.email,
                 amount: Number(formData.amount),
                 donationType: "regular",
                 autopayMode: autopayMode,
+                method: formData.paymentMethod === "bkash" ? ("bkash" as const) : ("sslcommerz" as const),
+                ...(donateForOther && formData.donorName ? { donorName: formData.donorName } : {}),
             }
-
-            console.log("[v0] Autopay donation:", mappedData)
 
             if (formData.paymentMethod === "bkash") {
                 const response = await bkashDonation(mappedData).unwrap()
@@ -132,19 +167,37 @@ export default function AutopayPage() {
         }
     }
 
+    const handleTermsAcceptAndSubmit = () => {
+        setTermsAccepted(true)
+        setShowTermsModal(false)
+        handleSubmit(onSubmit)()
+    }
+
+    const modeButtons: { key: AutopayMode; label: string }[] = [
+        { key: "daily", label: "দৈনিক" },
+        { key: "weekly", label: "সাপ্তাহিক" },
+        { key: "monthly", label: "মাসিক" },
+    ]
+
     return (
         <>
-            <div className="relative bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-16 md:py-24">
-                <div className="container mx-auto px-4">
-                    <h1 className="text-3xl md:text-5xl font-bold mb-2">আপনার স্বয়ংক্রিয় দানের যাত্রা শুরু করুন</h1>
-                    <p className="mt-4 text-lg opacity-90 ">প্রতিদিন বা মাসিক একটি ছোট অবদান, হাজারো জীবনে বড় প্রভাব তৈরি করুন।</p>
+            {/* Hero / Banner with email notice */}
+            <div className="bg-primary text-primary-foreground">
+                <div className="container mx-auto px-4 py-3 text-center text-sm flex flex-wrap items-center justify-center gap-2">
+                    <span>নিয়মিত অনুদান সংক্রান্ত যেকোনো বিষয় জানতে অসুবিধা হলে বা কোনো সমস্যা হলে, দয়া করে</span>
+                    <a href="mailto:contact@khairulummahfoundation.org" className="underline font-semibold flex items-center gap-1">
+                        ✉ contact@khairulummahfoundation.org
+                    </a>
+                    <span>- এ ইমেইল করুন</span>
                 </div>
             </div>
 
-            {/* Video & Benefits */}
-            <div className="container mx-auto px-4 max-w-6xl mt-12">
-                <div className="grid md:grid-cols-2 gap-12 mb-16">
-                    <div className="flex flex-col justify-center">
+            {/* Main content: Left info + Right form */}
+            <div className="container mx-auto px-4 max-w-7xl py-8 md:py-12">
+                <div className="grid lg:grid-cols-2 gap-10">
+                    {/* LEFT COLUMN: Video, Hadith, Description */}
+                    <div className="space-y-8">
+                        {/* Video */}
                         <div className="bg-black rounded-xl overflow-hidden aspect-video shadow-lg">
                             <iframe
                                 className="w-full h-full"
@@ -152,138 +205,228 @@ export default function AutopayPage() {
                                 title="Donation Video"
                                 allowFullScreen
                                 loading="lazy"
-                            ></iframe>
+                            />
                         </div>
-                    </div>
 
-                    <div className="flex flex-col justify-center">
-                        <div className="bg-secondary/20 rounded-xl p-8 border-l-4 border-secondary shadow-inner">
-                            <h2 className="text-2xl font-bold text-primary mb-4">আপনি কী পাবেন?</h2>
-                            <p className="text-foreground/80 mb-6 leading-relaxed">
-                                আপনার অবদান সরাসরি এই ধরনের অনুদানের মাধ্যমে সমাজে দৃশ্যমান প্রভাব ফেলে।
+                        {/* Hadith quote */}
+                        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
+                            <p className="text-lg font-semibold text-amber-900 leading-relaxed">
+                                &ldquo;{data.hadith}&rdquo;
                             </p>
-                            <ul className="space-y-3">
-                                {data?.benefits?.map((benefit: string, idx: number) => (
-                                    <li key={idx} className="flex items-start gap-3">
-                                        <span className="text-secondary font-bold text-lg mt-1">✓</span>
-                                        <span className="text-foreground">{benefit}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                        </div>
+
+                        {/* Description text */}
+                        <div className="space-y-4 text-foreground/80 leading-relaxed">
+                            <p>{data.desc}</p>
+                            <p>{data.infoText}</p>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <main className="py-8 md:py-12 bg-white">
-                <div className="container mx-auto px-4 max-w-6xl">
-                    <div className="flex gap-0 mb-8 border-b border-gray-200">
-                        <button
-                            onClick={() => setAutopayMode("daily")}
-                            className={`px-6 py-3 font-semibold transition border-b-2 ${autopayMode === "daily"
-                                ? "border-primary text-primary"
-                                : "border-transparent text-gray-600 hover:text-gray-900"
-                                }`}
-                        >
-                            দৈনিক
-                        </button>
-                        <button
-                            onClick={() => setAutopayMode("monthly")}
-                            className={`px-6 py-3 font-semibold transition border-b-2 ${autopayMode === "monthly"
-                                ? "border-primary text-primary"
-                                : "border-transparent text-gray-600 hover:text-gray-900"
-                                }`}
-                        >
-                            মাসিক
-                        </button>
-                    </div>
+                    {/* RIGHT COLUMN: Donation Form Card */}
+                    <div>
+                        <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden sticky top-4">
+                            {/* Green header */}
+                            <div className="bg-primary text-white p-6">
+                                <h2 className="text-xl md:text-2xl font-bold">অংশ নিন ফাউন্ডেশনের সকল কল্যাণমূলক কাজে</h2>
+                                <p className="mt-2 text-sm text-emerald-100 leading-relaxed">
+                                    এই খাতে দানের মাধ্যমে ফাউন্ডেশনের সকল কল্যাণমূলক কাজের অংশীদার হতে পারবেন। কারণ এই তহবিল ফাউন্ডেশন পরিচালিত সকল কল্যাণমূলক কার্যক্রমের জন্য উন্মুক্ত থাকে।
+                                </p>
+                            </div>
 
-                    <div className="grid md:grid-cols-3 gap-6">
-                        <div className="md:col-span-2">
-                            <div className="bg-white rounded-lg p-6 md:p-8 border border-gray-200">
-                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                            <div className="p-6 space-y-6">
+                                {/* Daily / Weekly / Monthly Tabs */}
+                                <div className="grid grid-cols-3 gap-2">
+                                    {modeButtons.map((btn) => (
+                                        <button
+                                            key={btn.key}
+                                            type="button"
+                                            onClick={() => handleModeChange(btn.key)}
+                                            className={`py-3 rounded-full text-sm font-semibold transition-all duration-200 ${
+                                                autopayMode === btn.key
+                                                    ? "bg-primary text-white shadow-md"
+                                                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            {btn.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Preset Amount Buttons */}
+                                <div>
+                                    <div className="grid grid-cols-3 gap-3">
+                                        {currentPresets.map((amt) => (
+                                            <button
+                                                key={amt}
+                                                type="button"
+                                                onClick={() => handlePresetClick(amt)}
+                                                className={`py-3 rounded-xl text-base font-semibold transition-all duration-200 border-2 ${
+                                                    selectedPreset === amt && !isCustomAmount
+                                                        ? "border-primary bg-primary text-white shadow-md"
+                                                        : "border-gray-200 bg-white text-gray-800 hover:border-primary/50 hover:bg-emerald-50"
+                                                }`}
+                                            >
+                                                ৳ {amt}
+                                            </button>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={handleCustomClick}
+                                            className={`py-3 rounded-xl text-sm font-semibold transition-all duration-200 border-2 ${
+                                                isCustomAmount
+                                                    ? "border-primary bg-primary text-white shadow-md"
+                                                    : "border-gray-200 bg-white text-gray-800 hover:border-primary/50 hover:bg-emerald-50"
+                                            }`}
+                                        >
+                                            যে কোনো পরিমাণ
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Form */}
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault()
+                                        handleDonateClick()
+                                    }}
+                                    className="space-y-4"
+                                >
+                                    {/* Amount input */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                                            পরিমাণ <span className="text-red-500">*</span>
+                                        </label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold">৳</span>
+                                            <input
+                                                type="number"
+                                                {...register("amount", { required: true, min: 1 })}
+                                                placeholder="20"
+                                                readOnly={!isCustomAmount && selectedPreset !== null}
+                                                className={`w-full pl-10 pr-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition ${
+                                                    !isCustomAmount && selectedPreset !== null ? "bg-gray-50" : ""
+                                                }`}
+                                            />
+                                        </div>
+                                        {errors.amount && <span className="text-red-500 text-xs mt-1 block">পরিমাণ অবশ্যক</span>}
+                                    </div>
+
+                                    {/* Name */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                                             আপনার নাম <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             {...register("name", { required: true })}
-                                            placeholder="নাম লিখুন"
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                                            placeholder="আপনার নাম লিখুন"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
                                         />
                                         {errors.name && <span className="text-red-500 text-xs mt-1 block">নাম অবশ্যক</span>}
                                     </div>
 
+                                    {/* Phone / Email with info tooltip */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            দানের পরিমাণ <span className="text-red-500">*</span>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                                            মোবাইল / ইমেইল <span className="text-red-500">*</span>
+                                            <span
+                                                className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-full bg-gray-300 text-[10px] text-gray-700 cursor-help"
+                                                title="বিকাশের জন্য মোবাইল নম্বর দিন"
+                                            >
+                                                ℹ
+                                            </span>
                                         </label>
                                         <input
-                                            type="number"
-                                            {...register("amount", { required: true })}
-                                            placeholder="৳ 20"
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
-                                        />
-                                        {errors.amount && <span className="text-red-500 text-xs mt-1 block">পরিমাণ অবশ্যক</span>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                            ফোন নম্বর <span className="text-red-500">*</span>
-                                        </label>
-                                        <input
-                                            type="tel"
+                                            type="text"
                                             {...register("phone", { required: true })}
-                                            placeholder="+880..."
-                                            className="w-full px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                                            placeholder="+8801XXXXXXXXX"
+                                            className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
                                         />
-                                        {errors.phone && <span className="text-red-500 text-xs mt-1 block">ফোন নম্বর অবশ্যক</span>}
+                                        {errors.phone && <span className="text-red-500 text-xs mt-1 block">মোবাইল / ইমেইল অবশ্যক</span>}
                                     </div>
 
-                                    <div className="pt-4 border-t border-gray-200">
-                                        <h3 className="text-base font-semibold text-gray-900 mb-3">পেমেন্ট পদ্ধতি</h3>
+                                    {/* Donate for another person */}
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="donateForOther"
+                                            checked={donateForOther}
+                                            onChange={(e) => setDonateForOther(e.target.checked)}
+                                            className="w-4 h-4 accent-primary rounded"
+                                        />
+                                        <label htmlFor="donateForOther" className="text-sm text-gray-700 font-medium">
+                                            অন্য কারো পক্ষ থেকে দান করে থাকলে তার নাম লিখুন
+                                        </label>
+                                    </div>
+
+                                    {donateForOther && (
+                                        <div>
+                                            <input
+                                                type="text"
+                                                {...register("donorName")}
+                                                placeholder="যার পক্ষ থেকে দান করছেন তার নাম"
+                                                className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Payment Method */}
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-gray-700 mb-3">পেমেন্ট পদ্ধতি</h3>
                                         <Controller
                                             control={control}
                                             name="paymentMethod"
                                             render={({ field }) => (
                                                 <div className="grid grid-cols-2 gap-3">
                                                     {[
-                                                        { id: "bkash", logo: bkash, name: "বিকাশ" },
-                                                        { id: "sslCommerz", logo: sslcommerz, name: "সিএসএল" },
+                                                        { id: "bkash" as const, logo: bkash, name: "বিকাশ" },
+                                                        { id: "sslCommerz" as const, logo: sslcommerz, name: "সিএসএল কমার্জ" },
                                                     ].map((method) => (
                                                         <div
                                                             key={method.id}
                                                             onClick={() => field.onChange(method.id)}
-                                                            className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition cursor-pointer ${field.value === method.id ? "border-primary bg-emerald-50" : "border-gray-200 bg-white"}`}
+                                                            className={`flex items-center justify-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
+                                                                field.value === method.id
+                                                                    ? "border-primary bg-emerald-50 shadow-sm"
+                                                                    : "border-gray-200 bg-white hover:border-gray-300"
+                                                            }`}
                                                         >
                                                             <Image
                                                                 src={method.logo || "/placeholder.svg"}
                                                                 alt={method.id}
-                                                                width={100}
-                                                                height={100}
-                                                                className="object-contain w-[150px] h-[40px] md:w-[150px] "
+                                                                width={120}
+                                                                height={40}
+                                                                className="object-contain h-[35px] w-auto"
                                                             />
                                                         </div>
                                                     ))}
                                                 </div>
                                             )}
                                         />
-
                                     </div>
 
-                                    <div className="flex items-start gap-3 pt-2">
-                                        <input type="checkbox" id="consent" className="mt-1 primary" required />
-                                        <label htmlFor="consent" className="text-sm text-gray-700">
-                                            আমি শর্তাবলী গ্রহণ করি এবং যেকোনো সময় বাতিল করতে পারব।
-                                        </label>
+                                    {/* Summary strip */}
+                                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-gray-600">{summaryDetails.modeLabel} দান:</span>
+                                            <span className="font-bold text-primary text-lg">{amountValue ? `৳ ${amountValue}` : "—"}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between text-sm mt-1">
+                                            <span className="text-gray-600">
+                                                বছরে মোট ({summaryDetails.totalPayments} বার):
+                                            </span>
+                                            <span className="font-bold text-primary">
+                                                {summaryDetails.totalAmount ? `৳ ${summaryDetails.totalAmount.toLocaleString("bn-BD")}` : "—"}
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <div className="grid md:grid-cols-2 gap-3 pt-4">
+                                    {/* Buttons */}
+                                    <div className="grid grid-cols-2 gap-3 pt-2">
                                         <Link href="/donate" className="w-full">
                                             <button
                                                 type="button"
-                                                className="w-full px-4 py-2.5 border-2 border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition"
+                                                className="w-full px-4 py-3 border-2 border-gray-300 text-gray-800 rounded-xl font-semibold hover:bg-gray-50 transition"
                                             >
                                                 ফিরে যান
                                             </button>
@@ -291,7 +434,7 @@ export default function AutopayPage() {
                                         <button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="w-full px-4 py-2.5 bg-primary text-white rounded-lg font-semibold hover:bg-emerald-700 transition disabled:opacity-50"
+                                            className="w-full px-4 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-700 transition disabled:opacity-50 shadow-md"
                                         >
                                             {isLoading ? "প্রক্রিয়াকরণ..." : "দান করুন"}
                                         </button>
@@ -299,48 +442,125 @@ export default function AutopayPage() {
                                 </form>
                             </div>
                         </div>
-
-                        <div className="md:col-span-1">
-                            <div className="bg-primary/90 text-white rounded-lg p-6 sticky top-6 shadow-lg">
-                                <h3 className="text-lg font-bold mb-4">আপনার {summaryDetails.modeLabel} দানের বিবরণ</h3>
-
-                                <div className="space-y-3 text-sm">
-                                    <div className="flex justify-between">
-                                        <span className="text-emerald-100">পরিমাণ ({autopayMode === "daily" ? "দিনে" : "মাসে"}):</span>
-                                        <span className="font-bold">{amountValue ? `৳ ${amountValue}` : "—"}</span>
-                                    </div>
-                                    <div className="border-t border-white/20"></div>
-
-                                    <div className="flex justify-between">
-                                        <span className="text-emerald-100">ফ্রিকোয়েন্সি:</span>
-                                        <span className="font-bold">{summaryDetails.frequency}</span>
-                                    </div>
-                                    <div className="border-t border-white/20"></div>
-
-                                    <div className="flex justify-between">
-                                        <span className="text-emerald-100">শুরু:</span>
-                                        <span className="font-bold">{summaryDetails.startDate}</span>
-                                    </div>
-                                    <div className="border-t border-white/20"></div>
-
-                                    <div className="flex justify-between">
-                                        <span className="text-emerald-100">মোট অর্থ (১২ মাস):</span>
-                                        <span className="font-bold text-yellow-200">
-                                            {summaryDetails.totalAmount ? `৳ ${summaryDetails.totalAmount}` : "—"}
-                                        </span>
-                                    </div>
-                                    <div className="border-t border-white/20"></div>
-
-                                    <div className="flex justify-between">
-                                        <span className="text-emerald-100">মোট পেমেন্ট:</span>
-                                        <span className="font-bold">{summaryDetails.totalPayments}টি</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </main>
+            </div>
+
+            {/* Terms & Conditions Modal */}
+            <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+                <DialogContent className="max-w-lg md:max-w-2xl" showCloseButton={true}>
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
+                            📜 নিয়মিত দানের শর্তাবলী
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-4 my-4 max-h-[60vh] overflow-y-auto pr-2 text-sm text-gray-700 leading-relaxed">
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                            <p className="font-semibold text-amber-800 mb-2">⚠️ গুরুত্বপূর্ণ তথ্য</p>
+                            <p>
+                                নিয়মিত দান একটি স্বয়ংক্রিয় পদ্ধতি। আপনার অনুমোদনের পর প্রতিটি নির্ধারিত সময়ে আপনার অ্যাকাউন্ট থেকে
+                                স্বয়ংক্রিয়ভাবে টাকা কেটে নেওয়া হবে।
+                            </p>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h4 className="font-bold text-gray-900">১. দানের ধরন ও পরিমাণ</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>
+                                    আপনি <strong>{summaryDetails.modeLabel}</strong> ভিত্তিতে{" "}
+                                    <strong>৳ {amountValue || "০"}</strong> দান করতে সম্মত হচ্ছেন।
+                                </li>
+                                <li>
+                                    প্রতি বছরে মোট <strong>{summaryDetails.totalPayments}</strong>টি পেমেন্ট হবে।
+                                </li>
+                                <li>
+                                    বছরে মোট আনুমানিক পরিমাণ:{" "}
+                                    <strong>৳ {summaryDetails.totalAmount.toLocaleString("bn-BD")}</strong>
+                                </li>
+                            </ul>
+
+                            <h4 className="font-bold text-gray-900">২. স্বয়ংক্রিয় পেমেন্ট</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>
+                                    আপনার নির্বাচিত পেমেন্ট পদ্ধতি (বিকাশ/এসএসএলকমার্জ) অনুযায়ী প্রতিটি নির্ধারিত সময়ে স্বয়ংক্রিয়ভাবে
+                                    পেমেন্ট প্রক্রিয়া হবে।
+                                </li>
+                                <li>পেমেন্ট সফল না হলে পুনরায় চেষ্টা করা হতে পারে।</li>
+                                <li>আপনার অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স না থাকলে পেমেন্ট ব্যর্থ হবে।</li>
+                            </ul>
+
+                            <h4 className="font-bold text-gray-900">৩. বাতিল ও পরিবর্তন</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>আপনি যেকোনো সময় নিয়মিত দান বাতিল করতে পারবেন।</li>
+                                <li>
+                                    বাতিল করতে{" "}
+                                    <a href="mailto:contact@khairulummahfoundation.org" className="text-primary underline font-medium">
+                                        contact@khairulummahfoundation.org
+                                    </a>{" "}
+                                    এ ইমেইল করুন।
+                                </li>
+                                <li>বাতিলের অনুরোধ প্রক্রিয়া হতে ১-৩ কর্মদিবস সময় লাগতে পারে।</li>
+                                <li>দানের পরিমাণ পরিবর্তন করতে চাইলে পুরাতনটি বাতিল করে নতুন করে সেট করতে হবে।</li>
+                            </ul>
+
+                            <h4 className="font-bold text-gray-900">৪. তহবিল ব্যবহার</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>আপনার দান ফাউন্ডেশনের কল্যাণমূলক কার্যক্রমে ব্যয় করা হবে।</li>
+                                <li>এই তহবিল সমাজসেবা, শিক্ষা, স্বাস্থ্যসেবা ও জরুরি সাহায্যে ব্যবহৃত হয়।</li>
+                                <li>তহবিলের ব্যবহার সম্পর্কে নিয়মিত প্রতিবেদন প্রকাশ করা হয়।</li>
+                            </ul>
+
+                            <h4 className="font-bold text-gray-900">৫. গোপনীয়তা</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>আপনার ব্যক্তিগত তথ্য সম্পূর্ণ গোপনীয় রাখা হবে।</li>
+                                <li>পেমেন্ট সংক্রান্ত তথ্য নিরাপদ এনক্রিপশন পদ্ধতিতে সংরক্ষণ করা হয়।</li>
+                                <li>তৃতীয় পক্ষের কাছে কোনো তথ্য শেয়ার করা হবে না।</li>
+                            </ul>
+
+                            <h4 className="font-bold text-gray-900">৬. রিফান্ড নীতি</h4>
+                            <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
+                                <li>একবার কাটা হয়ে গেলে দান ফেরতযোগ্য নয়।</li>
+                                <li>ভুলবশত অতিরিক্ত পেমেন্ট হলে ইমেইলের মাধ্যমে যোগাযোগ করুন।</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-200 pt-4">
+                        <div className="flex items-start gap-3 mb-4">
+                            <input
+                                type="checkbox"
+                                id="termsAcceptModal"
+                                checked={termsAccepted}
+                                onChange={(e) => setTermsAccepted(e.target.checked)}
+                                className="mt-1 w-4 h-4 accent-primary rounded"
+                            />
+                            <label htmlFor="termsAcceptModal" className="text-sm text-gray-700">
+                                আমি উপরোক্ত সকল শর্তাবলী পড়েছি এবং সম্মত হচ্ছি। আমি জানি যে আমি যেকোনো সময় এই নিয়মিত দান বাতিল করতে পারব।
+                            </label>
+                        </div>
+
+                        <DialogFooter className="gap-3">
+                            <DialogClose asChild>
+                                <button
+                                    type="button"
+                                    className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition"
+                                >
+                                    বাতিল
+                                </button>
+                            </DialogClose>
+                            <button
+                                type="button"
+                                disabled={!termsAccepted || isLoading}
+                                onClick={handleTermsAcceptAndSubmit}
+                                className="px-6 py-2.5 bg-primary text-white rounded-xl font-semibold hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                            >
+                                {isLoading ? "প্রক্রিয়াকরণ..." : "সম্মত হয়ে দান করুন"}
+                            </button>
+                        </DialogFooter>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }

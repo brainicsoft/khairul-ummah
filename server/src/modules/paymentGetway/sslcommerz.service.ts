@@ -1,11 +1,8 @@
 import axios from "axios"
 import Payment from "../payment/payment.model"
-import { baseUrl } from "../../config"
+import { baseUrl, SSL_API_URL, SSL_VALIDATION_URL, STORE_ID, STORE_PASSWORD } from "../../config"
 
-const STORE_ID = "brain6926ce1cd2eb3"
-const STORE_PASSWORD = "brain6926ce1cd2eb3@ssl"
-const SSL_API_URL = "https://sandbox.sslcommerz.com/gwprocess/v3/api.php"
-const SSL_VALIDATION_URL = "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
+
 
 interface PaymentPayload {
   name: string
@@ -38,7 +35,7 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
     currency: "BDT",
     tran_id: tran_id,
     success_url: `${baseUrl}/api/v1/payment/sslcommerz/success`,
-    fail_url: `${baseUrl}/api/v1/payment/sslcommerz/fail`,
+    fail_url: `${baseUrl}/api/v1/payment/sslcommerz/cancel`,
     cancel_url: `${baseUrl}/api/v1/payment/sslcommerz/cancel`,
     ipn_url: `${baseUrl}/api/v1/payment/sslcommerz/ipn`,
     

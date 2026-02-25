@@ -43,3 +43,15 @@ export const bkashPass:string = process.env.BKASH_PASS || ''
 export const bkashKey: string = process.env.BKASH_API_KEY || ''
 export const bkashSecret:string = process.env.BKASH_APP_SECRECT || ''
 export const bkashUrl:string =process.env.BKASH_API_URL || ''
+
+// ssl commerz
+
+export const STORE_ID:string = process.env.SSLC_STORE_ID || ''
+export const STORE_PASSWORD:string = process.env.SSLC_STORE_PASSWORD || ''
+
+//  url	
+// export const SSL_API_URL = "https://sandbox.sslcommerz.com/gwprocess/v3/api.php"
+// export const SSL_VALIDATION_URL = "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php"
+
+export const SSL_API_URL = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
+export const SSL_VALIDATION_URL = "https://securepay.sslcommerz.com/validator/api/validationserverAPI.php"
