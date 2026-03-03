@@ -32,6 +32,8 @@ export interface IDonation {
   phone: string;
   amount: number;
   paymentId: string;
+  transactionId?: string;
+  trxID?: string;
   status: "success" | "failed" | "pending";
   donationType: string;
   createdAt?: string;

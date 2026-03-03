@@ -1,6 +1,6 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, Users, Gift, CheckCircle, AlertCircle, ChevronDown } from "lucide-react"
+import { TrendingUp, Gift, CheckCircle, ChevronDown } from "lucide-react"
 import { useState } from "react"
 
 interface SummaryCardsProps {
@@ -15,7 +15,7 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
 
   const stats = [
     {
-      title: "মোট ডোনেশন",
+      title: "মোট সফল ডোনেশন",
       value: `৳ ${totalAmount.toLocaleString()}`,
       icon: TrendingUp,
       color: "bg-blue-500",
@@ -32,25 +32,13 @@ export default function SummaryCards({ summary }: SummaryCardsProps) {
       icon: CheckCircle,
       color: "bg-emerald-500",
     },
-    {
-      title: "লম্বিত ডোনেশন",
-      value: status.pending?.toString() || "0",
-      icon: AlertCircle,
-      color: "bg-yellow-500",
-    },
-    {
-      title: "বাতিল ডোনেশন",
-      value: status.failed?.toString() || "0",
-      icon: AlertCircle,
-      color: "bg-red-500",
-    },
   ]
 
   return (
     <div className="space-y-6">
 
       {/* -------- Summary Top Cards -------- */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {stats.map((stat, idx) => (
           <Card key={idx}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

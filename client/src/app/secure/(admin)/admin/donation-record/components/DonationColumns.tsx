@@ -82,6 +82,16 @@ export const getDonationColumns = (
       cell: ({ row }) => <div className="text-xs text-gray-600">{row.getValue("paymentId")}</div>,
     },
     {
+      accessorKey: "transactionId",
+      header: "Transaction ID",
+      cell: ({ row }) => <div className="text-xs text-gray-600">{row.getValue("transactionId") || "-"}</div>,
+    },
+    {
+      accessorKey: "trxID",
+      header: "trxID",
+      cell: ({ row }) => <div className="text-xs text-gray-600">{row.getValue("trxID") || "-"}</div>,
+    },
+    {
       accessorKey: "donationType",
       header: "ডোনেশন ধরন",
       cell: ({ row }) => {

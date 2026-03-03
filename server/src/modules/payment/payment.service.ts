@@ -52,7 +52,7 @@ const handleBkashPayment = async (payload: any) => {
     amount: payload.amount,
     donationType: payload.donationType,
     donorMessage: payload.donorMessage,
-    tran_id: paymentResponse.paymentID,
+    paymentId: paymentResponse.paymentID,
     status: "pending",
     method: "bkash",
   });
@@ -86,13 +86,15 @@ const handleSslcommerzPayment = async (payload: any) => {
  * Verify bKash payment
  */
 export const verifyBkashPaymentService = async (query: any) => {
+  console.log(query)
   const { paymentID, status } = query;
 
   if (!paymentID) {
     return { success: false, message: "Payment ID missing in callback URL" };
   }
 
-  const payment = await Payment.findOne({ tran_id: paymentID });
+
+  const payment = await Payment.findOne({ paymentId: paymentID });
   if (!payment) {
     return { success: false, message: "Payment not found", paymentID };
   }
@@ -102,7 +104,7 @@ export const verifyBkashPaymentService = async (query: any) => {
   }
 
   if (status !== "success") {
-    await Payment.findOneAndUpdate({ tran_id: paymentID, status: { $ne: "success" } }, { status: "failed" });
+    await Payment.findOneAndUpdate({ paymentId: paymentID, status: { $ne: "success" } }, { status: "failed" });
     return { success: false, message: "Payment failed or cancelled", paymentID };
   }
 
@@ -121,14 +123,18 @@ export const verifyBkashPaymentService = async (query: any) => {
 
   if (data.statusCode === "0000") {
     await Payment.findOneAndUpdate(
-      { tran_id: paymentID, status: { $ne: "success" } },
-      { status: "success", amount: data.amount, paymentGatewayResponse: data }
+      { paymentId: paymentID, status: { $ne: "success" } },
+      {
+        status: "success",
+        trxID: data.trxID,
+        amount: data.amount,
+      }
     );
 
     return { success: true, message: "Payment successful", trxID: data.trxID, amount: data.amount };
   }
 
-  await Payment.findOneAndUpdate({ tran_id: paymentID, status: { $ne: "success" } }, { status: "failed" });
+  await Payment.findOneAndUpdate({ paymentId: paymentID, status: { $ne: "success" } }, { status: "failed" });
   return { success: false, message: "Payment execution failed", paymentID };
 };
 

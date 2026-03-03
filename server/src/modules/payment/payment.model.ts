@@ -45,6 +45,9 @@ const PaymentSchema = new Schema<IPayment>(
       enum:["bkash","sslcommerz"],
       default:'bkash',
     },
+    trxID: {
+      type: String,
+    },
 
     donorMessage: {
       type: String,

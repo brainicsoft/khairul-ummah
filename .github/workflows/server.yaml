@@ -34,7 +34,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           overwrite: true
           source: "server/package.json,server/pnpm-lock.yaml,server/.env,server/dist/*,server/pm2.config.js,server/upload,server/server.js,server/docs/* server/tsconfig.json"
@@ -45,7 +45,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH }}
+          password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/khairulummah/server
             export NVM_DIR="$HOME/.nvm"

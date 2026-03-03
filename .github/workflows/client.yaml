@@ -33,7 +33,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH }}
+          password: ${{ secrets.PASSWORD }}
           port: 22
           overwrite: true
           source: client/.next,client/public,client/.gitignore,client/components.json,client/eslint.config.mjs,client/next.config.mjs,client/package.json,client/pnpm-lock.yaml,client/pm2.config.js,client/postcss.config.mjs,client/tailwind.config.ts,client/tsconfig.json,client/README.md
@@ -45,7 +45,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH }}
+          password: ${{ secrets.PASSWORD }}
           script: |
             cd /var/www/khairulummah/client
             export NVM_DIR="$HOME/.nvm"

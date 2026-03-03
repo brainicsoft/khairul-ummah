@@ -177,6 +177,13 @@ export default function DonationDetailModal({ donation, isOpen, onClose }: Donat
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
+                  <Receipt className="h-5 w-5 text-indigo-500" />
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">trxID</p>
+                    <p className="font-mono text-sm">{donation.trxID || "-"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">স্ট্যাটাস</p>
                     <Badge className={getStatusColor(donation.status)}>{getStatusLabel(donation.status)}</Badge>

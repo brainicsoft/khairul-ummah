@@ -11,6 +11,13 @@ import DonationEditModal from "./components/DonationEditModal"
 import DonationAddModal from "./components/DonationAddModal"
 import { useGetAllPaymentRecordsQuery, useGetPaymentSummaryQuery } from "@/redux/features/payment/paymentApi"
 
+const statusTabs = [
+  { label: "All", value: "" },
+  { label: "Pending", value: "pending" },
+  { label: "Success", value: "success" },
+  { label: "Failed", value: "failed" },
+]
+
 export default function DonationRecordsPage() {
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -71,7 +78,21 @@ export default function DonationRecordsPage() {
   const mappedData = donations.map((d) => ({
     ...d,
     id: d._id,
+    transactionId: d.transactionId || d.paymentId,
+    trxID: d.trxID || "-",
   }))
+
+  const successOverview = useMemo(() => {
+    const totalAmount = paymentSummary?.data?.totalAmount || 0
+    const successCount = paymentSummary?.data?.status?.success || 0
+    const donationTypeTotals = paymentSummary?.data?.donationTypeTotals || []
+
+    return {
+      totalAmount,
+      status: { success: successCount },
+      donationTypeTotals,
+    }
+  }, [paymentSummary])
 
   return (
     <main className="flex-1 space-y-8 p-8">
@@ -83,10 +104,29 @@ export default function DonationRecordsPage() {
         <Button onClick={() => setIsAddModalOpen(true)}>নতুন ডোনেশন যোগ করুন</Button>
       </div>
 
-      <SummaryCards summary={paymentSummary?.data} />
+      <SummaryCards summary={successOverview} />
 
       <Card>
         <CardHeader>
+          <div className="mb-3 flex flex-wrap gap-2">
+            {statusTabs.map((tab) => (
+              <button
+                key={tab.value || "all"}
+                type="button"
+                onClick={() => {
+                  setFilterStatus(tab.value)
+                  setCurrentPage(1)
+                }}
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                  filterStatus === tab.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border bg-background text-foreground hover:bg-muted"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
           <CardDescription>মোট ডোনেশন: {donationsRecords?.meta.total}</CardDescription>
         </CardHeader>
 
