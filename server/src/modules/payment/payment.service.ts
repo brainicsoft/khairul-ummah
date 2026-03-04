@@ -31,6 +31,23 @@ export const createPaymentService = async (payload: any) => {
   }
 };
 
+
+export const createBkashAutoPayService = async (payload: any) => {
+  const { amount, donationType, donorMessage } = payload;
+
+  // For auto pay, we can use user's registered phone and email
+
+  return {
+    name: amount.name,
+    email: amount.email,
+    phone: amount.phone,
+    amount,
+    donationType,
+    donorMessage
+  };
+};
+
+
 /**
  * Handle bKash payment
  */

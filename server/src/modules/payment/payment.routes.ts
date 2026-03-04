@@ -8,6 +8,7 @@ import {
   sslcommerzCancelController,
   sslcommerzIPNController,
   getPaymentStatusController,
+  createBkashAutoPayController,
 } from "./payment.controller"
 import auth from "../../middlewares/auth"
 
@@ -19,10 +20,13 @@ paymentRoutes.post("/create", createPaymentController)
 paymentRoutes.get("/",auth('admin'), getAllPaymentController)
 // Get payment summary
 paymentRoutes.get("/summary",auth('admin'), getPaymentSummaryController)
-// Get specific payment status
-paymentRoutes.get("/:id/status", getPaymentStatusController)
+
 // bKash verification (callback)
 paymentRoutes.get("/verify", verifyBkashController)
+
+// BKash Recurring Payment Routes
+
+paymentRoutes.post("/bkash/autopay/create", auth(), createBkashAutoPayController)  
 
 
 
@@ -31,3 +35,7 @@ paymentRoutes.get("/verify", verifyBkashController)
 paymentRoutes.post("/sslcommerz/success", sslcommerzSuccessController)
 paymentRoutes.post("/sslcommerz/cancel", sslcommerzCancelController)
 paymentRoutes.post("/sslcommerz/ipn", sslcommerzIPNController)
+
+
+// Get specific payment status
+paymentRoutes.get("/:id/status", getPaymentStatusController)
