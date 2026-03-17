@@ -103,7 +103,7 @@ export const validateSslcommerzPayment = async (data: any): Promise<{ success: b
     const response = await axios.get(validationUrl)
 
     // Update payment status based on validation
-    if (response.data.status === "SUCCESS") {
+    if (response.data.status === "VALIDATED") {
       await Payment.findOneAndUpdate(
         { paymentId: tran_id },
         {
@@ -121,7 +121,7 @@ export const validateSslcommerzPayment = async (data: any): Promise<{ success: b
       await Payment.findOneAndUpdate(
         { paymentId: tran_id },
         {
-          status: "success",
+          status: "failed",
           sslResponse: response.data,
         },
         { new: true },

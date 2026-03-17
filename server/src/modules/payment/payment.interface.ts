@@ -10,5 +10,6 @@ export interface IPayment extends Document {
   donationType:string;
   donorMessage?: string;
   createdAt: Date;
+  sslResponse?: any;
   updatedAt: Date;
 }

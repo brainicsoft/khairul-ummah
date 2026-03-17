@@ -53,6 +53,9 @@ const PaymentSchema = new Schema<IPayment>(
       type: String,
       trim: true,
     },
+    sslResponse: {
+      type: Schema.Types.Mixed,
+    },
   },
   {
     timestamps: true,
