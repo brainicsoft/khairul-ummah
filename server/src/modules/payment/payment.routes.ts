@@ -8,7 +8,6 @@ import {
   sslcommerzCancelController,
   sslcommerzIPNController,
   getPaymentStatusController,
-  createBkashAutoPayController,
 } from "./payment.controller"
 import auth from "../../middlewares/auth"
 
@@ -24,9 +23,7 @@ paymentRoutes.get("/summary",auth('admin'), getPaymentSummaryController)
 // bKash verification (callback)
 paymentRoutes.get("/verify", verifyBkashController)
 
-// BKash Recurring Payment Routes
-
-paymentRoutes.post("/bkash/autopay/create", auth(), createBkashAutoPayController)  
+// Recurring/autopay routes moved to `autopay` module (mounted at /autopay)
 
 
 

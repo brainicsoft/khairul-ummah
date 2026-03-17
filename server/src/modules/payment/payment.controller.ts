@@ -13,7 +13,6 @@ import {
   getPaymentStatusService,
   handleSslSuccessService,
   handleSslCancelService,
-  createBkashAutoPayService,
 } from "./payment.service"
 import { frontendUrl } from "../../config"
 
@@ -27,15 +26,7 @@ export const createPaymentController: RequestHandler = catchAsync(async (req, re
   })
 })
 
-export const createBkashAutoPayController: RequestHandler = catchAsync(async (req, res) => {
-  const result = await createBkashAutoPayService(req.body)
-  sendResponse(res, {
-    status: 201,
-    success: true,
-    message: "Successfully created recurring payment",
-    data: result,
-  })
-})
+// autopay controllers moved to `autopay` module
 
 
 export const verifyBkashController: RequestHandler = catchAsync(async (req, res) => {
@@ -193,3 +184,4 @@ export const getPaymentSummaryController: RequestHandler = catchAsync(async (req
     data: summary,
   })
 })
+// autopay endpoints moved to separate module `autopay`

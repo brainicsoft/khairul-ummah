@@ -38,7 +38,6 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
     fail_url: `${baseUrl}/api/v1/payment/sslcommerz/cancel`,
     cancel_url: `${baseUrl}/api/v1/payment/sslcommerz/cancel`,
     ipn_url: `${baseUrl}/api/v1/payment/sslcommerz/ipn`,
-    
     cus_name: name,
     cus_email: email,
     cus_phone: phone,

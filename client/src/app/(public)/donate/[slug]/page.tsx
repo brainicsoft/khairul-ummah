@@ -42,21 +42,6 @@ export default function DonateTypePage() {
   const slug = params.slug as string
   const { data, isLoading: donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
   console.log(data)
-   // fetch donation types on mount
-   useEffect(() => {
-    async function fetchDonationTypes() {
-      const data = await DonatesTypesMenue();
-      setDonationTypes(data);
-    }
-    fetchDonationTypes();
-  }, []);
-
-  // const data = DONATION_TYPES.find((type) => type.slug === slug)
-
-  const [selectedAmount, setSelectedAmount] = useState<string>("")
-
-  const [bkashDonation, { isLoading }] = useCreateBkashMutation()
-  const [createPayment] = useCreatePaymentMutation()
   const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
       category: "",
@@ -67,6 +52,28 @@ export default function DonateTypePage() {
       paymentMethod: "bkash",
     }
   })
+   // fetch donation types on mount
+   useEffect(() => {
+    async function fetchDonationTypes() {
+      const data = await DonatesTypesMenue();
+      setDonationTypes(data);
+    }
+    fetchDonationTypes();
+  }, []);
+
+  // When the donation data (page) loads, auto-select its slug in the category select
+  useEffect(() => {
+    if (data?.slug) {
+      setValue("category", data.slug);
+    }
+  }, [data, setValue]);
+
+  // const data = DONATION_TYPES.find((type) => type.slug === slug)
+
+  const [selectedAmount, setSelectedAmount] = useState<string>("")
+
+  const [bkashDonation, { isLoading }] = useCreateBkashMutation()
+  const [createPayment] = useCreatePaymentMutation()
 
   if (donatTypesLoding) return <div className="min-h-screen flex items-center justify-center">Loading...</div>
 
@@ -133,50 +140,9 @@ export default function DonateTypePage() {
         <p>সহায়তার জন্য আমাদের সাথে যোগাযোগ করুন ✉️ contact@khayrulummah.org</p>
       </div>
       <main className="py-12 md:py-16 bg-background">
+
         <div className="container mx-auto px-4 max-w-6xl">
-          {/* Video & Benefits */}
-          <div className="grid md:grid-cols-2 gap-12 mb-16">
-            <div className="flex flex-col justify-center">
-              <div className="bg-black rounded-xl overflow-hidden aspect-video shadow-lg">
-                <iframe
-                  className="w-full h-full"
-                  src={data.videoUrl}
-                  title="Donation Video"
-                  allowFullScreen
-                  loading="lazy"
-                ></iframe>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-center">
-              <div className="bg-secondary/20 rounded-xl p-8 border-l-4 border-secondary shadow-inner">
-                <h2 className="text-2xl font-bold text-primary mb-4">আপনি কী পাবেন?</h2>
-                <p className="text-foreground/80 mb-6 leading-relaxed">
-                  আপনার অবদান সরাসরি এই ধরনের অনুদানের মাধ্যমে সমাজে দৃশ্যমান প্রভাব ফেলে।
-                </p>
-                <ul className="space-y-3">
-                  {data?.benefits?.map((benefit: string, idx: number) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <span className="text-secondary font-bold text-lg mt-1">✓</span>
-                      <span className="text-foreground">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-          {/* Description */}
-          <div className="bg-card rounded-xl p-8 mb-16 border border-border shadow-md">
-            <h2 className="text-2xl font-bold text-primary mb-4">আমাদের কাজে অবদান রাখুন</h2>
-            <p className="text-foreground/80 leading-relaxed mb-4">
-              খাইরুল উম্মাহ ফাউন্ডেশন সমাজের সুবিধাবঞ্চিত মানুষের উন্নয়নে নিবেদিত। আপনার প্রতিটি অনুদান সরাসরি আমাদের বিভিন্ন কর্মসূচিতে ব্যয় করা হয় এবং প্রকৃত প্রভাব তৈরি করে।
-            </p>
-            <p className="text-foreground/80 leading-relaxed">
-              এই ধরনের অনুদানের মাধ্যমে আপনি সুনির্দিষ্টভাবে আপনার লক্ষ্য অর্জনে সাহায্য করতে পারেন এবং একটি উন্নত ভবিষ্যৎ নির্মাণে অংশীদার হন।
-            </p>
-          </div>
-
-          {/* Donation Form */}
+            {/* Donation Form */}
           <div className="grid md:grid-cols-3 gap-8">
             <div className="md:col-span-2">
               <div className="bg-card rounded-xl p-8 border border-border shadow-lg">
@@ -275,7 +241,7 @@ export default function DonateTypePage() {
                       render={({ field }) => (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {[{ id: "bkash", logo: bkash }, 
-                          // { id: "sslcommerz", logo: sslcommerz }
+                          { id: "sslcommerz", logo: sslcommerz }
                         ].map((method) => (
                             <label
                               key={method.id}
@@ -289,7 +255,7 @@ export default function DonateTypePage() {
                                 onChange={() => field.onChange(method.id)}
                                 className="accent-primary"
                               />
-                              <Image src={method.logo} alt={method.id} width={45} height={45} className="object-contain" />
+                              <Image src={method.logo} alt={method.id} width={48} height={48} className="object-contain" />
                             </label>
                           ))}
                         </div>
@@ -328,6 +294,49 @@ export default function DonateTypePage() {
               </Link>
             </div>
           </div>
+          {/* Video & Benefits */}
+          <div className="grid md:grid-cols-2 gap-12 mb-16">
+            <div className="flex flex-col justify-center">
+              <div className="bg-black rounded-xl overflow-hidden aspect-video shadow-lg">
+                <iframe
+                  className="w-full h-full"
+                  src={data.videoUrl}
+                  title="Donation Video"
+                  allowFullScreen
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-center">
+              <div className="bg-secondary/20 rounded-xl p-8 border-l-4 border-secondary shadow-inner">
+                <h2 className="text-2xl font-bold text-primary mb-4">আপনি কী পাবেন?</h2>
+                <p className="text-foreground/80 mb-6 leading-relaxed">
+                  আপনার অবদান সরাসরি এই ধরনের অনুদানের মাধ্যমে সমাজে দৃশ্যমান প্রভাব ফেলে।
+                </p>
+                <ul className="space-y-3">
+                  {data?.benefits?.map((benefit: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <span className="text-secondary font-bold text-lg mt-1">✓</span>
+                      <span className="text-foreground">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {/* Description */}
+          <div className="bg-card rounded-xl p-8 mb-16 border border-border shadow-md">
+            <h2 className="text-2xl font-bold text-primary mb-4">আমাদের কাজে অবদান রাখুন</h2>
+            <p className="text-foreground/80 leading-relaxed mb-4">
+              খাইরুল উম্মাহ ফাউন্ডেশন সমাজের সুবিধাবঞ্চিত মানুষের উন্নয়নে নিবেদিত। আপনার প্রতিটি অনুদান সরাসরি আমাদের বিভিন্ন কর্মসূচিতে ব্যয় করা হয় এবং প্রকৃত প্রভাব তৈরি করে।
+            </p>
+            <p className="text-foreground/80 leading-relaxed">
+              এই ধরনের অনুদানের মাধ্যমে আপনি সুনির্দিষ্টভাবে আপনার লক্ষ্য অর্জনে সাহায্য করতে পারেন এবং একটি উন্নত ভবিষ্যৎ নির্মাণে অংশীদার হন।
+            </p>
+          </div>
+
+        
           {/* FAQ */}
           <FAQ />
         </div>

@@ -1,8 +1,8 @@
 import 'dotenv/config';
 
 export const NODE_ENV = process.env.NODE_ENV;
-export const baseUrl = process.env.BASE_URL || 'https://api.khairulummahfoundation.org';
-export const frontendUrl = process.env.FRONTEND_URL || 'https://khairulummahfoundation.org';
+export const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
+export const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 export const port = process.env.PORT || 8080;
 // for Database Connection
 export const mongoUrl: string = process.env.mongoDB_URI || '';
@@ -43,6 +43,8 @@ export const bkashPass:string = process.env.BKASH_PASS || ''
 export const bkashKey: string = process.env.BKASH_API_KEY || ''
 export const bkashSecret:string = process.env.BKASH_APP_SECRECT || ''
 export const bkashUrl:string =process.env.BKASH_API_URL || ''
+// recurring gateway (subscriptions)
+export const bkashRecurringUrl:string = process.env.BKASH_RECURRING_URL || 'https://gateway.sbrecurring.pay.bka.sh/gateway'
 
 // ssl commerz
 

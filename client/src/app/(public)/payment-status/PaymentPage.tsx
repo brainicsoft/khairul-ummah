@@ -6,8 +6,8 @@ import { CheckCircle, XCircle } from "lucide-react"
 export default function PaymentStatusPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const paymentId = searchParams.get("paymentId")
-  const trxID = searchParams.get("trxID")
+  const paymentId = searchParams.get("val_id")
+  const trxID = searchParams.get("tran_id")
   const amount = searchParams.get("amount")
   const status = searchParams.get("status") || "success"
   const message = searchParams.get("message") || ""

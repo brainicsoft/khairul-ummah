@@ -3,8 +3,19 @@ import { bkashKey, bkashUrl } from "../../config";
 import { CustomError } from "../../errors/CustomError";
 import { 
   createBkashPayment, 
-  getBkashIdToken 
+  getBkashIdToken,
+  createBkashSubscription,
+  extendBkashSubscription,
+  refundBkashPayment,
+  listBkashSubscriptions,
+  getBkashSubscriptionById,
+  cancelBkashSubscription,
+  findBkashByRequestId,
+  getBkashSchedule,
+  getBkashPaymentById,
+  findPaymentsBySubscriptionId,
 } from "../paymentGetway/bkash.service";
+import axios from "axios";
 import {
   createSslcommerzPayment,
   validateSslcommerzPayment,
@@ -14,7 +25,6 @@ import {
 } from "../paymentGetway/sslcommerz.service";
 import type { IPayment } from "./payment.interface";
 import Payment from "./payment.model";
-import axios from "axios";
 
 /**
  * Create payment - handles both bKash and SSLCommerz
@@ -32,20 +42,7 @@ export const createPaymentService = async (payload: any) => {
 };
 
 
-export const createBkashAutoPayService = async (payload: any) => {
-  const { amount, donationType, donorMessage } = payload;
-
-  // For auto pay, we can use user's registered phone and email
-
-  return {
-    name: amount.name,
-    email: amount.email,
-    phone: amount.phone,
-    amount,
-    donationType,
-    donorMessage
-  };
-};
+// autopay functions moved to `autopay` module
 
 
 /**
