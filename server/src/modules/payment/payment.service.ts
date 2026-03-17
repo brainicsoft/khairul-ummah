@@ -99,8 +99,9 @@ const handleSslcommerzPayment = async (payload: any) => {
 /**
  * Verify bKash payment
  */
-export const verifyBkashPaymentService = async (query: any) => {
-  console.log(query)
+export const verifyBkashPaymentService = async (
+  query: any
+):Promise<any> => {
   const { paymentID, status } = query;
 
   if (!paymentID) {

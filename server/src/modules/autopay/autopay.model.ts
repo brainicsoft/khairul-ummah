@@ -41,6 +41,9 @@ const autopaySchema = new Schema<IAutopay>(
       type: String,
       index: true,
     },
+    subscriptionReference: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ['ACTIVE', 'PAUSED', 'CANCELLED', 'EXPIRED','PENDING'],
@@ -72,8 +75,15 @@ const autopaySchema = new Schema<IAutopay>(
       type: Boolean,
       default: true,
     },
+    deductionFailureCount: {
+      type: Number,
+      default: 0,
+    },
     metadata: {
       type: Schema.Types.Mixed,
+    },
+    nextPaymentDate: {
+      type: Date,
     },
   },
   {

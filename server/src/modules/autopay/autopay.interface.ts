@@ -7,13 +7,13 @@ export interface IAutopay {
   name?: string;
   email?: string;
   phone?: string;
-
+deductionFailureCount?: number; // count of consecutive deduction failures, useful for retry logic and status updates
   // core subscription fields
   amount: number; // amount in smallest currency unit or as agreed by app
   frequency: Frequency; // DAILY, WEEKLY, etc.
   paymentType: PaymentType; // FIXED or VARIABLE
   payerType: PayerType; // who pays / payer category
-
+  subscriptionReference?: string; // optional reference from payment gateway
   // identification & status
   subscriptionId?: string; // internal subscription id
   status?: SubscriptionStatus; // subscription lifecycle status
@@ -23,6 +23,7 @@ export interface IAutopay {
   endDate?: Date;
   nextRunAt?: Date;
   lastRunAt?: Date;
+  nextPaymentDate: Date;
 
   // payment method / references
   paymentMethodId?: string; // reference to saved payment method

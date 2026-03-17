@@ -3,6 +3,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import {
   createAutopay,
+  processBkashWebhook,
 //   extendAutopay,
 //   refundAutopay,
 //   listAutopays,
@@ -20,92 +21,17 @@ export const createAutopayController: RequestHandler = catchAsync(async (req, re
   sendResponse(res, { status: 201, success: true, message: "Successfully created recurring payment", data: result });
 });
 
-// export const extendAutopayController: RequestHandler = catchAsync(async (req, res) => {
-//   const result = await extendAutopay(req.body);
-//   sendResponse(res, { status: 200, success: true, message: "Subscription extended", data: result });
-// });
+export const bkashWebHookController: RequestHandler = catchAsync(async (req, res) => {
+  // Handle the webhook or redirect callback from bKash
+  const subscriptionRequestId = String(
+    req.body?.subscriptionRequestId || req.query?.subscriptionRequestId || req.body?.requestId || req.query?.requestId || ""
+  );
+  if (!subscriptionRequestId) {
+    return sendResponse(res, { status: 400, success: false, message: "subscriptionRequestId is required" });
+  }
 
-// export const refundAutopayController: RequestHandler = catchAsync(async (req, res) => {
-//   const result = await refundAutopay(req.body);
-//   sendResponse(res, { status: 200, success: true, message: "Refund processed", data: result });
-// });
+  const {redirectUrl}:any = await processBkashWebhook(subscriptionRequestId,req.query.reference);
+  console.log(`Processed bKash webhook for ${subscriptionRequestId}`, { redirectUrl });
 
-// export const listAutopaysController: RequestHandler = catchAsync(async (req, res) => {
-//   const page = Number(req.params.page) || 0;
-//   const size = Number(req.params.size) || 10;
-//   const result = await listAutopays(page, size);
-//   sendResponse(res, { status: 200, success: true, message: "Subscriptions fetched", data: result });
-// });
-
-// export const getAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
-//   const id = Number(req.params.id);
-//   const result = await getAutopayById(id);
-//   sendResponse(res, { status: 200, success: true, message: "Subscription fetched", data: result });
-// });
-
-// export const cancelAutopayController: RequestHandler = catchAsync(async (req, res) => {
-//   const id = Number(req.params.id);
-//   const reason = String(req.query.reason || "user_request");
-//   const result = await cancelAutopay(id, reason);
-//   sendResponse(res, { status: 200, success: true, message: "Subscription cancelled", data: result });
-// });
-
-// export const findAutopayByRequestIdController: RequestHandler = catchAsync(async (req, res) => {
-//   const requestId = String(req.params.requestId);
-//   const result = await findAutopayByRequestId(requestId);
-//   sendResponse(res, { status: 200, success: true, message: "Subscription fetched by requestId", data: result });
-// });
-
-// export const getAutopayScheduleController: RequestHandler = catchAsync(async (req, res) => {
-//   const { frequency, startDate, expiryDate } = req.query as Record<string, string>;
-//   const result = await getAutopaySchedule(frequency, startDate, expiryDate);
-//   sendResponse(res, { status: 200, success: true, message: "Schedule generated", data: result });
-// });
-
-// export const getAutopayPaymentByIdController: RequestHandler = catchAsync(async (req, res) => {
-//   const id = Number(req.params.id);
-//   const result = await getAutopayPaymentById(id);
-//   sendResponse(res, { status: 200, success: true, message: "Payment fetched", data: result });
-// });
-
-// export const getPaymentsBySubscriptionIdController: RequestHandler = catchAsync(async (req, res) => {
-//   const subscriptionId = Number(req.params.subscriptionId);
-//   const result = await getPaymentsBySubscriptionId(subscriptionId);
-//   sendResponse(res, { status: 200, success: true, message: "Payments fetched for subscription", data: result });
-// });
-
-//   import { 
-//    updateAutopayByIdService,
-//    deleteAutopayByIdService
-//    } from './autopay.service'; // Update with your service path
-
-
- 
-
-
-//   // update Autopay 
-
-//     export const updateAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
-//     const result = await updateAutopayByIdService(req.params.id,req.body);
-//     sendResponse(res, {
-//       status: 200,
-//       success: true,
-//       message: 'autopay updated successfully',
-//       data: result,
-//     });
-//   });
-
-//   // delete Autopay 
-
-//     export const deleteAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
-//     const result = await deleteAutopayByIdService(req.params.id);
-//     sendResponse(res, {
-//       status: 200,
-//       success: true,
-//       message: 'autopay deleted successfully',
-//       data: result,
-//     });
-//   });
-
-
-  
+  res.redirect(redirectUrl || '');
+});

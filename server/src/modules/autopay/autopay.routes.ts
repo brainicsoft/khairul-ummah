@@ -1,30 +1,17 @@
 import { Router } from "express";
 import {
   createAutopayController,
-//   extendAutopayController,
-//   refundAutopayController,
-//   listAutopaysController,
-//   getAutopayByIdController,
-//   cancelAutopayController,
-//   findAutopayByRequestIdController,
-//   getAutopayScheduleController,
-//   getAutopayPaymentByIdController,
-//   getPaymentsBySubscriptionIdController,
+  bkashWebHookController
 } from "./autopay.controller";
 
 export const autopayRoutes: Router = Router();
 
+// create a subscription
 autopayRoutes.post("/bkash/create", createAutopayController);
-// autopayRoutes.put("/bkash/extend", extendAutopayController);
-// autopayRoutes.post("/bkash/refund", refundAutopayController);
-
-// autopayRoutes.get("/subscriptions/:page/:size", listAutopaysController);
-// autopayRoutes.get("/subscriptions/:id", getAutopayByIdController);
-// autopayRoutes.delete("/subscriptions/:id", cancelAutopayController);
-// autopayRoutes.get("/request-id/:requestId", findAutopayByRequestIdController);
-// autopayRoutes.get("/schedule", getAutopayScheduleController);
-// autopayRoutes.get("/payment/:id", getAutopayPaymentByIdController);
-// autopayRoutes.get("/payment/bySubscriptionId/:subscriptionId", getPaymentsBySubscriptionIdController);
+// subscription validation
+// subscription validation / webhook (support GET and POST)
+autopayRoutes.get("/bkash/webhook", bkashWebHookController);
+autopayRoutes.post("/bkash/webhook", bkashWebHookController);
 
 export default autopayRoutes;
 

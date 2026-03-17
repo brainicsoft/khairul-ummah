@@ -1,3 +1,4 @@
+import { frontendUrl } from "../../config";
 import { createBkashSubscription } from "../paymentGetway/bkash.service";
 import { Autopay } from "./autopay.model";
 
@@ -30,6 +31,7 @@ export const createAutopay = async (payload: any) => {
     // maxCapRequired: payload.maxCapRequired,
   });
 
+  console.log('bKash subscription response:', bkashResp);
   // Update created record with gateway info and subscription id
   created.subscriptionId = bkashResp.subscriptionRequestId || String(created._id);
   created.metadata = { ...(created.metadata || {}), bkash: bkashResp };
@@ -37,6 +39,73 @@ export const createAutopay = async (payload: any) => {
 
   return { subscription: created, redirectURL: bkashResp.redirectURL, expirationTime: bkashResp.expirationTime };
 };
+
+export const processBkashWebhook = async (subscriptionRequestId: string,reference:any) => {
+  const { findBkashByRequestId } = await import("../paymentGetway/bkash.service");
+  const bkashResp = await findBkashByRequestId(subscriptionRequestId);
+  console.log(bkashResp,'bkash response')
+
+  // try find by subscriptionId first, fallback to metadata lookup
+  let autopay = await Autopay.findOne({ subscriptionId: subscriptionRequestId });
+  if (!autopay) {
+    autopay = await Autopay.findOne({ 'metadata.bkash.subscriptionRequestId': subscriptionRequestId });
+  }
+
+  if (!autopay) return { updated: false, bkash: bkashResp };
+
+  // Map common fields from bKash response into our Autopay document
+  try {
+    // basic mappings into model fields only
+    autopay.subscriptionId = bkashResp.subscriptionRequestId || autopay.subscriptionId;
+    autopay.subscriptionReference = bkashResp.subscriptionReference || autopay.subscriptionReference;
+    autopay.amount = bkashResp.amount ?? autopay.amount;
+    autopay.frequency = bkashResp.frequency || autopay.frequency;
+
+    if (bkashResp.startDate) autopay.startDate = new Date(bkashResp.startDate);
+    if (bkashResp.expiryDate) autopay.endDate = new Date(bkashResp.expiryDate);
+    if (bkashResp.nextPaymentDate) autopay.nextRunAt = new Date(bkashResp.nextPaymentDate);
+    if (bkashResp.lastSuccessfulPaymentDate) autopay.lastRunAt = new Date(bkashResp.lastSuccessfulPaymentDate);
+
+    const remoteStatus = bkashResp?.subscriptionStatus || bkashResp?.status || bkashResp?.state || null;
+    let mappedStatus: any = autopay.status;
+    if (remoteStatus) {
+      const rs = String(remoteStatus).toUpperCase();
+      if (rs.includes("ACTIVE") || rs.includes("AUTHORIZED") || rs.includes("APPROVED")) mappedStatus = "ACTIVE";
+      else if (rs.includes("PAUSE") || rs.includes("PAUSED")) mappedStatus = "PAUSED";
+      else if (rs.includes("CANCEL") || rs.includes("CANCELLED") || rs.includes("REVOKED")) mappedStatus = "CANCELLED";
+      else if (rs.includes("EXPIRE") || rs.includes("EXPIRED")) mappedStatus = "EXPIRED";
+      else if (rs.includes("SUCCEEDED") || rs.includes("SUCCESS")) mappedStatus = "ACTIVE";
+    }
+
+    autopay.status = mappedStatus;
+    autopay.isActive = !!(bkashResp.active ?? (mappedStatus === "ACTIVE"));
+    autopay.endDate = bkashResp.expired ;
+    autopay.deductionFailureCount = bkashResp.deductionFailureCount ?? autopay.deductionFailureCount;
+    autopay.nextPaymentDate=bkashResp.nextPaymentDate 
+
+    // If this callback indicates a successful charge, mark last/next run and expiry
+    if (remoteStatus && String(remoteStatus).toUpperCase().includes("SUCCEEDED")) {
+      if (bkashResp.lastSuccessfulPaymentDate) autopay.lastRunAt = new Date(bkashResp.lastSuccessfulPaymentDate);
+      if (bkashResp.nextPaymentDate) autopay.nextRunAt = new Date(bkashResp.nextPaymentDate);
+      if (bkashResp.expiryDate) autopay.endDate = new Date(bkashResp.expiryDate);
+      autopay.isActive = true;
+    }
+
+
+    // do not attach bkashValidation object — only persist fields available in the model
+    await autopay.save();
+    console.log(bkashResp)
+       const redirectUrl = new URL(`${frontendUrl}/payment-status`)
+       redirectUrl.searchParams.append("paymentId",subscriptionRequestId as string)
+       redirectUrl.searchParams.append("val_id", reference as string)
+       redirectUrl.searchParams.append("amount", bkashResp.amount?.toString() || "0")
+   
+       return {redirectUrl: redirectUrl.toString()};
+  } catch (err: any) {
+    console.error('processBkashWebhook mapping error', err?.message || err);
+    return { updated: false, error: err?.message || err, bkash: bkashResp };
+  }
+}
 
 // export const extendAutopay = async (payload: any) => {
 //   return await extendBkashSubscription(payload);
