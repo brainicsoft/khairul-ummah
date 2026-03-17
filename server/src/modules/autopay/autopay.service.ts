@@ -58,6 +58,7 @@ export const processBkashWebhook = async (subscriptionRequestId: string,referenc
     // basic mappings into model fields only
     autopay.subscriptionId = bkashResp.subscriptionRequestId || autopay.subscriptionId;
     autopay.subscriptionReference = bkashResp.subscriptionReference || autopay.subscriptionReference;
+    autopay.subscription_no = bkashResp.id
     autopay.amount = bkashResp.amount ?? autopay.amount;
     autopay.frequency = bkashResp.frequency || autopay.frequency;
 

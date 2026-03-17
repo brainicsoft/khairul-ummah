@@ -17,7 +17,7 @@ deductionFailureCount?: number; // count of consecutive deduction failures, usef
   // identification & status
   subscriptionId?: string; // internal subscription id
   status?: SubscriptionStatus; // subscription lifecycle status
-
+  subscription_no?: string; // subscription number from gateway
   // schedule & run metadata
   startDate?: Date;
   endDate?: Date;

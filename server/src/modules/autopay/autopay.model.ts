@@ -85,6 +85,9 @@ const autopaySchema = new Schema<IAutopay>(
     nextPaymentDate: {
       type: Date,
     },
+    subscription_no:{
+      type:String
+    } 
   },
   {
     timestamps: true,
