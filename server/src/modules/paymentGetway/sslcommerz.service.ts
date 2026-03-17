@@ -121,7 +121,7 @@ export const validateSslcommerzPayment = async (data: any): Promise<{ success: b
       await Payment.findOneAndUpdate(
         { paymentId: tran_id },
         {
-          status: "failed",
+          status: "success",
           sslResponse: response.data,
         },
         { new: true },
