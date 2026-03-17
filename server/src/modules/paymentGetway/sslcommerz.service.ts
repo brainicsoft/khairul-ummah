@@ -91,8 +91,6 @@ export const createSslcommerzPayment = async (payload: PaymentPayload): Promise<
 export const validateSslcommerzPayment = async (data: any): Promise<{ success: boolean; message: string }> => {
   const { tran_id, val_id, status, amount } = data
 
-  console.log("[v0] Validating payment - tran_id:", tran_id, "val_id:", val_id, "status:", status)
-
   if (!tran_id || !val_id) {
     console.error("[v0] Missing tran_id or val_id")
     return { success: false, message: "Missing tran_id or val_id" }
@@ -102,13 +100,10 @@ export const validateSslcommerzPayment = async (data: any): Promise<{ success: b
     // Call SSLCommerz validation API
     const validationUrl = `${SSL_VALIDATION_URL}?val_id=${val_id}&store_id=${STORE_ID}&store_passwd=${STORE_PASSWORD}&v=1&format=json`
 
-    console.log("[v0] Calling validation URL")
     const response = await axios.get(validationUrl)
 
-    console.log("[v0] Validation response:", response.data)
-
     // Update payment status based on validation
-    if (response.data.status === "VALID") {
+    if (response.data.status === "SUCCESS") {
       await Payment.findOneAndUpdate(
         { paymentId: tran_id },
         {
