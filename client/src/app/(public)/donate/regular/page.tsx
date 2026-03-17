@@ -6,6 +6,7 @@ import { useForm, Controller } from "react-hook-form"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
+import { useCreateAutopayMutation } from "@/redux/features/autopay/autopayApi"
 import {
     Dialog,
     DialogContent,
@@ -70,7 +71,10 @@ export default function AutopayPage() {
         setValue("amount", defaultAmount.toString())
     }, [setValue])
 
-    const [bkashDonation, { isLoading }] = useCreateBkashMutation()
+    // use RTK endpoint for autopay creation
+    const [createAutopay, { isLoading }] = useCreateAutopayMutation()
+    // keep payment hook available if needed elsewhere
+    const [bkashDonation] = useCreateBkashMutation()
 
     const data = {
         slug: "নিয়মিত-অনুদান",
@@ -144,22 +148,35 @@ export default function AutopayPage() {
             return
         }
         try {
+            // Collect known keys and pack any extras into `metadata`
+            const knownKeys = new Set(["category", "amount", "name", "phone", "email", "donorName", "paymentMethod"])
+            const extras: Record<string, any> = {}
+            Object.keys(formData).forEach((k) => {
+                if (!knownKeys.has(k)) extras[k] = (formData as any)[k]
+            })
+
             const mappedData = {
-                name: formData.name,
+                name: formData.name || undefined,
                 phone: formData.phone,
-                email: formData.email,
+                email: formData.email || undefined,
                 amount: Number(formData.amount),
                 donationType: "regular",
-                autopayMode: autopayMode,
+                // map frontend autopayMode to server Frequency
+                frequency: autopayMode === "daily" ? "DAILY" : autopayMode === "weekly" ? "WEEKLY" : "MONTHLY",
+                paymentType: "FIXED",
+                payerType: "CUSTOMER",
                 method: formData.paymentMethod === "bkash" ? ("bkash" as const) : ("sslcommerz" as const),
-                ...(donateForOther && formData.donorName ? { donorName: formData.donorName } : {}),
+                donorName: donateForOther && formData.donorName ? formData.donorName : undefined,
+                metadata: { ...(extras || {}), ...(formData.donorName ? { donorName: formData.donorName } : {}) },
             }
 
             if (formData.paymentMethod === "bkash") {
-                const response = await bkashDonation(mappedData).unwrap()
-                window.location.href = response.data.url
+                const resp = await createAutopay(mappedData).unwrap()
+                const redirect = resp?.redirectURL || resp?.data?.url || resp?.data?.redirectURL
+                if (redirect) window.location.href = redirect
+                else throw new Error('No redirect URL from gateway')
             } else {
-                alert("SSLCommerz নির্বাচিত! পেমেন্ট গেটওয়েতে রিডিরেক্ট করা হচ্ছে।")
+                alert("SSLCommerz নির্বাচিত! পেমেন্ট গেটওয়েটে রিডিরেক্ট করা হচ্ছে।")
             }
         } catch (error) {
             console.error(error)

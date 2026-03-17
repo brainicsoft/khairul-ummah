@@ -11,6 +11,7 @@ import { commiteeRoutes } from '../modules/commitee/commitee.routes';
 import { activitiesRoutes } from '../modules/activities/activities.routes';
 import { massegeRoutes } from '../modules/massege/massege.routes';
 import { lifetimeDonorRoutes } from '../modules/lifetimeDonor/lifetimeDonor.routes';
+import autopayRoutes from '../modules/autopay/autopay.routes';
 // import { autopayRoutes } from '../modules/autopay/autopay.routes';
 type IModulerRoutes = { path: string; route: Router }[];
 export const modulerRoutes: IModulerRoutes = [
@@ -62,8 +63,8 @@ export const modulerRoutes: IModulerRoutes = [
     path: '/lifetimeDonor',
     route: lifetimeDonorRoutes
   },
-  //   {
-  //   path: '/autopay',
-  //   route: autopayRoutes
-  // }
+    {
+    path: '/autopay',
+    route: autopayRoutes
+  }
 ];

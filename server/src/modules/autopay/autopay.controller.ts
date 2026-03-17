@@ -1,8 +1,8 @@
-// import type { RequestHandler } from "express";
-// import { sendResponse } from "../../utils/sendResponse";
-// import { catchAsync } from "../../utils/catchAsync";
-// import {
-//   createAutopay,
+import type { RequestHandler } from "express";
+import { catchAsync } from "../../utils/catchAsync";
+import { sendResponse } from "../../utils/sendResponse";
+import {
+  createAutopay,
 //   extendAutopay,
 //   refundAutopay,
 //   listAutopays,
@@ -12,12 +12,13 @@
 //   getAutopaySchedule,
 //   getAutopayPaymentById,
 //   getPaymentsBySubscriptionId,
-// } from "./autopay.service";
+} from "./autopay.service";
 
-// export const createAutopayController: RequestHandler = catchAsync(async (req, res) => {
-//   const result = await createAutopay(req.body);
-//   sendResponse(res, { status: 201, success: true, message: "Successfully created recurring payment", data: result });
-// });
+
+export const createAutopayController: RequestHandler = catchAsync(async (req, res) => {
+  const result = await createAutopay(req.body);
+  sendResponse(res, { status: 201, success: true, message: "Successfully created recurring payment", data: result });
+});
 
 // export const extendAutopayController: RequestHandler = catchAsync(async (req, res) => {
 //   const result = await extendAutopay(req.body);

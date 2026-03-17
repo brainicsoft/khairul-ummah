@@ -164,104 +164,107 @@ export const generateBkashAutopayHeaders = (method: string, urlPath: string, bod
 /**
  * Create subscription (autopay) in bKash gateway
  */
-// export const createBkashSubscription = async (payload: any) => {
-//     const {
-//         amount,
-//         frequency = "CALENDAR_MONTH",
-//         startDate,
-//         expiryDate,
-//         payer,
-//         payerType = "CUSTOMER",
-//         firstPaymentIncludedInCycle = true,
-//         maxCapRequired = false,
-//         serviceId,
-//         merchantShortCode,
-//     } = payload;
 
-//     if (!amount || amount <= 0) throw new CustomError(400, "Invalid amount for autopay subscription");
+const autoApiKey = 'Pu5waoPF09NjMMAuAyC_obSLq1J_0xqe';
+const serviceId = 100001;
+const shortCode = '01823074813';
 
-//     const subscriptionRequestId = `sr_${uuidv4()}`;
-//     const body: any = {
-//         subscriptionRequestId,
-//         serviceId: serviceId || Number(process.env.BKASH_SERVICE_ID) || 1,
-//         subscriptionReference: `sub_${uuidv4().slice(-8)}`,
-//         paymentType: "FLEXIBLE",
-//         subscriptionType: "WITH_PAYMENT",
-//         amount,
-//         firstPaymentAmount: amount,
-//         maxCapRequired,
-//         frequency,
-//         startDate: startDate || moment().format("YYYY-MM-DD"),
-//         expiryDate: expiryDate || moment().add(1, "year").format("YYYY-MM-DD"),
-//         merchantShortCode: merchantShortCode || process.env.BKASH_MERCHANT_SHORTCODE || "",
-//         redirectUrl: `${baseUrl}/api/v1/payment/bkash/autopay/verify`,
-//         payerType,
-//         payer: payer || "",
-//         currency: "BDT",
-//         firstPaymentIncludedInCycle,
-//     };
+export const createBkashSubscription = async (payload: any) => {
+    const {
+        amount,
+        frequency = "DAILLY",
+        startDate,
+        expiryDate,
+        payer,
+        payerType = "CUSTOMER",
+        firstPaymentIncludedInCycle = true,
+        maxCapRequired = false,
+    } = payload;
 
-//     const urlPath = `/api/subscription`;
-//     const requestUrl = `${bkashRecurringUrl.replace(/\/$/, '')}${urlPath}`;
-//     const pathToSign = new URL(requestUrl).pathname; // ensures signed path matches actual request path
+    if (!amount || amount <= 0) {
+        throw new CustomError(400, "Invalid amount");
+    }
 
-//     const headers = generateBkashAutopayHeaders("POST", pathToSign, body, bkashKey, bkashSecret, bkashRecurringUrl);
-//     headers.version = process.env.BKASH_API_VERSION || "v1.0";
-//     headers.channelId = process.env.BKASH_CHANNEL_ID || "Merchant WEB";
-//     headers.timeStamp = new Date().toISOString();
-//     // Add x-api-key for gateway compatibility, keep x-app-key as well
-//     if (headers['x-app-key']) headers['x-api-key'] = headers['x-app-key'];
-//     // mask authorization for logs
-//     const safeHeaders = { ...headers, Authorization: headers.Authorization ? `${String(headers.Authorization).slice(0, 20)}...[masked]` : undefined };
+    const subscriptionRequestId = `KUF-SB${uuidv4().replace(/-/g, '').slice(0, 12)}`;
 
-//     console.log("[createBkashSubscription] calling bKash subscription API:", {
-//         url: requestUrl,
-//         headers: safeHeaders,
-//         body: { ...body, merchantShortCode: body.merchantShortCode ? '***' : undefined },
-//     });
+    const body = {
+        subscriptionRequestId,
+        subscriptionReference: `KUF_REF_${uuidv4().slice(-6)}`,
 
-//     try {
-//         const response = await axios.post(requestUrl, body, { headers });
-//         console.log("[createBkashSubscription] response status:", response.status);
-//         console.log("[createBkashSubscription] response data:", response.data);
-//         if (!response.data) throw new CustomError(500, "Empty response from bKash subscription API");
+        amount,
+        firstPaymentAmount: null,
+        amountQueryUrl: null,
 
-//         return response.data;
-//     } catch (error: any) {
-//         const resp = error.response;
-//         console.error("[createBkashSubscription] bKash subscription create error message:", error.message);
+        currency: "BDT",
+        frequency,
+        startDate: startDate || moment().format("YYYY-MM-DD"),
+        expiryDate: expiryDate || moment().add(1, "year").format("YYYY-MM-DD"),
 
-//         const errorDetails: any = {
-//             message: error.message,
-//             stack: error.stack,
-//             config: error.config ? { url: error.config.url, method: error.config.method, headers: error.config.headers } : undefined,
-//         };
+        subscriptionType: "BASIC",
+        paymentType: "FIXED",
 
-//         if (resp) {
-//             errorDetails.response = {
-//                 status: resp.status,
-//                 statusText: resp.statusText,
-//                 headers: resp.headers,
-//                 // resp.data might be empty; include as-is (could be string or object)
-//                 data: resp.data,
-//             };
+        maxCapRequired,
+        maxCapAmount: null,
 
-//             console.error("[createBkashSubscription] response status:", resp.status, resp.statusText);
-//             console.error("[createBkashSubscription] response headers:", resp.headers);
-//             console.error("[createBkashSubscription] response data:", resp.data);
-//         }
+        // ✅ USING YOUR DATA HERE
+        serviceId: serviceId,
+        merchantShortCode: shortCode,
 
-//         // Log a compact JSON of errorDetails for easier copy/paste debugging
-//         try {
-//             console.error("[createBkashSubscription] error details:", JSON.stringify(errorDetails, null, 2));
-//         } catch (e) {
-//             console.error("[createBkashSubscription] error details (inspect manually):", errorDetails);
-//         }
+        payer: payer || null,
+        payerType,
 
-//         const respSummary = resp ? `${resp.status} ${resp.statusText} ${typeof resp.data === 'string' ? resp.data.slice(0, 500) : JSON.stringify(resp.data || {}).slice(0,500)}` : error.message;
-//         throw new CustomError(502, `bKash subscription create failed: ${respSummary}`);
-//     }
-// };
+        redirectUrl: `https://get.khairulummahfoundation.org/bkash/webhook`,
+
+        firstPaymentIncludedInCycle,
+
+        extraParams: null,
+    };
+
+    const url = `${bkashRecurringUrl.replace(/\/$/, '')}/api/subscription`;
+    const pathToSign = new URL(url).pathname;
+
+    const headers: any = generateBkashAutopayHeaders(
+        "POST",
+        pathToSign,
+        body,
+        bkashKey,
+        bkashSecret,
+        bkashRecurringUrl
+    );
+
+    headers.version = "v1.0";
+    headers.channelId = "Merchant WEB";
+    headers.timeStamp = new Date().toISOString();
+
+    // ✅ IMPORTANT: use your api key
+    headers["x-api-key"] = autoApiKey;
+
+    try {
+        const response = await axios.post(url, body, { headers });
+
+        if (!response?.data?.redirectURL) {
+            throw new CustomError(500, "Invalid bKash response");
+        }
+
+        return {
+            subscriptionRequestId: response.data.subscriptionRequestId,
+            redirectURL: response.data.redirectURL,
+            expirationTime: response.data.expirationTime,
+        };
+
+    } catch (error: any) {
+        const resp = error.response;
+
+        console.error("bKash Error:", resp?.data || error.message);
+
+        throw new CustomError(
+            502,
+            `bKash subscription failed: ${
+                resp?.data?.message || error.message
+            }`
+        );
+    }
+};
 
 // Extend subscription
 // export const extendBkashSubscription = async (payload: any) => {

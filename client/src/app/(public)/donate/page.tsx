@@ -62,7 +62,7 @@ export default function DonationTypesPage({ searchParams }: GalleryPageProps) {
 
               return (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                  {/* <div
+                  <div
                     className={`rounded-xl  h-full transform transition  hover:shadow-sm cursor-pointer border flex flex-col`}
                   >
                     <div className="flex items-start justify-between mb-6">
@@ -85,7 +85,7 @@ export default function DonationTypesPage({ searchParams }: GalleryPageProps) {
                         </button>
                       </Link>
                     </div>
-                  </div> */}
+                  </div>
 
                   {donationTypes.map((type) => (
                     <Link key={type._id} href={`/donate/${type.slug}`} className="group">

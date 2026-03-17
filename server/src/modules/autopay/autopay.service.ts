@@ -1,20 +1,42 @@
-// import { CustomError } from "../../errors/CustomError";
-// import {
-//   createBkashSubscription,
-//   extendBkashSubscription,
-//   refundBkashPayment,
-//   listBkashSubscriptions,
-//   getBkashSubscriptionById,
-//   cancelBkashSubscription,
-//   findBkashByRequestId,
-//   getBkashSchedule,
-//   getBkashPaymentById,
-//   findPaymentsBySubscriptionId,
-// } from "../paymentGetway/bkash.service";
+import { createBkashSubscription } from "../paymentGetway/bkash.service";
+import { Autopay } from "./autopay.model";
 
-// export const createAutopay = async (payload: any) => {
-//   return await createBkashSubscription(payload);
-// };
+export const createAutopay = async (payload: any) => {
+  // Persist subscription data first
+  const toCreate: any = {
+    name: payload.name,
+    email: payload.email,
+    phone: payload.phone,
+    amount: payload.amount,
+    frequency: payload.frequency || 'DAILY',
+    paymentType: payload.paymentType || 'FIXED',
+    payerType: payload.payerType || 'CUSTOMER',
+    startDate: payload.startDate ? new Date(payload.startDate) : undefined,
+    endDate: payload.expiryDate ? new Date(payload.expiryDate) : undefined,
+    metadata: payload.metadata || {},
+  };
+
+  const created = await Autopay.create(toCreate);
+
+  // Then call bKash to create the gateway subscription
+  const bkashResp = await createBkashSubscription({
+    amount: payload.amount,
+    frequency: payload.frequency || 'DAILY',
+    startDate: payload.startDate,
+    expiryDate: payload.expiryDate,
+    // payer: { name: payload.name, email: payload.email, phone: payload.phone },
+    payerType: payload.payerType || 'CUSTOMER',
+    firstPaymentIncludedInCycle: payload.firstPaymentIncludedInCycle,
+    // maxCapRequired: payload.maxCapRequired,
+  });
+
+  // Update created record with gateway info and subscription id
+  created.subscriptionId = bkashResp.subscriptionRequestId || String(created._id);
+  created.metadata = { ...(created.metadata || {}), bkash: bkashResp };
+  await created.save();
+
+  return { subscription: created, redirectURL: bkashResp.redirectURL, expirationTime: bkashResp.expirationTime };
+};
 
 // export const extendAutopay = async (payload: any) => {
 //   return await extendBkashSubscription(payload);
