@@ -1,8 +1,35 @@
-import { createBkashSubscription } from './../paymentGetway/bkash.service';
-
+import { createBkashSubscription } from "../paymentGetway/recurring/recurring.bkash";
+import { Autopay } from "./autopay.model";
+import { buildBkashAutopayRequestData } from "../paymentGetway/recurring/recurring.bkash.utils";
+import { baseUrl } from "../../config";
 
 export const createAutopay = async (payload: any) => {
-  return await createBkashSubscription(payload);
+  const { recordData } = buildBkashAutopayRequestData(payload, baseUrl);
+  const autopayRecord = await Autopay.create(recordData);
+
+  try {
+    const bkashResponse = await createBkashSubscription(payload);
+
+    // Update record with gateway response and identifiers if present
+    const update: any = {
+      gatewayResponse: bkashResponse,
+      status: 'activated',
+    };
+
+    if (bkashResponse.subscriptionRequestId) update.subscriptionRequestId = bkashResponse.subscriptionRequestId;
+    if (bkashResponse.subscriptionReference) update.subscriptionReference = bkashResponse.subscriptionReference;
+
+    await Autopay.findByIdAndUpdate(autopayRecord._id, update, { new: true });
+
+    return { autopay: autopayRecord, bkash: bkashResponse };
+  } catch (error: any) {
+    // mark record as failed and attach error
+    await Autopay.findByIdAndUpdate(autopayRecord._id, {
+      status: 'failed',
+      gatewayResponse: { error: error.message || error },
+    });
+    throw error;
+  }
 };
 
 // export const extendAutopay = async (payload: any) => {
