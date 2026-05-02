@@ -1,20 +1,9 @@
-// import { CustomError } from "../../errors/CustomError";
-// import {
-//   createBkashSubscription,
-//   extendBkashSubscription,
-//   refundBkashPayment,
-//   listBkashSubscriptions,
-//   getBkashSubscriptionById,
-//   cancelBkashSubscription,
-//   findBkashByRequestId,
-//   getBkashSchedule,
-//   getBkashPaymentById,
-//   findPaymentsBySubscriptionId,
-// } from "../paymentGetway/bkash.service";
+import { createBkashSubscription } from './../paymentGetway/bkash.service';
 
-// export const createAutopay = async (payload: any) => {
-//   return await createBkashSubscription(payload);
-// };
+
+export const createAutopay = async (payload: any) => {
+  return await createBkashSubscription(payload);
+};
 
 // export const extendAutopay = async (payload: any) => {
 //   return await extendBkashSubscription(payload);

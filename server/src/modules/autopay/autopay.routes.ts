@@ -1,20 +1,14 @@
-// import { Router } from "express";
-// import {
-//   createAutopayController,
-//   extendAutopayController,
-//   refundAutopayController,
-//   listAutopaysController,
-//   getAutopayByIdController,
-//   cancelAutopayController,
-//   findAutopayByRequestIdController,
-//   getAutopayScheduleController,
-//   getAutopayPaymentByIdController,
-//   getPaymentsBySubscriptionIdController,
-// } from "./autopay.controller";
+import { Router } from "express";
+import { requestValidator } from "../../middlewares/requestValidator";
+import {
+  createAutopayController,
 
-// export const autopayRoutes: Router = Router();
+} from "./autopay.controller";
+import { autopayValidationSchema } from "./autopay.validation";
 
-// autopayRoutes.post("/bkash/create", createAutopayController);
+export const autopayRoutes: Router = Router();
+
+autopayRoutes.post("/bkash/create", requestValidator(autopayValidationSchema), createAutopayController);
 // autopayRoutes.put("/bkash/extend", extendAutopayController);
 // autopayRoutes.post("/bkash/refund", refundAutopayController);
 
@@ -26,6 +20,6 @@
 // autopayRoutes.get("/payment/:id", getAutopayPaymentByIdController);
 // autopayRoutes.get("/payment/bySubscriptionId/:subscriptionId", getPaymentsBySubscriptionIdController);
 
-// export default autopayRoutes;
+export default autopayRoutes;
 
 // // autopay.routes.ts

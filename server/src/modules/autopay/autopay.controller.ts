@@ -1,23 +1,22 @@
-// import type { RequestHandler } from "express";
-// import { sendResponse } from "../../utils/sendResponse";
-// import { catchAsync } from "../../utils/catchAsync";
-// import {
-//   createAutopay,
-//   extendAutopay,
-//   refundAutopay,
-//   listAutopays,
-//   getAutopayById,
-//   cancelAutopay,
-//   findAutopayByRequestId,
-//   getAutopaySchedule,
-//   getAutopayPaymentById,
-//   getPaymentsBySubscriptionId,
-// } from "./autopay.service";
+import type { RequestHandler } from "express";
+import { sendResponse } from "../../utils/sendResponse";
+import { catchAsync } from "../../utils/catchAsync";
+import {
+  createAutopay,
 
-// export const createAutopayController: RequestHandler = catchAsync(async (req, res) => {
-//   const result = await createAutopay(req.body);
-//   sendResponse(res, { status: 201, success: true, message: "Successfully created recurring payment", data: result });
-// });
+} from "./autopay.service";
+
+export const createAutopayController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const result = await createAutopay(req.body);
+    sendResponse(res, {
+      status: 201,
+      success: true,
+      message: 'Successfully created recurring payment',
+      data: result,
+    });
+  },
+);
 
 // export const extendAutopayController: RequestHandler = catchAsync(async (req, res) => {
 //   const result = await extendAutopay(req.body);
@@ -73,16 +72,12 @@
 //   sendResponse(res, { status: 200, success: true, message: "Payments fetched for subscription", data: result });
 // });
 
-//   import { 
+//   import {
 //    updateAutopayByIdService,
 //    deleteAutopayByIdService
 //    } from './autopay.service'; // Update with your service path
 
-
- 
-
-
-//   // update Autopay 
+//   // update Autopay
 
 //     export const updateAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
 //     const result = await updateAutopayByIdService(req.params.id,req.body);
@@ -94,7 +89,7 @@
 //     });
 //   });
 
-//   // delete Autopay 
+//   // delete Autopay
 
 //     export const deleteAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
 //     const result = await deleteAutopayByIdService(req.params.id);
@@ -105,6 +100,3 @@
 //       data: result,
 //     });
 //   });
-
-
-  
