@@ -1,4 +1,4 @@
-import { createBkashSubscription } from "../paymentGetway/recurring/recurring.bkash";
+import { createBkashSubscription ,getBkashSubscriptionById, findBkashByRequestId, findPaymentsBySubscriptionId,getBkashPaymentById,getBkashSchedule,cancelBkashSubscription,refundBkashPayment} from "../paymentGetway/recurring/recurring.bkash";
 import { Autopay } from "./autopay.model";
 import { buildBkashAutopayRequestData } from "../paymentGetway/recurring/recurring.bkash.utils";
 import { baseUrl } from "../../config";
@@ -36,38 +36,38 @@ export const createAutopay = async (payload: any) => {
 //   return await extendBkashSubscription(payload);
 // };
 
-// export const refundAutopay = async (payload: any) => {
-//   return await refundBkashPayment(payload);
-// };
+export const refundAutopay = async (payload: any) => {
+  return await refundBkashPayment(payload);
+};
 
 // export const listAutopays = async (page: number, size: number) => {
 //   return await listBkashSubscriptions(page, size);
 // };
 
-// export const getAutopayById = async (id: number) => {
-//   return await getBkashSubscriptionById(id);
-// };
+export const getAutopayById = async (id: string) => {
+  return await getBkashSubscriptionById(id);
+};
 
-// export const cancelAutopay = async (id: number, reason: string) => {
-//   return await cancelBkashSubscription(id, reason);
-// };
+export const cancelAutopay = async (id: number, reason: string) => {
+  return await cancelBkashSubscription(id, reason);
+};
 
-// export const findAutopayByRequestId = async (requestId: string) => {
-//   return await findBkashByRequestId(requestId);
-// };
+export const findAutopayByRequestId = async (requestId: string) => {
+  return await findBkashByRequestId(requestId);
+};
 
-// export const getAutopaySchedule = async (frequency: string, startDate: string, expiryDate: string) => {
-//   return await getBkashSchedule(frequency, startDate, expiryDate);
-// };
+export const getAutopaySchedule = async (frequency: string, startDate: string, expiryDate: string) => {
+  return await getBkashSchedule(frequency, startDate, expiryDate);
+};
 
-// export const getAutopayPaymentById = async (id: number) => {
-//   return await getBkashPaymentById(id);
-// };
+export const getAutopayPaymentById = async (id: number) => {
+  return await getBkashPaymentById(id);
+};
 
-// export const getPaymentsBySubscriptionId = async (subscriptionId: number) => {
-//   return await findPaymentsBySubscriptionId(subscriptionId);
-// };
-// // autopay.service.ts
+export const getPaymentsBySubscriptionId = async (subscriptionId: number) => {
+  return await findPaymentsBySubscriptionId(subscriptionId);
+};
+// autopay.service.ts
 //     import { QueryBuilder } from "../../builder/QueryBuilder";
 //     import { IAutopay } from "./autopay.interface";
 //     import { Autopay } from "./autopay.model";
