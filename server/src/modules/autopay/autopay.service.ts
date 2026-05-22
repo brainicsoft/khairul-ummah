@@ -1,7 +1,7 @@
-import { createBkashSubscription } from "../paymentGetway/recurring/recurring.bkash";
-import { Autopay } from "./autopay.model";
-import { buildBkashAutopayRequestData } from "../paymentGetway/recurring/recurring.bkash.utils";
-import { baseUrl } from "../../config";
+import { createBkashSubscription, getBkashSubscriptionFromBkashById } from '../paymentGetway/recurring/recurring.bkash';
+import { Autopay } from './autopay.model';
+import { buildBkashAutopayRequestData } from '../paymentGetway/recurring/recurring.bkash.utils';
+import { baseUrl } from '../../config';
 
 export const createAutopay = async (payload: any) => {
   const { recordData } = buildBkashAutopayRequestData(payload, baseUrl);
@@ -16,20 +16,40 @@ export const createAutopay = async (payload: any) => {
       status: 'activated',
     };
 
-    if (bkashResponse.subscriptionRequestId) update.subscriptionRequestId = bkashResponse.subscriptionRequestId;
-    if (bkashResponse.subscriptionReference) update.subscriptionReference = bkashResponse.subscriptionReference;
+    if (bkashResponse.subscriptionRequestId) {
+      update.subscriptionId = bkashResponse.subscriptionRequestId;
+      update['metadata.bkash.subscriptionRequestId'] = bkashResponse.subscriptionRequestId;
+    }
+
+    if (bkashResponse.subscriptionReference) {
+      update.subscriptionReference = bkashResponse.subscriptionReference;
+    }
+
+    if (bkashResponse.redirectURL || bkashResponse.redirectUrl) {
+      update['metadata.bkash.redirectURL'] = bkashResponse.redirectURL || bkashResponse.redirectUrl;
+    }
+
+    if (bkashResponse.expirationTime) {
+      update['metadata.bkash.expirationTime'] = bkashResponse.expirationTime;
+    }
 
     await Autopay.findByIdAndUpdate(autopayRecord._id, update, { new: true });
 
     return { autopay: autopayRecord, bkash: bkashResponse };
   } catch (error: any) {
-    // mark record as failed and attach error
+    // mark record as deactive and attach error
     await Autopay.findByIdAndUpdate(autopayRecord._id, {
-      status: 'failed',
+      status: 'deactive',
       gatewayResponse: { error: error.message || error },
     });
     throw error;
   }
+};
+
+export const getAutopayByRequestId = async (requestId: string) => {
+  const result = await getBkashSubscriptionFromBkashById(requestId); // optional: fetch latest data from bKash for this subscription
+  // const result = await Autopay.findOne({ subscriptionId: requestId });
+  return result;
 };
 
 // export const extendAutopay = async (payload: any) => {
@@ -73,7 +93,7 @@ export const createAutopay = async (payload: any) => {
 //     import { Autopay } from "./autopay.model";
 
 //     // Create New autopay service
- 
+
 //     export const createAutopayService = async (payload: IAutopay) => {
 //   const result = await Autopay.create(payload);
 //   return result;
@@ -115,13 +135,10 @@ export const createAutopay = async (payload: any) => {
 
 // export const updateAutopayByIdService = async (id:string,payload:Partial<IAutopay>) => {
 //   const result = await Autopay.findByIdAndUpdate(id,payload,{
-      
+
 //       new: true,
 //       runValidators: true,
-    
+
 //   });
 //   return result;
 // };
-
-    
-      

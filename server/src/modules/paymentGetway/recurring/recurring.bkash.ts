@@ -26,27 +26,9 @@ export const createBkashSubscription = async (payload: any) => {
     bkashSecret,
     bkashRecurringUrl,
   );
-  // mask authorization for logs
-  const safeHeaders = {
-    ...headers,
-    Authorization: headers.Authorization
-      ? `${String(headers.Authorization).slice(0, 20)}...[masked]`
-      : undefined,
-  };
-
-  console.log('[createBkashSubscription] calling bKash subscription API:', {
-    url: requestUrl,
-    headers: safeHeaders,
-    body: {
-      ...body,
-      merchantShortCode: body.merchantShortCode ? '***' : undefined,
-    },
-  });
 
   try {
     const response = await axios.post(requestUrl, body, { headers });
-    console.log('[createBkashSubscription] response status:', response.status);
-    console.log('[createBkashSubscription] response data:', response.data);
     if (!response.data)
       throw new CustomError(500, 'Empty response from bKash subscription API');
 
@@ -85,6 +67,34 @@ export const createBkashSubscription = async (payload: any) => {
     throw new CustomError(
       502,
       `bKash subscription create failed: ${respSummary}`,
+    );
+  }
+};
+
+//  get recurrring payment from bkash
+
+export const getBkashSubscriptionFromBkashById = async (id: string) => {
+  const urlPath = `/api/subscriptions/request-id/${id}`;
+  const headers: any = generateBkashAutopayHeaders(
+    'GET',
+    urlPath,
+    {},
+    bkashKey,
+    bkashSecret,
+    bkashRecurringUrl,
+  );
+  const fullurl =`${bkashRecurringUrl}${urlPath}`;
+  console.log(fullurl)
+  try {
+    const data  = await axios.get(fullurl, {
+      headers,
+    });
+    console.log(data)
+    return data;
+  } catch (error: any) {
+    throw new CustomError(
+      502,
+      error.response?.data?.message || error.message || 'bKash fetch failed',
     );
   }
 };

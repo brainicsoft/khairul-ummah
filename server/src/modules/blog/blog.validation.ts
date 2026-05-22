@@ -8,5 +8,3 @@ export const blogValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

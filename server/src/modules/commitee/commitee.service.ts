@@ -1,7 +1,7 @@
 // commitee.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { ICommitee } from "./commitee.interface";
-import { Commitee } from "./commitee.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { ICommitee } from './commitee.interface';
+import { Commitee } from './commitee.model';
 
 // Create New commitee service
 
@@ -23,11 +23,11 @@ export const getAllCommiteeService = async (query: Record<string, unknown>) => {
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await commiteeQueries.modelQuery;
   const meta = await commiteeQueries.countTotal();
-  return {result, meta};
+  return { result, meta };
 };
 
 // get commitee by Id or single  service
@@ -45,22 +45,20 @@ export const deleteCommiteeByIdService = async (id: string) => {
 };
 // update commitee by Id or single  service
 
-export const updateCommiteeByIdService = async (id: string, payload: Partial<ICommitee>) => {
+export const updateCommiteeByIdService = async (
+  id: string,
+  payload: Partial<ICommitee>,
+) => {
   const result = await Commitee.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };
 
-
 // Get only slugs of all donation projects
 export const getAllRoleTypeMembersService = async () => {
-  const roleTypeMembers = await Commitee.distinct("roleType")
-    
+  const roleTypeMembers = await Commitee.distinct('roleType');
 
   return roleTypeMembers;
 };
-

@@ -4,12 +4,12 @@ export interface ILifetimeDonor {
   email?: string;
   phone: string;
 
-  amount: number;  
-  address?: string;      
-  profession?: string;  
-  message?: string;     
+  amount: number;
+  address?: string;
+  profession?: string;
+  message?: string;
   termsAccepted: boolean;
   slug?: string;
 
-  // update your content here 
+  // update your content here
 }

@@ -8,5 +8,3 @@ export const lifetimeDonorValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

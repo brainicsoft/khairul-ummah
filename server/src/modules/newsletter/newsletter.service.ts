@@ -1,7 +1,7 @@
 // newsletter.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { INewsletter } from "./newsletter.interface";
-import { Newsletter } from "./newsletter.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { INewsletter } from './newsletter.interface';
+import { Newsletter } from './newsletter.model';
 
 // Create New newsletter service
 
@@ -12,18 +12,18 @@ export const createNewsletterService = async (payload: INewsletter) => {
   });
 
   if (existingSubscriber) {
-    throw new Error("Email already subscribed");
+    throw new Error('Email already subscribed');
   }
 
   const result = await Newsletter.create(payload);
   return result;
 };
 
-
-
 // getAll newsletter service
 
-export const getAllNewsletterService = async (query: Record<string, unknown>) => {
+export const getAllNewsletterService = async (
+  query: Record<string, unknown>,
+) => {
   const newsletterQueries = new QueryBuilder(Newsletter.find(), query)
     .sort()
     .filter()
@@ -34,7 +34,7 @@ export const getAllNewsletterService = async (query: Record<string, unknown>) =>
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await newsletterQueries.modelQuery;
   return result;
@@ -55,14 +55,13 @@ export const deleteNewsletterByIdService = async (id: string) => {
 };
 // update newsletter by Id or single  service
 
-export const updateNewsletterByIdService = async (id: string, payload: Partial<INewsletter>) => {
+export const updateNewsletterByIdService = async (
+  id: string,
+  payload: Partial<INewsletter>,
+) => {
   const result = await Newsletter.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };
-
-

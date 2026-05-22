@@ -48,5 +48,7 @@ const lifetimeDonorSchema = new Schema<ILifetimeDonor>({
   },
 });
 
-
-export const LifetimeDonor = model<ILifetimeDonor>('LifetimeDonor', lifetimeDonorSchema);
+export const LifetimeDonor = model<ILifetimeDonor>(
+  'LifetimeDonor',
+  lifetimeDonorSchema,
+);

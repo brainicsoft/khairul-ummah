@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { catchAsync } from '../../utils/catchAsync';
 import { IUser } from '../user/user.interface';
 import jwt from 'jsonwebtoken';
-import passport from 'passport'; 
+import passport from 'passport';
 import {
   changePasswordService,
   createUserService,
@@ -14,54 +14,64 @@ import {
 } from './auth.service';
 import { sendResponse } from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import { NODE_ENV, access_token, access_token_expiry, refresh_token, refresh_token_expiry } from '../../config';
+import {
+  NODE_ENV,
+  access_token,
+  access_token_expiry,
+  refresh_token,
+  refresh_token_expiry,
+} from '../../config';
 import { JwtPayload } from 'jsonwebtoken';
 import { CustomError } from '../../errors/CustomError';
 import { ILogin } from './auth.interface';
 import { genarateToken } from '../../utils/genarateToken';
 
-
 export const googleLoginController: RequestHandler = catchAsync(() => {
-passport.authenticate('google',{
-  scope: ['email','profile'],
-})
-
+  passport.authenticate('google', {
+    scope: ['email', 'profile'],
+  });
 });
 
-export const  googleLoginCallbackController:RequestHandler = catchAsync((req,res) => {
- const user:any = req.user;
-if(user){
-  const jwtPayload = {
-    userId: user._id,
-    email: user.email,
-    name: user.username,
-    role: user.role,
-    avatar: user.avatar,
-    username: user.username,
-  };
- 
+export const googleLoginCallbackController: RequestHandler = catchAsync(
+  (req, res) => {
+    const user: any = req.user;
+    if (user) {
+      const jwtPayload = {
+        userId: user._id,
+        email: user.email,
+        name: user.username,
+        role: user.role,
+        avatar: user.avatar,
+        username: user.username,
+      };
 
-  const accessToken = genarateToken(jwtPayload, access_token, access_token_expiry);
-  const refreshToken = genarateToken(jwtPayload, refresh_token, refresh_token_expiry);
-  
+      const accessToken = genarateToken(
+        jwtPayload,
+        access_token,
+        access_token_expiry,
+      );
+      const refreshToken = genarateToken(
+        jwtPayload,
+        refresh_token,
+        refresh_token_expiry,
+      );
 
-  res.cookie('refreshToken', refreshToken, {
-    secure: NODE_ENV === 'production',
-    httpOnly: true,
-    sameSite:'lax' 
-  });
+      res.cookie('refreshToken', refreshToken, {
+        secure: NODE_ENV === 'production',
+        httpOnly: true,
+        sameSite: 'lax',
+      });
 
-  sendResponse(res, {
-    status: httpStatus.OK,
-    success: true,
-    message: 'logged in successfully',
-    token: accessToken,
-    data: user,
-  });
-}
-
-
-});
+      sendResponse(res, {
+        status: httpStatus.OK,
+        success: true,
+        message: 'logged in successfully',
+        token: accessToken,
+        data: user,
+      });
+    }
+  },
+);
 
 // export const googleLoginCallbackController = (req: Request, res: any) => {
 //   // if (!req.user) {
@@ -71,7 +81,7 @@ if(user){
 //   //     message: 'User not found',
 //   //   });
 //   // }
-//   // const { accessToken, refreshToken } = req?.user as any; 
+//   // const { accessToken, refreshToken } = req?.user as any;
 //   // console.log(accessToken,refreshToken);
 
 //   // res.cookie('refreshToken', refreshToken, {
@@ -82,8 +92,6 @@ if(user){
 //   //   secure: NODE_ENV === 'production',
 //   //   httpOnly: true,
 //   // });
-
-
 
 //   // Redirect to a secure page or dashboard after successful login
 //   // res.redirect('/dashboard');
@@ -203,7 +211,7 @@ export const resetPasswordController: RequestHandler = catchAsync(
 );
 export const changePasswordController: RequestHandler = catchAsync(
   async (req, res) => {
-    const user:any = req.user;
+    const user: any = req.user;
     await changePasswordService(user, req.body);
 
     sendResponse(res, {

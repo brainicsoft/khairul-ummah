@@ -1,6 +1,6 @@
 // activities.model.ts
 
-  import { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IActivities } from './activities.interface';
 
 const activitiesSchema = new Schema<IActivities>({
@@ -10,13 +10,13 @@ const activitiesSchema = new Schema<IActivities>({
   category: {
     type: String,
   },
-   description: {
+  description: {
     type: String,
   },
- image: {
+  image: {
     type: String,
- },
- createdAt: {
+  },
+  createdAt: {
     type: Date,
     default: Date.now,
   },
@@ -27,7 +27,4 @@ const activitiesSchema = new Schema<IActivities>({
   },
 });
 
-
-  export const Activities = model<IActivities>('Activities', activitiesSchema);
-
-  
+export const Activities = model<IActivities>('Activities', activitiesSchema);

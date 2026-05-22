@@ -23,8 +23,8 @@ const userSchema = new Schema<IUser, IUserModel>(
       type: String,
       default: null,
     },
-    avatar:{
-      type:String
+    avatar: {
+      type: String,
     },
     password: {
       type: String,

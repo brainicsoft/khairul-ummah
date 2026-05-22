@@ -1,6 +1,6 @@
 // gallery.model.ts
 
-  import { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IGallery } from './gallery.interface';
 
 const gallerySchema = new Schema<IGallery>({
@@ -20,14 +20,11 @@ const gallerySchema = new Schema<IGallery>({
     type: String,
     required: false,
   },
-   date: {
+  date: {
     type: String,
     required: false,
     default: Date.now,
   },
 });
 
-
-  export const Gallery = model<IGallery>('Gallery', gallerySchema);
-
-  
+export const Gallery = model<IGallery>('Gallery', gallerySchema);

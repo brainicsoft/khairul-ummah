@@ -22,5 +22,4 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 initBkash();
 
-
 export default app;

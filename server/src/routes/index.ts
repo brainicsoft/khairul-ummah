@@ -25,46 +25,46 @@ export const modulerRoutes: IModulerRoutes = [
   },
   {
     path: '/volunteer',
-    route: volunteerRoutes
+    route: volunteerRoutes,
   },
   {
     path: '/gallery',
-    route: galleryRoutes
+    route: galleryRoutes,
   },
   {
     path: '/donation',
-    route: donationProjectRoutes
+    route: donationProjectRoutes,
   },
   {
     path: '/blog',
-    route: blogRoutes
+    route: blogRoutes,
   },
   {
     path: '/payment',
-    route: paymentRoutes
+    route: paymentRoutes,
   },
   {
     path: '/newsletter',
-    route: newsletterRoutes
+    route: newsletterRoutes,
   },
   {
     path: '/commitee',
-    route: commiteeRoutes
+    route: commiteeRoutes,
   },
   {
     path: '/activities',
-    route: activitiesRoutes
+    route: activitiesRoutes,
   },
   {
     path: '/massege',
-    route: massegeRoutes
+    route: massegeRoutes,
   },
   {
     path: '/lifetimeDonor',
-    route: lifetimeDonorRoutes
+    route: lifetimeDonorRoutes,
   },
-    {
+  {
     path: '/autopay',
-    route: autopayRoutes
-  }
+    route: autopayRoutes,
+  },
 ];

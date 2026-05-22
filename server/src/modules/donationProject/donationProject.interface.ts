@@ -6,9 +6,9 @@ export interface IDonationProject {
   title: string;
   desc: string;
   image: string;
-  category: "general" | "special" | "emergency";
+  category: 'general' | 'special' | 'emergency';
   benefits: string[];
-  status: "pending" | "active" | "completed";
+  status: 'pending' | 'active' | 'completed';
   videoUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;

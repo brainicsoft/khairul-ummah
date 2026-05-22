@@ -11,7 +11,7 @@ interface IResponse<T> {
 
 export const sendResponse = <T>(
   res: Response,
-  { data, message, status, success, token,meta }: IResponse<T>,
+  { data, message, status, success, token, meta }: IResponse<T>,
 ) => {
   return res.status(status).json({
     status,

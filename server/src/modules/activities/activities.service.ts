@@ -1,7 +1,7 @@
 // activities.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { IActivities } from "./activities.interface";
-import { Activities } from "./activities.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { IActivities } from './activities.interface';
+import { Activities } from './activities.model';
 
 // Create New activities service
 
@@ -12,7 +12,9 @@ export const createActivitiesService = async (payload: IActivities) => {
 
 // getAll activities service
 
-export const getAllActivitiesService = async (query: Record<string, unknown>) => {
+export const getAllActivitiesService = async (
+  query: Record<string, unknown>,
+) => {
   const activitiesQueries = new QueryBuilder(Activities.find(), query)
     .sort()
     .filter()
@@ -23,11 +25,11 @@ export const getAllActivitiesService = async (query: Record<string, unknown>) =>
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await activitiesQueries.modelQuery;
   const meta = await activitiesQueries.countTotal();
-  return {result , meta};
+  return { result, meta };
 };
 
 // get activities by Id or single  service
@@ -45,12 +47,13 @@ export const deleteActivitiesByIdService = async (id: string) => {
 };
 // update activities by Id or single  service
 
-export const updateActivitiesByIdService = async (id: string, payload: Partial<IActivities>) => {
+export const updateActivitiesByIdService = async (
+  id: string,
+  payload: Partial<IActivities>,
+) => {
   const result = await Activities.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };

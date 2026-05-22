@@ -1,10 +1,7 @@
-import type { RequestHandler } from "express";
-import { sendResponse } from "../../utils/sendResponse";
-import { catchAsync } from "../../utils/catchAsync";
-import {
-  createAutopay,
-
-} from "./autopay.service";
+import type { RequestHandler } from 'express';
+import { sendResponse } from '../../utils/sendResponse';
+import { catchAsync } from '../../utils/catchAsync';
+import { createAutopay, getAutopayByRequestId } from './autopay.service';
 
 export const createAutopayController: RequestHandler = catchAsync(
   async (req, res) => {
@@ -13,6 +10,19 @@ export const createAutopayController: RequestHandler = catchAsync(
       status: 201,
       success: true,
       message: 'Successfully created recurring payment',
+      data: result,
+    });
+  },
+);
+
+export const getAutopayByIdController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const id = req.params.requestId;
+    const result = await getAutopayByRequestId(id);
+    sendResponse(res, {
+      status: 200,
+      success: true,
+      message: 'Subscription fetched',
       data: result,
     });
   },
@@ -33,12 +43,6 @@ export const createAutopayController: RequestHandler = catchAsync(
 //   const size = Number(req.params.size) || 10;
 //   const result = await listAutopays(page, size);
 //   sendResponse(res, { status: 200, success: true, message: "Subscriptions fetched", data: result });
-// });
-
-// export const getAutopayByIdController: RequestHandler = catchAsync(async (req, res) => {
-//   const id = Number(req.params.id);
-//   const result = await getAutopayById(id);
-//   sendResponse(res, { status: 200, success: true, message: "Subscription fetched", data: result });
 // });
 
 // export const cancelAutopayController: RequestHandler = catchAsync(async (req, res) => {

@@ -1,8 +1,8 @@
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { bkashKey, bkashUrl } from "../../config";
-import { CustomError } from "../../errors/CustomError";
-import { 
-  createBkashPayment, 
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { bkashKey, bkashUrl } from '../../config';
+import { CustomError } from '../../errors/CustomError';
+import {
+  createBkashPayment,
   getBkashIdToken,
   // createBkashSubscription,
   // extendBkashSubscription,
@@ -14,36 +14,56 @@ import {
   // getBkashSchedule,
   // getBkashPaymentById,
   // findPaymentsBySubscriptionId,
-} from "../paymentGetway/bkash.service";
-import axios from "axios";
+} from '../paymentGetway/bkash.service';
+import axios from 'axios';
 import {
   createSslcommerzPayment,
   validateSslcommerzPayment,
   handleSslSuccess,
   handleSslFail,
   handleSslCancel,
-} from "../paymentGetway/sslcommerz.service";
-import type { IPayment } from "./payment.interface";
-import Payment from "./payment.model";
+} from '../paymentGetway/sslcommerz.service';
+import type { IPayment } from './payment.interface';
+import Payment from './payment.model';
 
 /**
  * Create payment - handles both bKash and SSLCommerz
  */
 export const createPaymentService = async (payload: any) => {
-  const { name, email, phone, amount, donationType, donorMessage, method = "bkash" } = payload;
+  const {
+    name,
+    email,
+    phone,
+    amount,
+    donationType,
+    donorMessage,
+    method = 'bkash',
+  } = payload;
 
-  if (method === "bkash") {
-    return await handleBkashPayment({ name, email, phone, amount, donationType, donorMessage });
-  } else if (method === "sslcommerz") {
-    return await handleSslcommerzPayment({ name, email, phone, amount, donationType, donorMessage });
+  if (method === 'bkash') {
+    return await handleBkashPayment({
+      name,
+      email,
+      phone,
+      amount,
+      donationType,
+      donorMessage,
+    });
+  } else if (method === 'sslcommerz') {
+    return await handleSslcommerzPayment({
+      name,
+      email,
+      phone,
+      amount,
+      donationType,
+      donorMessage,
+    });
   } else {
     throw new CustomError(400, `Payment method ${method} is not supported`);
   }
 };
 
-
 // autopay functions moved to `autopay` module
-
 
 /**
  * Handle bKash payment
@@ -52,11 +72,11 @@ const handleBkashPayment = async (payload: any) => {
   const paymentResponse = await createBkashPayment(payload);
 
   if (!paymentResponse?.bkashURL) {
-    throw new CustomError(500, "bKash URL missing in response");
+    throw new CustomError(500, 'bKash URL missing in response');
   }
 
   if (!paymentResponse.paymentID) {
-    throw new CustomError(500, "bKash Payment ID missing in response");
+    throw new CustomError(500, 'bKash Payment ID missing in response');
   }
 
   const payment = await Payment.create({
@@ -67,8 +87,8 @@ const handleBkashPayment = async (payload: any) => {
     donationType: payload.donationType,
     donorMessage: payload.donorMessage,
     paymentId: paymentResponse.paymentID,
-    status: "pending",
-    method: "bkash",
+    status: 'pending',
+    method: 'bkash',
   });
 
   return {
@@ -77,7 +97,6 @@ const handleBkashPayment = async (payload: any) => {
   };
 };
 
-
 /**
  * Handle SSLCommerz payment
  */
@@ -85,10 +104,10 @@ const handleSslcommerzPayment = async (payload: any) => {
   const paymentResponse = await createSslcommerzPayment(payload);
 
   if (!paymentResponse?.GatewayPageURL) {
-    throw new CustomError(500, "SSLCommerz GatewayPageURL missing");
+    throw new CustomError(500, 'SSLCommerz GatewayPageURL missing');
   }
 
-  console.log("[Payment Service] SSLCommerz payment created successfully");
+  console.log('[Payment Service] SSLCommerz payment created successfully');
 
   return {
     url: paymentResponse.GatewayPageURL,
@@ -100,26 +119,37 @@ const handleSslcommerzPayment = async (payload: any) => {
  * Verify bKash payment
  */
 export const verifyBkashPaymentService = async (query: any) => {
-  console.log(query)
+  console.log(query);
   const { paymentID, status } = query;
 
   if (!paymentID) {
-    return { success: false, message: "Payment ID missing in callback URL" };
+    return { success: false, message: 'Payment ID missing in callback URL' };
   }
-
 
   const payment = await Payment.findOne({ paymentId: paymentID });
   if (!payment) {
-    return { success: false, message: "Payment not found", paymentID };
+    return { success: false, message: 'Payment not found', paymentID };
   }
 
-  if (payment.status === "success") {
-    return { success: true, message: "Payment already successful", trxID: payment.trxID, amount: payment.amount };
+  if (payment.status === 'success') {
+    return {
+      success: true,
+      message: 'Payment already successful',
+      trxID: payment.trxID,
+      amount: payment.amount,
+    };
   }
 
-  if (status !== "success") {
-    await Payment.findOneAndUpdate({ paymentId: paymentID, status: { $ne: "success" } }, { status: "failed" });
-    return { success: false, message: "Payment failed or cancelled", paymentID };
+  if (status !== 'success') {
+    await Payment.findOneAndUpdate(
+      { paymentId: paymentID, status: { $ne: 'success' } },
+      { status: 'failed' },
+    );
+    return {
+      success: false,
+      message: 'Payment failed or cancelled',
+      paymentID,
+    };
   }
 
   const { data } = await axios.post(
@@ -127,29 +157,37 @@ export const verifyBkashPaymentService = async (query: any) => {
     { paymentID },
     {
       headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
         authorization: getBkashIdToken(),
-        "x-app-key": bkashKey,
+        'x-app-key': bkashKey,
       },
-    }
+    },
   );
 
-  if (data.statusCode === "0000") {
+  if (data.statusCode === '0000') {
     await Payment.findOneAndUpdate(
-      { paymentId: paymentID, status: { $ne: "success" } },
+      { paymentId: paymentID, status: { $ne: 'success' } },
       {
-        status: "success",
+        status: 'success',
         trxID: data.trxID,
         amount: data.amount,
-      }
+      },
     );
 
-    return { success: true, message: "Payment successful", trxID: data.trxID, amount: data.amount };
+    return {
+      success: true,
+      message: 'Payment successful',
+      trxID: data.trxID,
+      amount: data.amount,
+    };
   }
 
-  await Payment.findOneAndUpdate({ paymentId: paymentID, status: { $ne: "success" } }, { status: "failed" });
-  return { success: false, message: "Payment execution failed", paymentID };
+  await Payment.findOneAndUpdate(
+    { paymentId: paymentID, status: { $ne: 'success' } },
+    { status: 'failed' },
+  );
+  return { success: false, message: 'Payment execution failed', paymentID };
 };
 
 /**
@@ -160,7 +198,7 @@ export const processSslcommerzIPNService = async (payload: any) => {
     const result = await validateSslcommerzPayment(payload);
     return result;
   } catch (error: any) {
-    console.error("[Payment Service] IPN processing error:", error.message);
+    console.error('[Payment Service] IPN processing error:', error.message);
     return { success: false, message: error.message };
   }
 };
@@ -183,7 +221,7 @@ export const handleSslCancelService = async (tran_id: string) => {
  */
 export const getPaymentStatusService = async (id: string) => {
   const payment = await Payment.findById(id);
-  if (!payment) throw new CustomError(404, "Payment not found");
+  if (!payment) throw new CustomError(404, 'Payment not found');
   return payment;
 };
 
@@ -191,7 +229,7 @@ export const getAllPaymentService = async (query: Record<string, unknown>) => {
   const paymentQueries = new QueryBuilder(Payment.find(), query)
     .sort()
     .filter()
-    .search(["name", "email", "phone", "donationType"])
+    .search(['name', 'email', 'phone', 'donationType'])
     .fields()
     .paginate();
 
@@ -200,38 +238,66 @@ export const getAllPaymentService = async (query: Record<string, unknown>) => {
   return { result, meta };
 };
 
-export const getPaymentByIdService = async (id: string) => await Payment.findById(id);
-export const deletePaymentByIdService = async (id: string) => await Payment.findByIdAndDelete(id);
-export const updatePaymentByIdService = async (id: string, payload: Partial<IPayment>) =>
-  await Payment.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
+export const getPaymentByIdService = async (id: string) =>
+  await Payment.findById(id);
+export const deletePaymentByIdService = async (id: string) =>
+  await Payment.findByIdAndDelete(id);
+export const updatePaymentByIdService = async (
+  id: string,
+  payload: Partial<IPayment>,
+) =>
+  await Payment.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
 
 /**
  * Payment summary
  */
 export const getPaymentSummaryService = async () => {
-  const allTypes = await Payment.distinct("donationType");
+  const allTypes = await Payment.distinct('donationType');
 
   const successPayments = await Payment.aggregate([
-    { $match: { status: "success" } },
-    { $group: { _id: "$donationType", totalAmount: { $sum: "$amount" }, count: { $sum: 1 } } },
+    { $match: { status: 'success' } },
+    {
+      $group: {
+        _id: '$donationType',
+        totalAmount: { $sum: '$amount' },
+        count: { $sum: 1 },
+      },
+    },
   ]);
 
-  const donationMap: Record<string, { totalAmount: number; count: number }> = {};
-  successPayments.forEach((item) => {
-    donationMap[item._id] = { totalAmount: item.totalAmount, count: item.count };
+  const donationMap: Record<string, { totalAmount: number; count: number }> =
+    {};
+  successPayments.forEach(item => {
+    donationMap[item._id] = {
+      totalAmount: item.totalAmount,
+      count: item.count,
+    };
   });
 
-  const donationTypeTotals = allTypes.map((type) => ({
+  const donationTypeTotals = allTypes.map(type => ({
     _id: type,
     totalAmount: donationMap[type]?.totalAmount || 0,
     count: donationMap[type]?.count || 0,
   }));
 
-  const totalAmount = donationTypeTotals.reduce((sum, item) => sum + item.totalAmount, 0);
+  const totalAmount = donationTypeTotals.reduce(
+    (sum, item) => sum + item.totalAmount,
+    0,
+  );
 
-  const statusCounts = await Payment.aggregate([{ $group: { _id: "$status", count: { $sum: 1 } } }]);
-  const statusMap: Record<string, number> = { success: 0, pending: 0, failed: 0, cancelled: 0 };
-  statusCounts.forEach((item) => {
+  const statusCounts = await Payment.aggregate([
+    { $group: { _id: '$status', count: { $sum: 1 } } },
+  ]);
+  const statusMap: Record<string, number> = {
+    success: 0,
+    pending: 0,
+    failed: 0,
+    cancelled: 0,
+  };
+  statusCounts.forEach(item => {
     statusMap[item._id] = item.count;
   });
 

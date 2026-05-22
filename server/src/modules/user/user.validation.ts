@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const updateUserValidation = z.object({
   body: z.object({
@@ -8,6 +8,6 @@ export const updateUserValidation = z.object({
     password: z.string().optional(),
     phone: z.string().optional(),
     address: z.string().optional(),
-    role: z.enum(["user", "admin"]).optional(),
+    role: z.enum(['user', 'admin']).optional(),
   }),
 });

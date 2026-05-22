@@ -8,5 +8,3 @@ export const donationProjectValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

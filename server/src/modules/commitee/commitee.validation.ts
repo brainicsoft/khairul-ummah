@@ -8,5 +8,3 @@ export const commiteeValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

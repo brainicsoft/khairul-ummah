@@ -17,7 +17,7 @@ import { handleDuplicateError } from '../errors/duplicateErrors';
  */
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
-  console.log(error)
+  console.log(error);
   let status = 500;
   let message = 'Something went wrong';
   const success = false;
@@ -70,24 +70,27 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
    * =========================== === === Zod  Error === === =====================
    */
 
-/* inside your errorHandler */
-if (error instanceof ZodError) {
-  status = 400;
-  message = "Validation Error";
-  stackTrace = error.stack ? { ...stackTrace, stack: error.stack } : stackTrace;
+  /* inside your errorHandler */
+  if (error instanceof ZodError) {
+    status = 400;
+    message = 'Validation Error';
+    stackTrace = error.stack
+      ? { ...stackTrace, stack: error.stack }
+      : stackTrace;
 
-  // Convert Zod issues to TErrors safely
-  errors = error.issues.map((issue) => {
-    const path = issue.path
-      .map((p) => (typeof p === "symbol" ? p.toString() : p)) // convert symbol to string
-      .join(".") || "body"; // fallback if path is empty
+    // Convert Zod issues to TErrors safely
+    errors = error.issues.map(issue => {
+      const path =
+        issue.path
+          .map(p => (typeof p === 'symbol' ? p.toString() : p)) // convert symbol to string
+          .join('.') || 'body'; // fallback if path is empty
 
-    return {
-      path,
-      message: issue.message,
-    };
-  }) as TErrors;
-}
+      return {
+        path,
+        message: issue.message,
+      };
+    }) as TErrors;
+  }
 
   /**
    * =========================== === === MOngoose   Error === === =====================

@@ -9,7 +9,5 @@ export interface ICommitee {
   // title: string;
   slug: string;
 
-  // update your content here 
+  // update your content here
 }
-
-  

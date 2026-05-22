@@ -38,6 +38,4 @@ const commiteeSchema = new Schema<ICommitee>({
   // },
 });
 
-
 export const Commitee = model<ICommitee>('Commitee', commiteeSchema);
-

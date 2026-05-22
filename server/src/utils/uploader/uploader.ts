@@ -2,7 +2,7 @@ import { Request } from 'express';
 import multer, { Multer, MulterError } from 'multer';
 
 const storage = multer.memoryStorage();
-const fileSizeLimit = 100 * 1024 * 1024; 
+const fileSizeLimit = 100 * 1024 * 1024;
 
 const upload: Multer = multer({
   storage,

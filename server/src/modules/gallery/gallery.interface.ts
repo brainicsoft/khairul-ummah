@@ -6,5 +6,3 @@ export interface IGallery {
   purpose?: string;
   date?: string;
 }
-
-  

@@ -1,32 +1,24 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Create User Validation - Zod v4+
  */
 export const createUserValidation = z.object({
   body: z.object({
-    name: z
-      .string()
-      .min(1, "Name is required"), // replaces required_error
+    name: z.string().min(1, 'Name is required'), // replaces required_error
 
-    username: z
-      .string()
-      .min(1, "Username is required"), // replaces required_error
+    username: z.string().min(1, 'Username is required'), // replaces required_error
 
     email: z
       .string()
-      .min(1, "Email is required")
-      .email("Invalid email address"),
+      .min(1, 'Email is required')
+      .email('Invalid email address'),
 
-    googleId: z
-      .string()
-      .optional(),
+    googleId: z.string().optional(),
 
-    password: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
 
-    role: z.enum(["user", "admin"]).default("user"),
+    role: z.enum(['user', 'admin']).default('user'),
   }),
 });
 
@@ -35,13 +27,9 @@ export const createUserValidation = z.object({
  */
 export const activateUserValidation = z.object({
   body: z.object({
-    activationToken: z
-      .string()
-      .min(1, "Token is required"),
+    activationToken: z.string().min(1, 'Token is required'),
 
-    code: z
-      .string()
-      .min(1, "Code is required"),
+    code: z.string().min(1, 'Code is required'),
   }),
 });
 
@@ -52,11 +40,9 @@ export const loginValidation = z.object({
   body: z.object({
     email: z
       .string()
-      .min(1, "Email is required")
-      .email("Invalid email address"),
+      .min(1, 'Email is required')
+      .email('Invalid email address'),
 
-    password: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
   }),
 });

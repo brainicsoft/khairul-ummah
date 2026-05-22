@@ -1,7 +1,7 @@
 // donationProject.model.ts
 
-import { Schema, model } from "mongoose";
-import { IDonationProject } from "./donationProject.interface";
+import { Schema, model } from 'mongoose';
+import { IDonationProject } from './donationProject.interface';
 
 const donationProjectSchema = new Schema<IDonationProject>(
   {
@@ -26,7 +26,7 @@ const donationProjectSchema = new Schema<IDonationProject>(
     },
     category: {
       type: String,
-      enum: ["general", "special", "emergency"],
+      enum: ['general', 'special', 'emergency'],
       required: true,
     },
     benefits: {
@@ -35,8 +35,8 @@ const donationProjectSchema = new Schema<IDonationProject>(
     },
     status: {
       type: String,
-      enum: ["pending", "active", "completed"],
-      default: "pending",
+      enum: ['pending', 'active', 'completed'],
+      default: 'pending',
     },
 
     videoUrl: {
@@ -46,10 +46,9 @@ const donationProjectSchema = new Schema<IDonationProject>(
   {
     timestamps: true,
   },
-  
 );
 
 export const DonationProject = model<IDonationProject>(
-  "DonationProject",
-  donationProjectSchema
+  'DonationProject',
+  donationProjectSchema,
 );

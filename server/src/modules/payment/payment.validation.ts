@@ -8,5 +8,3 @@ export const paymentValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

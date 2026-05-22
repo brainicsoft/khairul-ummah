@@ -43,5 +43,3 @@ export interface IAutopay {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
-  

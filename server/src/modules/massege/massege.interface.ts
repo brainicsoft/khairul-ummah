@@ -6,7 +6,5 @@ export interface IMassege {
   message: string;
   subject?: string;
 
-  // update your content here 
+  // update your content here
 }
-
-  

@@ -1,7 +1,7 @@
 // lifetimeDonor.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { ILifetimeDonor } from "./lifetimeDonor.interface";
-import { LifetimeDonor } from "./lifetimeDonor.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { ILifetimeDonor } from './lifetimeDonor.interface';
+import { LifetimeDonor } from './lifetimeDonor.model';
 
 // Create New lifetimeDonor service
 
@@ -12,7 +12,9 @@ export const createLifetimeDonorService = async (payload: ILifetimeDonor) => {
 
 // getAll lifetimeDonor service
 
-export const getAllLifetimeDonorService = async (query: Record<string, unknown>) => {
+export const getAllLifetimeDonorService = async (
+  query: Record<string, unknown>,
+) => {
   const lifetimeDonorQueries = new QueryBuilder(LifetimeDonor.find(), query)
     .sort()
     .filter()
@@ -23,7 +25,7 @@ export const getAllLifetimeDonorService = async (query: Record<string, unknown>)
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await lifetimeDonorQueries.modelQuery;
   return result;
@@ -44,14 +46,13 @@ export const deleteLifetimeDonorByIdService = async (id: string) => {
 };
 // update lifetimeDonor by Id or single  service
 
-export const updateLifetimeDonorByIdService = async (id: string, payload: Partial<ILifetimeDonor>) => {
+export const updateLifetimeDonorByIdService = async (
+  id: string,
+  payload: Partial<ILifetimeDonor>,
+) => {
   const result = await LifetimeDonor.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };
-
-

@@ -1,14 +1,21 @@
-import { Router } from "express";
-import { requestValidator } from "../../middlewares/requestValidator";
+import { Router } from 'express';
+import { requestValidator } from '../../middlewares/requestValidator';
 import {
   createAutopayController,
-
-} from "./autopay.controller";
-import { autopayValidationSchema } from "./autopay.validation";
+  getAutopayByIdController,
+} from './autopay.controller';
+import { autopayValidationSchema } from './autopay.validation';
 
 export const autopayRoutes: Router = Router();
 
-autopayRoutes.post("/bkash/create", requestValidator(autopayValidationSchema), createAutopayController);
+autopayRoutes.post(
+  '/bkash/create',
+  requestValidator(autopayValidationSchema),
+  createAutopayController,
+);
+// Query Subscription & Payment after successful callback
+autopayRoutes.get('/bkash/request-id/:requestId', getAutopayByIdController);
+
 // autopayRoutes.put("/bkash/extend", extendAutopayController);
 // autopayRoutes.post("/bkash/refund", refundAutopayController);
 

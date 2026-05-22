@@ -10,9 +10,8 @@ export interface IUser {
   role: 'user' | 'admin' | 'subadmin';
   isDeleted: boolean;
   code: number;
-  googleId:string,
-  avatar?:string;
-  
+  googleId: string;
+  avatar?: string;
 }
 export interface IUserMethod {
   comparePassword(password: string): Promise<boolean>;

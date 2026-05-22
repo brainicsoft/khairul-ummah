@@ -1,7 +1,7 @@
 // gallery.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { IGallery } from "./gallery.interface";
-import { Gallery } from "./gallery.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { IGallery } from './gallery.interface';
+import { Gallery } from './gallery.model';
 
 // Create New gallery service
 
@@ -23,7 +23,7 @@ export const getAllGalleryService = async (query: Record<string, unknown>) => {
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await galleryQueries.modelQuery;
   const meta = await galleryQueries.countTotal();
@@ -45,14 +45,13 @@ export const deleteGalleryByIdService = async (id: string) => {
 };
 // update gallery by Id or single  service
 
-export const updateGalleryByIdService = async (id: string, payload: Partial<IGallery>) => {
+export const updateGalleryByIdService = async (
+  id: string,
+  payload: Partial<IGallery>,
+) => {
   const result = await Gallery.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };
-
-

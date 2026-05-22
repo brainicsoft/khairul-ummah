@@ -1,7 +1,7 @@
 // volunteer.service.ts
-import { QueryBuilder } from "../../builder/QueryBuilder";
-import { IVolunteer } from "./volunteer.interface";
-import { Volunteer } from "./volunteer.model";
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { IVolunteer } from './volunteer.interface';
+import { Volunteer } from './volunteer.model';
 
 // Create New volunteer service
 
@@ -12,7 +12,9 @@ export const createVolunteerService = async (payload: IVolunteer) => {
 
 // getAll volunteer service
 
-export const getAllVolunteerService = async (query: Record<string, unknown>) => {
+export const getAllVolunteerService = async (
+  query: Record<string, unknown>,
+) => {
   const volunteerQueries = new QueryBuilder(Volunteer.find(), query)
     .sort()
     .filter()
@@ -23,13 +25,13 @@ export const getAllVolunteerService = async (query: Record<string, unknown>) => 
       // replace  with proper fields
     ])
     .fields()
-    .paginate()
+    .paginate();
 
   const result = await volunteerQueries.modelQuery;
   const meta = await volunteerQueries.countTotal();
   return {
     result,
-    meta
+    meta,
   };
 };
 
@@ -48,14 +50,13 @@ export const deleteVolunteerByIdService = async (id: string) => {
 };
 // update volunteer by Id or single  service
 
-export const updateVolunteerByIdService = async (id: string, payload: Partial<IVolunteer>) => {
+export const updateVolunteerByIdService = async (
+  id: string,
+  payload: Partial<IVolunteer>,
+) => {
   const result = await Volunteer.findByIdAndUpdate(id, payload, {
-
     new: true,
     runValidators: true,
-
   });
   return result;
 };
-
-

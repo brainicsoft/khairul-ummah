@@ -1,5 +1,5 @@
-import { model, Schema } from "mongoose"
-import { IVolunteer } from "./volunteer.interface"
+import { model, Schema } from 'mongoose';
+import { IVolunteer } from './volunteer.interface';
 
 const volunteerSchema = new Schema<IVolunteer>(
   {
@@ -84,7 +84,7 @@ const volunteerSchema = new Schema<IVolunteer>(
   },
   {
     timestamps: true,
-  }
-)
+  },
+);
 
-export const Volunteer = model<IVolunteer>('Volunteer', volunteerSchema)
+export const Volunteer = model<IVolunteer>('Volunteer', volunteerSchema);

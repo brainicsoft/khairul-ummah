@@ -8,5 +8,3 @@ export const massegeValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

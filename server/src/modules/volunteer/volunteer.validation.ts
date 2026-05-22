@@ -8,5 +8,3 @@ export const volunteerValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

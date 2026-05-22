@@ -8,5 +8,3 @@ export const activitiesValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

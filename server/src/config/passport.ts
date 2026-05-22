@@ -12,7 +12,13 @@ passport.use(
       callbackURL: `${baseUrl}/api/v1/auth/google/callback`,
       passReqToCallback: true,
     },
-    async (_request: any, _accessToken: string, _refreshToken: string, profile: any, done: (err: any, user?: any) => void) => {
+    async (
+      _request: any,
+      _accessToken: string,
+      _refreshToken: string,
+      profile: any,
+      done: (err: any, user?: any) => void,
+    ) => {
       try {
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {
@@ -26,7 +32,7 @@ passport.use(
             email: profile.emails?.[0].value,
             googleId: profile.id,
             avatar: profile.photos?.[0].value,
-            password: null, 
+            password: null,
           });
         }
 
@@ -34,8 +40,8 @@ passport.use(
       } catch (error) {
         done(error, null);
       }
-    }
-  )
+    },
+  ),
 );
 
 // Serialize user into session

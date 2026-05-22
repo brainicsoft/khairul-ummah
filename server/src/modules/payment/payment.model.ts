@@ -1,5 +1,5 @@
-import { Schema, model } from "mongoose";
-import { IPayment } from "./payment.interface";
+import { Schema, model } from 'mongoose';
+import { IPayment } from './payment.interface';
 
 const PaymentSchema = new Schema<IPayment>(
   {
@@ -26,13 +26,13 @@ const PaymentSchema = new Schema<IPayment>(
     paymentId: {
       type: String,
       // required: true,
-      unique:true
+      unique: true,
     },
 
     status: {
       type: String,
-      enum: ["pending", "success", "failed"],
-      default: "pending",
+      enum: ['pending', 'success', 'failed'],
+      default: 'pending',
     },
 
     donationType: {
@@ -40,10 +40,10 @@ const PaymentSchema = new Schema<IPayment>(
       required: true,
       trim: true,
     },
-   method: {
-      type:String,
-      enum:["bkash","sslcommerz"],
-      default:'bkash',
+    method: {
+      type: String,
+      enum: ['bkash', 'sslcommerz'],
+      default: 'bkash',
     },
     trxID: {
       type: String,
@@ -59,9 +59,9 @@ const PaymentSchema = new Schema<IPayment>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const Payment = model<IPayment>("Payment", PaymentSchema);
+const Payment = model<IPayment>('Payment', PaymentSchema);
 
 export default Payment;

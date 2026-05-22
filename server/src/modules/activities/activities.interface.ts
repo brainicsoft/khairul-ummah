@@ -7,7 +7,5 @@ export interface IActivities {
   createdAt?: string;
   slug?: string;
 
-  // update your content here 
+  // update your content here
 }
-
-  

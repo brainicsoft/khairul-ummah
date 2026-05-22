@@ -8,5 +8,3 @@ export const galleryValidationSchema = z.object({
     avatar: z.string(),
   }),
 });
-
-  

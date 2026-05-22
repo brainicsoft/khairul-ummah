@@ -1,6 +1,6 @@
 // massege.model.ts
 
-  import { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { IMassege } from './massege.interface';
 
 const massegeSchema = new Schema<IMassege>({
@@ -24,10 +24,6 @@ const massegeSchema = new Schema<IMassege>({
     default: 'Contact Form Submission',
     trim: true,
   },
-  
 });
 
-
-  export const Massege = model<IMassege>('Massege', massegeSchema);
-
-  
+export const Massege = model<IMassege>('Massege', massegeSchema);
