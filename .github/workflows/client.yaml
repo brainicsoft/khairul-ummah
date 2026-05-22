@@ -36,7 +36,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           overwrite: true
-          source: client/.next,client/public,client/.gitignore,client/components.json,client/eslint.config.mjs,client/next.config.mjs,client/package.json,client/pnpm-lock.yaml,client/pm2.config.js,client/postcss.config.mjs,client/tailwind.config.ts,client/tsconfig.json,client/README.md
+          source: client/.next,client/public,client/.gitignore,client/components.json,client/eslint.config.mjs,client/next.config.mjs,client/package.json,client/pnpm-lock.yaml,client/pnpm-workspace.yaml,client/pm2.config.js,client/postcss.config.mjs,client/tailwind.config.ts,client/tsconfig.json,client/README.md
           target: "/var/www/khairulummah"
 
 
