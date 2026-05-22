@@ -23,11 +23,10 @@ jobs:
     #     run: |
     #       echo "$PROD_ENV" > server/.env
       # Step 3: Install dependencies for both frontend and backend
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
-          npm i  -g pnpm 
-          cd client && pnpm i 
-          pnpm build
+          npm i -g pnpm
+          cd client && CI=true pnpm i && pnpm build
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -52,5 +51,5 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             export PATH="$PATH:$HOME/.nvm/versions/node/v22.15.0/bin"
-            pnpm i
+            CI=true pnpm i
             pm2 reload pm2.config.js

@@ -1,4 +1,4 @@
-name: Brainicmart Server CI/CD Pipeline
+name: khairul ummah Server CI/CD Pipeline
 on:
   push:
     branches:
@@ -18,17 +18,19 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "22.14.0"
-      - name: 🔨 Create .env file
+
+      - name: Create .env file
         env:
           PROD_ENV: ${{ secrets.SERVER_ENV }}
         run: |
           echo "$PROD_ENV" > server/.env
-      # Step 3: Install dependencies for both frontend and backend
-      - name: Install dependencies
+
+      # Step 3: Install dependencies and build
+      - name: Install dependencies and build
         run: |
-          npm i -g pnpm 
-          cd server && pnpm i
-          pnpm build
+          npm i -g pnpm
+          cd server && CI=true pnpm i && pnpm build
+
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -37,9 +39,9 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: 22
           overwrite: true
-          source: "server/package.json,server/pnpm-lock.yaml,server/.env,server/dist/*,server/pm2.config.js,server/upload,server/server.js,server/docs/* server/tsconfig.json"
-          target:
-            /var/www/khairulummah
+          source: server/dist,server/package.json,server/pnpm-lock.yaml,server/pnpm-workspace.yaml,server/pm2.config.js,server/tsconfig.json,server/.env
+          target: "/var/www/khairulummah"
+
       - name: Run scripts on server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -52,5 +54,6 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
             export PATH="$PATH:$HOME/.nvm/versions/node/v22.14.0/bin"
-            pnpm i
+            mkdir -p uploads
+            CI=true pnpm i
             pm2 reload pm2.config.js
