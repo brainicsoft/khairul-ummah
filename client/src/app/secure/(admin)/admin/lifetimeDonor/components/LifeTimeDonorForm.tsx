@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 
 export interface ILifetimeDonor {
+  _id?: string
   email: string
   name: string
   slug?: string

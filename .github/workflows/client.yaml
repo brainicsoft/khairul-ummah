@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - main
+      - advance-ui
+  pull_request:
+    branches:
+      - main
+      - advance-ui
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -10,11 +15,10 @@ jobs:
     steps:
       # Step 1: Checkout code
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      # Step 2: Setup Node.js
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: "22.14.0"
     #   - name: 🔨 Create .env file
@@ -27,7 +31,9 @@ jobs:
         run: |
           npm i -g pnpm
           cd client && CI=true pnpm i && pnpm build
+
       - name: Copy files to server
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.HOST }}
@@ -40,6 +46,7 @@ jobs:
 
 
       - name: Run scripts on server
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }}
