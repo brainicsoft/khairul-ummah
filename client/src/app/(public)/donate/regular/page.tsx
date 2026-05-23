@@ -185,8 +185,8 @@ export default function AutopayPage() {
             <div className="bg-primary text-primary-foreground">
                 <div className="container mx-auto px-4 py-3 text-center text-sm flex flex-wrap items-center justify-center gap-2">
                     <span>নিয়মিত অনুদান সংক্রান্ত যেকোনো বিষয় জানতে অসুবিধা হলে বা কোনো সমস্যা হলে, দয়া করে</span>
-                    <a href="mailto:contact@khairulummahfoundation.org" className="underline font-semibold flex items-center gap-1">
-                        ✉ contact@khairulummahfoundation.org
+                    <a href="mailto:khairulummah@kuf.org.bd" className="underline font-semibold flex items-center gap-1">
+                        ✉ khairulummah@kuf.org.bd
                     </a>
                     <span>- এ ইমেইল করুন</span>
                 </div>
@@ -495,8 +495,8 @@ export default function AutopayPage() {
                                 <li>আপনি যেকোনো সময় নিয়মিত দান বাতিল করতে পারবেন।</li>
                                 <li>
                                     বাতিল করতে{" "}
-                                    <a href="mailto:contact@khairulummahfoundation.org" className="text-primary underline font-medium">
-                                        contact@khairulummahfoundation.org
+                                    <a href="mailto:khairulummah@kuf.org.bd" className="text-primary underline font-medium">
+                                        khairulummah@kuf.org.bd
                                     </a>{" "}
                                     এ ইমেইল করুন।
                                 </li>

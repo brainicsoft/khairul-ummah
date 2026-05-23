@@ -14,6 +14,8 @@ const massegeSchema = new Schema<IMassege>({
   },
   phone: {
     type: String,
+    required: true,
+    trim: true,
   },
   message: {
     type: String,
