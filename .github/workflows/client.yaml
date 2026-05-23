@@ -30,7 +30,9 @@ jobs:
       - name: Install dependencies and build
         run: |
           npm i -g pnpm
-          cd client && CI=true pnpm i && pnpm build
+          cd client
+          test -f src/config/site.ts || (echo "Missing src/config/site.ts — commit site config before deploy" && exit 1)
+          CI=true pnpm i && pnpm build
 
       - name: Copy files to server
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
