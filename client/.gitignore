@@ -18,7 +18,9 @@ yarn-error.log*
 
 # env files
 .env*
-/src/config/
+# keep tracked TS under src/config (site, constants); ignore secrets only
+/src/config/.env*
+/src/config/*.local
 # vercel
 .vercel
 

@@ -3,17 +3,20 @@
 import { injectEndpoints } from "../../api/api";
 
 export interface ILifetimeDonor {
-  _id: string;
+  _id?: string;
   name: string;
   email: string;
   phone?: string;
   amount: number;
   profession?: string;
+  occupation?: string;
   address: string;
   message?: string;
   termsAccepted: boolean;
   slug?: string;
 }
+
+export type CreateLifetimeDonorInput = Omit<ILifetimeDonor, '_id' | 'slug'>;
 
 interface Meta {
   page: number;
@@ -72,7 +75,7 @@ export const {
     // ============================
     // CREATE LIFETIME DONOR
     // ============================
-    createLifetimeDonor: mutation<any, ILifetimeDonor>({
+    createLifetimeDonor: mutation<any, CreateLifetimeDonorInput>({
       query: (data) => ({
         url: "/lifetimeDonor/request",
         method: "POST",
