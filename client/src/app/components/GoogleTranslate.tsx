@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Script from 'next/script'
-import { translationConfig } from '../lang/lang_config'
+import { DEFAULT_LANGUAGE, translationConfig } from '../lang/lang_config'
 
 export function GoogleTranslate() {
   useEffect(() => {
@@ -46,7 +46,7 @@ export function GoogleTranslate() {
       if (window.google?.translate?.TranslateElement) {
         new window.google.translate.TranslateElement(
           {
-            pageLanguage: translationConfig.defaultLanguage,
+            pageLanguage: DEFAULT_LANGUAGE,
             includedLanguages: translationConfig.languages.map((l) => l.name).join(','),
             layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false,

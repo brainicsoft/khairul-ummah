@@ -3,21 +3,18 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
 import {
+  DEFAULT_LANGUAGE,
   SUPPORTED_LANGUAGES,
-  translationConfig,
   type LanguageCode,
 } from '../lang/lang_config'
 import {
+  applyLanguageChange,
   parseLanguageFromCookie,
-  setGoogleTranslateLanguage,
-  triggerGoogleTranslateSelect,
   waitForGoogleTranslateCombo,
 } from '../lang/google-translate'
 
 export function LanguageSwitcher() {
-  const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(
-    translationConfig.defaultLanguage
-  )
+  const [currentLanguage, setCurrentLanguage] = useState<LanguageCode>(DEFAULT_LANGUAGE)
   const [isOpen, setIsOpen] = useState(false)
   const [isReady, setIsReady] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,7 +24,7 @@ export function LanguageSwitcher() {
 
     waitForGoogleTranslateCombo().then((select) => {
       if (select) {
-        const fromSelect = select.value || translationConfig.defaultLanguage
+        const fromSelect = select.value || DEFAULT_LANGUAGE
         setCurrentLanguage(fromSelect as LanguageCode)
       }
       setIsReady(true)
@@ -44,20 +41,15 @@ export function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const switchLanguage = useCallback(async (lang: LanguageCode) => {
+  const switchLanguage = useCallback((lang: LanguageCode) => {
     if (lang === currentLanguage) {
       setIsOpen(false)
       return
     }
 
-    setGoogleTranslateLanguage(lang)
-    setCurrentLanguage(lang)
     setIsOpen(false)
-
-    const applied = triggerGoogleTranslateSelect(lang)
-    if (!applied) {
-      window.location.reload()
-    }
+    setCurrentLanguage(lang)
+    applyLanguageChange(lang)
   }, [currentLanguage])
 
   const currentLang =

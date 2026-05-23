@@ -5,7 +5,11 @@ import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import icon from "@/assets/logo/logo-round.jpg"
 import { GoogleTranslate } from "./components/GoogleTranslate"
-import { translationConfig } from "./lang/lang_config"
+import {
+  DEFAULT_LANGUAGE,
+  translationConfig,
+} from "./lang/lang_config"
+import { GOOGLE_TRANSLATE_BOOTSTRAP_SCRIPT } from "./lang/google-translate-bootstrap"
 import StoreProvider from "@/redux/StoreProvider"
 
 // Configure Hind Siliguri with all weights and subsets
@@ -37,9 +41,14 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="bn" className={`${hindSiliguri.variable} ${geist.variable} ${geistMono.variable}`}>
+    <html lang={DEFAULT_LANGUAGE} className={`${hindSiliguri.variable} ${geist.variable} ${geistMono.variable}`}>
       <head>
         <link rel="icon" href={icon.src} sizes="any" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: GOOGLE_TRANSLATE_BOOTSTRAP_SCRIPT,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.__GOOGLE_TRANSLATION_CONFIG__ = ${JSON.stringify(translationConfig)};`,

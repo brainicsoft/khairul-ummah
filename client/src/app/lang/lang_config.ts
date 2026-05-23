@@ -8,19 +8,27 @@ declare global {
   }
 }
 
-export const translationConfig = {
-  languages: [
-    { title: 'English', name: 'en' },
-    { title: 'Bangla', name: 'bn' },
-    { title: 'Arabic', name: 'ar' },
-  ],
-  defaultLanguage: 'bn',
-}
+/** Site default: original page language (Bangla). Not translated. */
+export const DEFAULT_LANGUAGE = 'bn' as const
 
-export const SUPPORTED_LANGUAGES = [
-  { code: 'bn', name: 'বাংলা', flag: '🇧🇩' },
+export type LanguageCode = typeof DEFAULT_LANGUAGE | 'en' | 'ar'
+
+export const SUPPORTED_LANGUAGES: {
+  code: LanguageCode
+  name: string
+  flag: string
+  isDefault?: boolean
+}[] = [
+  { code: DEFAULT_LANGUAGE, name: 'বাংলা', flag: '🇧🇩', isDefault: true },
   { code: 'en', name: 'English', flag: '🇬🇧' },
   { code: 'ar', name: 'العربية', flag: '🇸🇦' },
-] as const
+]
 
-export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]['code']
+export const translationConfig = {
+  defaultLanguage: DEFAULT_LANGUAGE,
+  languages: [
+    { title: 'Bangla', name: DEFAULT_LANGUAGE },
+    { title: 'English', name: 'en' },
+    { title: 'Arabic', name: 'ar' },
+  ],
+}
