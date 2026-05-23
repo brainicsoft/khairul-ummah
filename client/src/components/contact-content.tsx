@@ -12,6 +12,7 @@ export function ContactContent() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   })
@@ -25,13 +26,11 @@ export function ContactContent() {
     e.preventDefault();
 
     try {
-      const res: any = await createMessage(formData).unwrap();
-
-      console.log("Contact created:", res);
+      await createMessage(formData).unwrap();
 
       toast.success("আপনার বার্তা সফলভাবে পাঠানো হয়েছে!");
 
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     } catch (error: any) {
       console.error("Failed to submit contact:", error);
       toast.error("দুঃখিত! বার্তা পাঠানো যায়নি। আবার চেষ্টা করুন।");
@@ -69,6 +68,18 @@ export function ContactContent() {
                 />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-2">মোবাইল নম্বর</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="০১৭XXXXXXXX"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  required
+                />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-2">বিষয়</label>
                 <input
                   type="text"
@@ -92,9 +103,10 @@ export function ContactContent() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
+                disabled={isLoading}
+                className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition disabled:opacity-60"
               >
-                বার্তা পাঠান
+                {isLoading ? "পাঠানো হচ্ছে..." : "বার্তা পাঠান"}
               </button>
             </form>
           </div>

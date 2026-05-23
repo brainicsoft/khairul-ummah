@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>নতুন যোগাযোগ বার্তা</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 16px; }
+    .container { max-width: 600px; margin: 0 auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .header { background: #0778B0; color: #fff; padding: 16px 20px; }
+    .header h2 { margin: 0; font-size: 18px; }
+    .content { padding: 20px; color: #333; font-size: 14px; line-height: 1.6; }
+    .row { margin-bottom: 12px; }
+    .label { font-weight: bold; color: #0778B0; display: block; margin-bottom: 4px; }
+    .message-box { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; white-space: pre-wrap; }
+    .footer { padding: 12px 20px; font-size: 12px; color: #888; text-align: center; border-top: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>খাইরুল উম্মাহ ফাউন্ডেশন — নতুন যোগাযোগ বার্তা</h2>
+    </div>
+    <div class="content">
+      <div class="row">
+        <span class="label">নাম</span>
+        <%= data.name %>
+      </div>
+      <div class="row">
+        <span class="label">ইমেইল</span>
+        <a href="mailto:<%= data.email %>"><%= data.email %></a>
+      </div>
+      <div class="row">
+        <span class="label">মোবাইল</span>
+        <% if (data.phone) { %>
+          <a href="tel:<%= data.phone %>"><%= data.phone %></a>
+        <% } else { %>
+          —
+        <% } %>
+      </div>
+      <div class="row">
+        <span class="label">বিষয়</span>
+        <%= data.subject || 'Contact Form Submission' %>
+      </div>
+      <div class="row">
+        <span class="label">বার্তা</span>
+        <div class="message-box"><%= data.message %></div>
+      </div>
+    </div>
+    <div class="footer">
+      ওয়েবসাইট যোগাযোগ ফর্ম থেকে পাঠানো হয়েছে
+    </div>
+  </div>
+</body>
+</html>

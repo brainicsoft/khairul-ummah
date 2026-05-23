@@ -36,6 +36,14 @@ export const mailPort = 465;
 export const mailUser: string = process.env.MAIL_USER || '';
 export const mailPass: string = process.env.MAIL_PASS || '';
 export const mailService: string = process.env.MAIL_SERVICE || '';
+/** Comma-separated in CONTACT_NOTIFY_EMAILS env */
+export const contactNotifyEmails: string[] = (
+  process.env.CONTACT_NOTIFY_EMAILS ??
+  'khairulummah@kuf.org.bd,moon@brainicsoft.com'
+)
+  .split(',')
+  .map((email) => email.trim())
+  .filter(Boolean);
 
 // for payment
 export const bkashUser: string = process.env.BKASH_USER || '';

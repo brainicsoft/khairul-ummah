@@ -2,7 +2,7 @@
 export interface IMassege {
   name: string;
   email: string;
-  phone?: string;
+  phone: string;
   message: string;
   subject?: string;
 

@@ -1,12 +1,36 @@
 // massege.service.ts
 import { QueryBuilder } from '../../builder/QueryBuilder';
+import { contactNotifyEmails } from '../../config';
+import { sendMail } from '../../utils/emailSender';
 import { IMassege } from './massege.interface';
 import { Massege } from './massege.model';
 
-// Create New massege service
+const sendContactAdminEmail = async (message: IMassege) => {
+  const subject = `[যোগাযোগ] ${message.subject || 'নতুন বার্তা'} — ${message.name}`;
+  await sendMail(
+    contactNotifyEmails.join(', '),
+    subject,
+    {
+      name: message.name,
+      email: message.email,
+      phone: message.phone || '',
+      subject: message.subject,
+      message: message.message,
+    },
+    'contact-notification',
+  );
+};
 
+// Create New massege service
 export const createMassegeService = async (payload: IMassege) => {
   const result = await Massege.create(payload);
+
+  try {
+    await sendContactAdminEmail(payload);
+  } catch (error) {
+    console.error('[Contact] Admin notification email failed:', error);
+  }
+
   return result;
 };
 
@@ -16,12 +40,7 @@ export const getAllMassegeService = async (query: Record<string, unknown>) => {
   const massegeQueries = new QueryBuilder(Massege.find(), query)
     .sort()
     .filter()
-    .search([
-      'email',
-      // 'category',
-      // 'description',
-      // replace  with proper fields
-    ])
+    .search(['email', 'name', 'phone', 'subject'])
     .fields()
     .paginate();
 
