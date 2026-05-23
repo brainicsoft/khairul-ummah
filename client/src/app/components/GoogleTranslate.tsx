@@ -47,7 +47,7 @@ export function GoogleTranslate() {
         new window.google.translate.TranslateElement(
           {
             pageLanguage: translationConfig.defaultLanguage,
-            includedLanguages: 'en,bn,ar',
+            includedLanguages: translationConfig.languages.map((l) => l.name).join(','),
             layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
             autoDisplay: false,
           },
