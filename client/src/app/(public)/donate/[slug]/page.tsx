@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Image, { StaticImageData } from "next/image"
 import { useForm, Controller } from "react-hook-form"
@@ -13,6 +13,7 @@ import { useGetDonationProjectBySlugQuery } from "@/redux/features/donationProje
 import FAQ from "@/components/FAQ"
 import { DonatesTypesMenue } from "@/components/DonatesTypesMenue"
 import toast from "react-hot-toast"
+import { siteContact } from "@/config/site"
 
 export type DonationType = {
   _id: number
@@ -39,38 +40,41 @@ export default function DonateTypePage() {
   // state for donation types
   const [donationTypes, setDonationTypes] = useState<any[]>([]);
   const params = useParams()
-  const slug = params.slug as string
+  const searchParams = useSearchParams()
+  const slug = decodeURIComponent(params.slug as string)
   const { data, isLoading: donatTypesLoding } = useGetDonationProjectBySlugQuery({ slug });
-  console.log(data)
   const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<FormValues>({
     defaultValues: {
-      category: "",
+      category: slug,
       amount: "",
       name: "",
       email: "",
       phone: "",
       paymentMethod: "bkash",
-    }
+    },
   })
-   // fetch donation types on mount
-   useEffect(() => {
-    async function fetchDonationTypes() {
-      const data = await DonatesTypesMenue();
-      setDonationTypes(data);
-    }
-    fetchDonationTypes();
-  }, []);
-
-  // When the donation data (page) loads, auto-select its slug in the category select
-  useEffect(() => {
-    if (data?.slug) {
-      setValue("category", data.slug);
-    }
-  }, [data, setValue]);
-
-  // const data = DONATION_TYPES.find((type) => type.slug === slug)
-
   const [selectedAmount, setSelectedAmount] = useState<string>("")
+
+  useEffect(() => {
+    async function fetchDonationTypes() {
+      const types = await DonatesTypesMenue()
+      setDonationTypes(types)
+    }
+    fetchDonationTypes()
+  }, [])
+
+  // Category + amount — set after fund list loads (fixes empty select on arrival)
+  useEffect(() => {
+    if (slug) {
+      setValue("category", slug, { shouldDirty: true, shouldValidate: true })
+    }
+
+    const amountFromUrl = searchParams.get("amount")
+    if (amountFromUrl && !Number.isNaN(Number(amountFromUrl))) {
+      setValue("amount", amountFromUrl, { shouldDirty: true })
+      setSelectedAmount(amountFromUrl)
+    }
+  }, [slug, donationTypes, searchParams, setValue])
 
   const [bkashDonation, { isLoading }] = useCreateBkashMutation()
   const [createPayment] = useCreatePaymentMutation()
@@ -137,7 +141,12 @@ export default function DonateTypePage() {
       </div>
 
       <div className="bg-muted py-3 text-center text-sm text-muted-foreground">
-        <p>সহায়তার জন্য আমাদের সাথে যোগাযোগ করুন ✉️ contact@khayrulummah.org</p>
+        <p>
+          সহায়তার জন্য যোগাযোগ:{" "}
+          <a href={`mailto:${siteContact.email}`} className="underline">
+            {siteContact.email}
+          </a>
+        </p>
       </div>
       <main className="py-12 md:py-16 bg-background">
 
@@ -153,18 +162,25 @@ export default function DonateTypePage() {
                     <label className="block text-sm font-semibold text-foreground mb-2">
                       ক্যাটাগরি <span className="text-red-500">*</span>
                     </label>
-                    <select
-                      {...register("category", { required: true })}
-                      className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="">নির্বাচন করুন</option>
-                      {donationTypes.map((type) => (
-                        <option key={type._id} value={type.slug}>
-                          {type.slug}
-                        </option>
-                      ))}
-
-                    </select>
+                    <Controller
+                      control={control}
+                      name="category"
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          value={field.value || slug}
+                          className="w-full px-4 py-3 rounded-lg border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                          <option value="">নির্বাচন করুন</option>
+                          {donationTypes.map((type) => (
+                            <option key={type._id} value={type.slug}>
+                              {type.title || type.slug}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    />
                     {errors.category && <span className="text-red-500 text-sm">ক্যাটাগরি অবশ্যক</span>}
                   </div>
 

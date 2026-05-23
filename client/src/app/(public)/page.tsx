@@ -1,24 +1,27 @@
 import { HeroSection } from "@/components/homePage/HeroSection"
-import { FeaturesSection } from "@/components/homePage/FeaturesSection"
+import { QuickFunds } from "@/components/homePage/QuickFunds"
 import { DonationCTA } from "@/components/homePage/DonationCTA"
-import { Donation } from "@/components/homePage/Donation"
+import { FeaturesSection } from "@/components/homePage/FeaturesSection"
 import { Programs } from "@/components/homePage/Programs"
 import { Gallery } from "@/components/homePage/Gallery"
-import { Newsletter } from "@/components/homePage/Newsletter"
 import { BlogSection } from "@/components/homePage/BlogSection"
+import { Newsletter } from "@/components/homePage/Newsletter"
 import ScrollToTop from "@/components/ScrollToTop"
+
 export default function Home() {
   return (
-    <main className="min-h-screen relative">
-      <HeroSection />
-      <FeaturesSection />
-      <DonationCTA />
-      <Donation />
-      <Programs />
-      <Gallery />
-      <BlogSection />
-      <Newsletter />
-      <ScrollToTop/>
-    </main>
+    <>
+      <main className="min-h-screen">
+        <HeroSection />
+        <QuickFunds />
+        <FeaturesSection />
+        <Programs />
+        <Gallery />
+        <DonationCTA />
+        <BlogSection />
+        <Newsletter />
+      </main>
+      <ScrollToTop />
+    </>
   )
 }

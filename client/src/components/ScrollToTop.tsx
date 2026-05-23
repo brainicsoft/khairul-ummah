@@ -6,28 +6,20 @@ export default function ScrollToTop() {
   const [showScroll, setShowScroll] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScroll(window.scrollY > 300);
-    };
+    const handleScroll = () => setShowScroll(window.scrollY > 300);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  if (!showScroll) return null;
 
   return (
-    <>
-      {showScroll && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300"
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="h-5 w-5" />
-        </button>
-      )}
-    </>
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className="fixed bottom-20 right-4 z-40 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-accent lg:bottom-6"
+      aria-label="উপরে যান"
+    >
+      <ArrowUp className="h-5 w-5" />
+    </button>
   );
 }

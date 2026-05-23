@@ -5,6 +5,7 @@ import { useState } from "react"
 import { Phone, Mail, MapPin } from "lucide-react"
 import {useCreateMessageMutation } from "@/redux/features/contacts/massegeApi";
 import toast from "react-hot-toast";
+import { siteContact } from "@/config/site";
 
 export function ContactContent() {
   const [createMessage, { isLoading }] = useCreateMessageMutation();
@@ -108,7 +109,9 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ফোন</h3>
-                  <p className="text-muted-foreground"> +8801811-448843</p>
+                  <a href={`tel:${siteContact.phone}`} className="text-muted-foreground hover:text-primary">
+                    {siteContact.phoneDisplay}
+                  </a>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -117,7 +120,12 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ইমেইল</h3>
-                  <p className="text-muted-foreground"> khairulummahfoundation.com</p>
+                  <a
+                    href={`mailto:${siteContact.email}`}
+                    className="break-all text-muted-foreground hover:text-primary"
+                  >
+                    {siteContact.email}
+                  </a>
                 </div>
               </div>
               <div className="flex gap-4">
@@ -126,7 +134,7 @@ export function ContactContent() {
                 </div>
                 <div>
                   <h3 className="font-semibold mb-1">ঠিকানা</h3>
-                  <p className="text-muted-foreground"> ময়মনসিংহ, বাংলাদেশ</p>
+                  <p className="text-muted-foreground">{siteContact.address}</p>
                 </div>
               </div>
 

@@ -16,15 +16,15 @@ try {
 }
 export function Gallery() {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="bg-muted/40 py-14 md:py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">গ্যালারি</h2>
+        <h2 className="mb-10 text-center text-2xl font-bold text-primary md:text-3xl">গ্যালারি</h2>
 
         <div className="grid md:grid-cols-3 gap-6 mb-12">
           {items.map((image:any, idx:number) => (
             <div
               key={idx}
-              className="relative h-64 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer"
+              className="relative h-64 overflow-hidden rounded-2xl border border-border shadow-sm transition hover:shadow-md"
             >
               <Image
                 src={image.image || "/placeholder.svg"}

@@ -1,6 +1,7 @@
 import type React from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { MobileDonateBar } from "@/components/homePage/MobileDonateBar"
 import { Toaster } from "react-hot-toast"
 
 export default function PublicLayout({
@@ -11,10 +12,11 @@ export default function PublicLayout({
   return (
     <div className="public-layout min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1">
-      <Toaster position="top-right" reverseOrder={false} />
+      <main className="flex-1 pb-20 lg:pb-0">
+        <Toaster position="top-right" reverseOrder={false} />
         {children}
       </main>
+      <MobileDonateBar />
       <Footer />
     </div>
   )

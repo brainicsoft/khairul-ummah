@@ -1,14 +1,22 @@
 import { apiUrl } from "@/config/constants";
 
-export async function DonatesTypesMenue() {
+export type DonationFundOption = {
+  _id: string;
+  slug: string;
+  title: string;
+  desc?: string;
+  image?: string;
+};
+
+export async function DonatesTypesMenue(): Promise<DonationFundOption[]> {
   try {
-    const res = await fetch(`${apiUrl}/donation/slug/all`, { cache: "no-store" });
-    if (!res.ok) return []; // API error → empty array
+    const res = await fetch(`${apiUrl}/donation?page=1&limit=50`, { cache: "no-store" });
+    if (!res.ok) return [];
 
     const json = await res.json();
     return json?.data || [];
   } catch (error) {
     console.error("Failed to fetch donation types:", error);
-    return []; // server off → empty array
+    return [];
   }
 }

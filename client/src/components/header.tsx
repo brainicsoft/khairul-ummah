@@ -2,125 +2,165 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X, ChevronDown, Phone, Mail, MapPin } from "lucide-react"
 import Image from "next/image"
 import logo from "../assets/logo/logo.png"
 import { LanguageSwitcher } from "@/app/components/LanguageSwitcher"
 import { DonatesTypesMenue } from "./DonatesTypesMenue"
+import { siteContact } from "@/config/site"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hoverDropdown, setHoverDropdown] = useState<string | null>(null)
   const [clickDropdown, setClickDropdown] = useState<string | null>(null)
   const pathname = usePathname()
-  const [donationTypes, setDonationTypes] = useState<any[]>([]);
+  const [donationTypes, setDonationTypes] = useState<any[]>([])
 
   useEffect(() => {
-    async function fetchDonationTypes() {
-      const data = await DonatesTypesMenue(); // await async function
-      setDonationTypes(data); // state update
-    }
+    DonatesTypesMenue().then(setDonationTypes)
+  }, [])
 
-    fetchDonationTypes();
-  }, []); // only once on mount
-
-  const fundSubMenu = donationTypes.map((type: any) => ({
-    id: type.id,
-    href: `/donate/${type.slug}`,
-    label: type.slug,
-  }));
-
-  const aboutSubMenu = [
-    { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
-    { href: "/about/committee", label: "পরিচালনা পরিষদ" },
-  ]
-  const navLinks = [
-    { href: "/", label: "হোম" },
-    { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
-    { href: "/activities", label: "আমাদের কার্যক্রম" },
-    { href: "/about", label: "আমাদের সম্পর্কে", dropdown: "about" },
-    { href: "/running-project", label: "চলমান প্রজেক্ট" },
-    { href: "/lifetime-donor", label: "আজীবন দাতা সদস্য" },
-    { href: "/blog", label: "ব্লগ" },
-    { href: "/contact", label: "যোগাযোগ" },
-    { href: "/volunteer", label: "স্বেচ্ছাসেবক নিবন্ধন" },
-    { href: "/gellery", label: "গ্যালারি" },
-  ]
-
-  // ✅ Auto close dropdown & menu on route change
   useEffect(() => {
     setHoverDropdown(null)
     setClickDropdown(null)
     setIsMenuOpen(false)
   }, [pathname])
 
+  const fundSubMenu = donationTypes.map((type: any) => ({
+    id: type._id,
+    href: `/donate/${type.slug}`,
+    label: type.title || type.slug,
+  }))
+
+  const aboutSubMenu = [
+    { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
+    { href: "/about/committee", label: "পরিচালনা পরিষদ" },
+  ]
+
+  const navLinks = [
+    { href: "/", label: "হোম" },
+    { href: "/about", label: "আমাদের সম্পর্কে", dropdown: "about" },
+    { href: "/activities", label: "আমাদের কার্যক্রম" },
+    { href: "/running-project", label: "চলমান প্রজেক্ট" },
+    { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
+    { href: "/lifetime-donor", label: "আজীবন দাতা সদস্য" },
+    { href: "/gellery", label: "গ্যালারি" },
+    { href: "/blog", label: "ব্লগ" },
+    { href: "/volunteer", label: "স্বেচ্ছাসেবক নিবন্ধন" },
+    { href: "/contact", label: "যোগাযোগ" },
+  ]
+
+  const donateHref = pathname === "/" ? "#donate" : "/donate"
+
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-border shadow-sm">
-      <div className="container mx-auto px-2 py-2 sm:py-3 flex justify-between items-center">
-        {/* Logo */}
+    <>
+      {/* Top bar — scrolls away */}
+      <div className="border-b border-primary/20 bg-primary text-primary-foreground">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-2 px-3 py-2 md:gap-4 md:px-4 md:py-2.5">
+          <a
+            href={`tel:${siteContact.phone}`}
+            className="flex items-center gap-1.5 text-xs font-medium hover:underline md:text-sm"
+          >
+            <Phone className="h-3.5 w-3.5 shrink-0 md:h-4 md:w-4" />
+            <span>{siteContact.phoneDisplay}</span>
+          </a>
+
+          <div className="hidden min-w-0 flex-1 flex-col items-center text-center text-xs md:flex md:text-sm">
+            <a
+              href={`mailto:${siteContact.email}`}
+              className="flex items-center gap-1.5 font-medium hover:underline"
+            >
+              <Mail className="h-3.5 w-3.5 shrink-0" />
+              {siteContact.email}
+            </a>
+            <span className="mt-0.5 flex items-center gap-1 opacity-95">
+              <MapPin className="h-3.5 w-3.5 shrink-0" />
+              <span className="line-clamp-1">{siteContact.address}</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={`mailto:${siteContact.email}`}
+              className="flex items-center gap-1 text-xs hover:underline md:hidden"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              <span className="max-w-[140px] truncate">ইমেইল</span>
+            </a>
+            <LanguageSwitcher tone="light" />
+          </div>
+        </div>
+      </div>
+
+      {/* Navbar — sticky at top while scrolling */}
+      <header className="sticky top-0 z-50 w-full shrink-0 bg-white shadow-sm">
+        <div className="container mx-auto flex items-center justify-between border-b border-border px-2 py-2 sm:py-3">
         <Link href="/">
           <Image
-            className="h-14 sm:h-16 lg:h-[70px] w-auto"
+            className="h-12 w-auto sm:h-14 lg:h-16"
             src={logo}
-            alt="Logo"
+            alt="খাইরুল উম্মাহ ফাউন্ডেশন"
             width={250}
             height={70}
             priority
           />
         </Link>
 
-
-        {/* Desktop Menu */}
-        <div className="flex justify-between items-center">
-          <nav className="hidden lg:flex gap-1 xl:gap-2 items-center relative flex-wrap justify-center">
+        <div className="flex items-center">
+          <nav className="relative hidden items-center lg:flex">
             {navLinks.map((link) => {
               const hasDropdown = !!link.dropdown
-              const isOpen = hoverDropdown === link.dropdown || clickDropdown === link.dropdown
+              const isOpen =
+                hoverDropdown === link.dropdown || clickDropdown === link.dropdown
 
               return hasDropdown ? (
                 <div
                   key={link.href}
                   className="relative"
                   onMouseEnter={() => {
-                    if (clickDropdown !== link.dropdown) {
-                      setHoverDropdown(link.dropdown)
-                    }
+                    if (clickDropdown !== link.dropdown) setHoverDropdown(link.dropdown!)
                   }}
                   onMouseLeave={() => {
-                    if (clickDropdown !== link.dropdown) {
-                      setHoverDropdown(null)
-                    }
+                    if (clickDropdown !== link.dropdown) setHoverDropdown(null)
                   }}
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center">
                     <Link
                       href={link.href}
-                      className="font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap"
+                      className={`whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
+                        pathname === link.href ? "text-primary" : ""
+                      }`}
                     >
                       {link.label}
                     </Link>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.preventDefault()
-                        setClickDropdown(clickDropdown === link.dropdown ? null : link.dropdown!)
+                        setClickDropdown(
+                          clickDropdown === link.dropdown ? null : link.dropdown!
+                        )
                       }}
+                      aria-label="মেনু খুলুন"
                     >
                       <ChevronDown
-                        className={`w-4 h-4 transition ${isOpen ? "rotate-180" : ""}`}
+                        className={`h-4 w-4 transition ${isOpen ? "rotate-180" : ""}`}
                       />
                     </button>
                   </div>
 
-                  {/* Dropdown menu */}
                   <div
-                    className={`absolute left-0 mt-2 w-52 bg-white border border-gray-200 shadow-lg rounded-lg transition-all duration-200 ease-in-out transform 
-                    ${isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}
+                    className={`absolute left-0 mt-1 w-56 rounded-xl border border-border bg-white py-1 shadow-lg transition ${
+                      isOpen
+                        ? "visible translate-y-0 opacity-100"
+                        : "invisible -translate-y-1 opacity-0"
+                    }`}
                   >
                     {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white transition whitespace-nowrap"
+                        className="block px-4 py-2.5 text-sm text-foreground hover:bg-primary hover:text-primary-foreground"
                       >
                         {item.label}
                       </Link>
@@ -131,75 +171,78 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`font-semibold text-[15px] px-2 py-1 hover:text-primary transition whitespace-nowrap ${pathname === link.href ? "text-primary" : ""
-                    }`}
+                  className={`whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
+                    pathname === link.href ? "text-primary" : ""
+                  }`}
                 >
                   {link.label}
                 </Link>
               )
             })}
           </nav>
-          <div className="flex items-center gap-2 ">
-            <div className="hidden lg:flex">
-              <LanguageSwitcher />
-            </div>
-            <Link href="/donate">
-              <button className="bg-primary text-white px-5 py-2 rounded-lg hover:bg-primary/90 transition text-sm font-semibold ml-2 whitespace-nowrap hidden lg:flex">
-                দান করুন
-              </button>
-            </Link>
-          </div>
-        </div>
-        {/* Mobile Menu */}
-        <div className="flex lg:hidden items-center gap-2">
-          <LanguageSwitcher />
-          <Link href="/donate">
-            <button className="bg-primary cursor-pointer text-white px-3 sm:px-4 py-1.5 rounded-lg hover:bg-primary/90 transition text-xs sm:text-sm font-semibold">
-              দান করুন
-            </button>
-          </Link>
 
-          <button
-            className="lg:hidden p-1"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="ml-2 flex items-center gap-2">
+            <Link href={donateHref}>
+              <span className="inline-flex min-h-[40px] items-center rounded-lg bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-accent lg:px-5">
+                দান করুন
+              </span>
+            </Link>
+            <button
+              type="button"
+              className="p-1 lg:hidden"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="মেনু"
+            >
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Mobile Dropdown */}
       {isMenuOpen && (
-        <nav className="lg:hidden border-t border-border bg-white p-3 sm:p-4 flex flex-col gap-2 max-h-[calc(100vh-80px)] overflow-y-auto">
+        <nav className="max-h-[calc(100vh-140px)] overflow-y-auto border-t border-border bg-white p-4 lg:hidden">
+          <div className="mb-4 space-y-2 rounded-lg bg-muted/50 p-3 text-sm">
+            <a href={`tel:${siteContact.phone}`} className="flex items-center gap-2 text-primary">
+              <Phone className="h-4 w-4" />
+              {siteContact.phoneDisplay}
+            </a>
+            <a
+              href={`mailto:${siteContact.email}`}
+              className="flex items-center gap-2 break-all text-primary"
+            >
+              <Mail className="h-4 w-4 shrink-0" />
+              {siteContact.email}
+            </a>
+            <p className="flex items-start gap-2 text-muted-foreground">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
+              {siteContact.address}
+            </p>
+          </div>
+
           {navLinks.map((link) => {
             const hasDropdown = !!link.dropdown
             const isOpen = clickDropdown === link.dropdown
 
             return hasDropdown ? (
-              <div key={link.href}>
-                <div className="flex justify-between items-center">
-                  <Link
-                    href={link.href}
-                    className="font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition"
-                  >
+              <div key={link.href} className="border-b border-border/50 py-2">
+                <div className="flex items-center justify-between">
+                  <Link href={link.href} className="font-semibold text-primary">
                     {link.label}
                   </Link>
                   <ChevronDown
+                    className={`h-4 w-4 cursor-pointer ${isOpen ? "rotate-180" : ""}`}
                     onClick={() =>
                       setClickDropdown(isOpen ? null : link.dropdown!)
                     }
-                    className={`w-4 h-4 transition cursor-pointer ${isOpen ? "rotate-180" : ""}`}
                   />
                 </div>
-
                 {isOpen && (
-                  <div className="ml-4 mt-1 flex flex-col gap-2 bg-gray-50 rounded-lg p-2">
+                  <div className="ml-3 mt-2 space-y-1">
                     {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
-                        className="text-sm text-gray-700 hover:text-primary transition py-1"
+                        className="block py-1.5 text-sm text-muted-foreground hover:text-primary"
                       >
                         {item.label}
                       </Link>
@@ -211,22 +254,17 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`font-semibold text-sm sm:text-base text-black hover:text-primary p-2 rounded transition block ${pathname === link.href ? "bg-primary/10 text-primary" : ""
-                  }`}
+                className={`block border-b border-border/50 py-3 font-semibold ${
+                  pathname === link.href ? "text-primary" : ""
+                }`}
               >
                 {link.label}
               </Link>
             )
           })}
-
-          <Link href="/donate" className="sm:hidden pt-2 border-t">
-            <button className="bg-primary text-white px-4 py-2 rounded-lg w-full hover:bg-primary/90 font-semibold text-sm">
-              দান করুন
-            </button>
-          </Link>
-
         </nav>
       )}
-    </header>
+      </header>
+    </>
   )
 }
