@@ -13,6 +13,9 @@ export const {
   useCreateUserMutation,
   useVerifyOtpMutation,
   useExportRoundsCsvMutation,
+  useCheckPhoneQuery,
+  useLazyCheckPhoneQuery,
+  useDonorRegisterMutation,
   endpoints: authEndpoints,
 } = injectEndpoints({
   // Define your endpoints here
@@ -49,6 +52,40 @@ export const {
       invalidatesTags: ["fundingRound"],
       transformResponse: (response: any) => response, // directly return response
       transformErrorResponse: (response: any) => response?.data, // adjust for data if error
+    }),
+
+    checkPhone: query<{ exists: boolean; phone: string }, string>({
+      query: (phone) => ({
+        url: `/auth/check-phone?phone=${encodeURIComponent(phone)}`,
+      }),
+      transformResponse: (response: any) => response?.data,
+      transformErrorResponse: (response: any) => response?.data,
+    }),
+
+    donorRegister: mutation<
+      object,
+      { name: string; phone: string; email?: string; password: string }
+    >({
+      query: (data) => ({
+        url: "/auth/donor-register",
+        method: "POST",
+        body: data,
+      }),
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        try {
+          const { data = {} }: any = await queryFulfilled;
+          dispatch(
+            setAuthData({
+              token: data.token || "",
+              data: data.data,
+            })
+          );
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      transformResponse: (response: any) => response,
+      transformErrorResponse: (response: any) => response?.data,
     }),
 
     forgetPassword: mutation<object, any>({

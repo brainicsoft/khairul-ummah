@@ -56,4 +56,4 @@ jobs:
             export PATH="$PATH:$HOME/.nvm/versions/node/v22.14.0/bin"
             mkdir -p uploads
             CI=true pnpm i
-            pm2 reload pm2.config.js
+            pm2 reload pm2.config.js || pm2 restart all

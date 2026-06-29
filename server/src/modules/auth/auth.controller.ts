@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import passport from 'passport';
 import {
   changePasswordService,
+  checkPhoneExistsService,
+  createDonorProfileService,
   createUserService,
   forgetPasswordService,
   loginService,
@@ -149,6 +151,40 @@ export const activateAccountController: RequestHandler = catchAsync(
 /**
  *  === ============= === Login part  === ---- === ===
  */
+
+export const checkPhoneController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const phone = req.query.phone as string;
+    const result = await checkPhoneExistsService(phone);
+
+    sendResponse(res, {
+      status: httpStatus.OK,
+      success: true,
+      message: 'Phone check completed',
+      data: result,
+    });
+  },
+);
+
+export const createDonorProfileController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const { refreshToken, accessToken, rest } =
+      await createDonorProfileService(req.body);
+
+    res.cookie('refreshToken', refreshToken, {
+      secure: NODE_ENV === 'production',
+      httpOnly: true,
+    });
+
+    sendResponse(res, {
+      status: httpStatus.CREATED,
+      success: true,
+      message: 'Donor profile created successfully',
+      token: accessToken,
+      data: rest,
+    });
+  },
+);
 
 export const loginController: RequestHandler = catchAsync(async (req, res) => {
   const payload: ILogin = req.body;

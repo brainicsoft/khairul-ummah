@@ -2,12 +2,16 @@ import { Router } from 'express';
 import { requestValidator } from '../../middlewares/requestValidator';
 import {
   activateUserValidation,
+  checkPhoneValidation,
   createUserValidation,
+  donorRegisterValidation,
   loginValidation,
 } from './auth.validaton';
 import {
   activateAccountController,
   changePasswordController,
+  checkPhoneController,
+  createDonorProfileController,
   createUserController,
   forgetPasswordController,
   googleLoginCallbackController,
@@ -44,6 +48,16 @@ authRoutes.post(
   activateAccountController,
 );
 authRoutes.post('/login', requestValidator(loginValidation), loginController);
+authRoutes.get(
+  '/check-phone',
+  requestValidator(checkPhoneValidation),
+  checkPhoneController,
+);
+authRoutes.post(
+  '/donor-register',
+  requestValidator(donorRegisterValidation),
+  createDonorProfileController,
+);
 // authRoutes.get(
 //   '/me',
 //   auth('admin','subadmin','user'),

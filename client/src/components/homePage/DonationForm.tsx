@@ -6,6 +6,7 @@ import PayMetohdModal from "./PayMethohdModal";
 import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi";
 import toast from "react-hot-toast";
 import { Phone } from "lucide-react";
+import { savePendingDonorProfile } from "@/lib/pendingDonorProfile";
 import { siteContact } from "@/config/site";
 
 const QUICK_AMOUNTS = [500, 1000, 2000, 5000];
@@ -76,6 +77,11 @@ export function DonationForm({ variant = "floating", className = "" }: DonationF
         donationType: formValues.donateType,
         method: paymentMethod,
       }).unwrap();
+      savePendingDonorProfile({
+        name: formValues.name,
+        phone: formValues.phone,
+        email: formValues.email || undefined,
+      });
       window.location.href = response.data.url;
     } catch {
       toast.error("পেমেন্ট শুরু করা যায়নি। আবার চেষ্টা করুন।");

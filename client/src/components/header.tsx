@@ -8,6 +8,11 @@ import logo from "../assets/logo/logo.png"
 import { LanguageSwitcher } from "@/app/components/LanguageSwitcher"
 import { DonatesTypesMenue } from "./DonatesTypesMenue"
 import { siteContact } from "@/config/site"
+import {
+  aboutSubMenu,
+  mainNavLinks,
+  regularDonationNavItem,
+} from "@/config/navigation"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -27,7 +32,7 @@ export function Header() {
   }, [pathname])
 
   const fundSubMenu = [
-    { id: "regular-donation", href: "/donate/regular", label: "নিয়মিত অনুদান" },
+    regularDonationNavItem,
     ...donationTypes.map((type: any) => ({
       id: type._id,
       href: `/donate/${type.slug}`,
@@ -35,24 +40,7 @@ export function Header() {
     })),
   ]
 
-  const aboutSubMenu = [
-    { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },
-    { href: "/about/committee", label: "পরিচালনা পরিষদ" },
-  ]
-
-  const navLinks = [
-    { href: "/", label: "হোম" },
-    { href: "/about", label: "আমাদের সম্পর্কে", dropdown: "about" },
-    { href: "/activities", label: "আমাদের কার্যক্রম" },
-    { href: "/running-project", label: "চলমান প্রজেক্ট" },
-    { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
-    { href: "/donate/regular", label: "নিয়মিত অনুদান" },
-    { href: "/lifetime-donor", label: "আজীবন দাতা সদস্য" },
-    { href: "/gellery", label: "গ্যালারি" },
-    { href: "/blog", label: "ব্লগ" },
-    { href: "/volunteer", label: "স্বেচ্ছাসেবক নিবন্ধন" },
-    { href: "/contact", label: "যোগাযোগ" },
-  ]
+  const navLinks = mainNavLinks
 
   const donateHref = pathname === "/" ? "#donate" : "/donate"
 
@@ -110,8 +98,8 @@ export function Header() {
           />
         </Link>
 
-        <div className="flex items-center">
-          <nav className="relative hidden items-center lg:flex">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <nav className="relative hidden min-w-0 flex-1 items-center justify-end overflow-x-auto overflow-y-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:flex">
             {navLinks.map((link) => {
               const hasDropdown = !!link.dropdown
               const isOpen =
@@ -131,7 +119,7 @@ export function Header() {
                   <div className="flex items-center">
                     <Link
                       href={link.href}
-                      className={`whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
+                      className={`shrink-0 whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
                         pathname === link.href ? "text-primary" : ""
                       }`}
                     >
@@ -175,7 +163,7 @@ export function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
+                  className={`shrink-0 whitespace-nowrap px-2 py-1 text-[15px] font-semibold transition hover:text-primary ${
                     pathname === link.href ? "text-primary" : ""
                   }`}
                 >

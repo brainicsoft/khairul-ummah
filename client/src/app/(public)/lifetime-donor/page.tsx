@@ -8,7 +8,7 @@ import { useCreateLifetimeDonorMutation } from "@/redux/features/lifetimeDonor/l
 import toast from "react-hot-toast"
 import { useCreateBkashMutation, useCreatePaymentMutation } from "@/redux/features/payment/paymentApi"
 import PayMethohdModal from "@/components/homePage/PayMethohdModal"
-import { se } from "date-fns/locale"
+import { savePendingDonorProfile } from "@/lib/pendingDonorProfile"
 
 export default function LifetimeDonorPage() {
     const [createPayment] = useCreatePaymentMutation()
@@ -114,9 +114,19 @@ export default function LifetimeDonorPage() {
             console.log("Lifetime Donor Response:", res);
             if (formData.paymentMethod === "bkash") {
                 const response = await bkashDonation(payload).unwrap()
+                savePendingDonorProfile({
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email || undefined,
+                })
                 window.location.href = response.data.url
             } else {
                 const response = await createPayment(paymentData).unwrap()
+                savePendingDonorProfile({
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email || undefined,
+                })
                 window.location.href = response.data.url
                 toast.success("SSLCommerz selected! Redirect to payment gateway.")
             }

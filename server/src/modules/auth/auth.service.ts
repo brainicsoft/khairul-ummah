@@ -15,6 +15,7 @@ import {
 } from '../../config';
 import { activationCode } from './auth.utils';
 import { sendMail } from '../../utils/emailSender';
+import { normalizePhone } from '../../utils/normalizePhone';
 
 export const prepareForActivateService = async (payload: IUser) => {
   if (await User.isUserExists(payload)) {
@@ -51,8 +52,95 @@ export const createUserService = async (payload: IUser) => {
   };
 };
 
+export const checkPhoneExistsService = async (phone: string) => {
+  const normalized = normalizePhone(phone);
+
+  if (!normalized || normalized.length < 11) {
+    throw new CustomError(httpStatus.BAD_REQUEST, 'Invalid phone number');
+  }
+
+  const user = await User.findOne({ phone: normalized });
+
+  return {
+    exists: !!user,
+    phone: normalized,
+  };
+};
+
+export const createDonorProfileService = async (payload: {
+  name: string;
+  phone: string;
+  email?: string;
+  password: string;
+}) => {
+  const normalized = normalizePhone(payload.phone);
+
+  if (!normalized || normalized.length < 11) {
+    throw new CustomError(httpStatus.BAD_REQUEST, 'Invalid phone number');
+  }
+
+  const existingByPhone = await User.findOne({ phone: normalized });
+  if (existingByPhone) {
+    throw new CustomError(httpStatus.CONFLICT, 'Phone already registered');
+  }
+
+  const phoneDigits = normalized.replace(/\D/g, '');
+  const email = payload.email?.trim() || `${phoneDigits}@donor.kuf.org.bd`;
+  const username = `donor_${phoneDigits}`;
+
+  if (await User.isUserExists({ email, username, phone: normalized })) {
+    throw new CustomError(httpStatus.CONFLICT, 'User already exists');
+  }
+
+  const user = await User.create({
+    name: payload.name.trim(),
+    username,
+    email,
+    phone: normalized,
+    password: payload.password,
+    role: 'user',
+  });
+
+  const jwtPayload: TJwtPayload = {
+    userId: (user as any)._id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    username: user.username,
+  };
+
+  const accessToken = genarateToken(
+    jwtPayload,
+    access_token,
+    access_token_expiry,
+  );
+
+  const refreshToken = genarateToken(
+    jwtPayload,
+    refresh_token,
+    refresh_token_expiry,
+  );
+
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const { password, ...rest } = user.toObject();
+
+  return {
+    accessToken,
+    refreshToken,
+    rest,
+  };
+};
+
 export const loginService = async (payload: ILogin) => {
-  const user = await User.findOne({ email: payload.email }).select('+password');
+  const identifier = payload.email.trim();
+  const normalized = normalizePhone(identifier);
+  const orConditions: Record<string, string>[] = [{ email: identifier }];
+
+  if (normalized.length >= 11) {
+    orConditions.push({ phone: normalized });
+  }
+
+  const user = await User.findOne({ $or: orConditions }).select('+password');
 
   // Check User Exist Or not
   if (!user) {

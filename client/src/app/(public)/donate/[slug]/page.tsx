@@ -14,6 +14,7 @@ import FAQ from "@/components/FAQ"
 import { DonatesTypesMenue } from "@/components/DonatesTypesMenue"
 import toast from "react-hot-toast"
 import { siteContact } from "@/config/site"
+import { savePendingDonorProfile } from "@/lib/pendingDonorProfile"
 import { Check } from "lucide-react"
 
 const labelClass = "mb-1.5 block text-sm font-semibold text-foreground"
@@ -125,9 +126,19 @@ export default function DonateTypePage() {
 
       if (formData.paymentMethod === "bkash") {
         const response = await bkashDonation(mappedData).unwrap()
+        savePendingDonorProfile({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+        })
         window.location.href = response.data.url
       } else {
         const response = await createPayment(mappedData).unwrap()
+        savePendingDonorProfile({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || undefined,
+        })
         window.location.href = response.data.url
         toast.success("SSLCommerz selected! Redirect to payment gateway.")
       }

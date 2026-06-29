@@ -19,6 +19,12 @@ const userSchema = new Schema<IUser, IUserModel>(
       required: [true, 'Email is required'],
       unique: true,
     },
+    phone: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
     googleId: {
       type: String,
       default: null,
@@ -69,9 +75,15 @@ userSchema.pre('aggregate', function (next) {
 });
 
 userSchema.statics.isUserExists = async function (payload) {
-  const existingUser = await User.findOne({
-    $or: [{ email: payload.email }, { username: payload.username }],
-  });
+  const orConditions: Record<string, string>[] = [];
+
+  if (payload.email) orConditions.push({ email: payload.email });
+  if (payload.username) orConditions.push({ username: payload.username });
+  if (payload.phone) orConditions.push({ phone: payload.phone });
+
+  if (!orConditions.length) return null;
+
+  const existingUser = await User.findOne({ $or: orConditions });
   return existingUser;
 };
 userSchema.statics.updatePassword = async function (

@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useForm } from "react-hook-form"
 import bkash from "@/assets/bkash.png"
 import { useCreateRecurringBkashMutation } from "@/redux/features/autopay/autopayApi"
+import { savePendingDonorProfile } from "@/lib/pendingDonorProfile"
 import {
     Dialog,
     DialogContent,
@@ -164,6 +165,12 @@ export default function AutopayPage() {
             if (!redirectUrl) {
                 throw new Error("Redirect URL not found in response")
             }
+
+            savePendingDonorProfile({
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email || undefined,
+            })
 
             window.location.href = redirectUrl
         } catch (error) {
