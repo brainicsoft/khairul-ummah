@@ -6,11 +6,17 @@ import { createAutopay, getAutopayByRequestId } from './autopay.service';
 export const createAutopayController: RequestHandler = catchAsync(
   async (req, res) => {
     const result = await createAutopay(req.body);
+    const redirectUrl =
+      result.bkash?.redirectURL || result.bkash?.redirectUrl || null;
+
     sendResponse(res, {
       status: 201,
       success: true,
       message: 'Successfully created recurring payment',
-      data: result,
+      data: {
+        ...result,
+        url: redirectUrl,
+      },
     });
   },
 );

@@ -3,6 +3,9 @@
 import { z } from 'zod';
 export const autopayValidationSchema = z.object({
   body: z.object({
+    name: z.string().min(1, 'Name is required'),
+    phone: z.string().min(1, 'Phone is required'),
+    email: z.string().optional(),
     amount: z.number().positive(),
     serviceId: z.number().int().positive().optional(),
     amountQueryUrl: z.string().optional(),

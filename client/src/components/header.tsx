@@ -43,6 +43,7 @@ export function Header() {
     { href: "/activities", label: "আমাদের কার্যক্রম" },
     { href: "/running-project", label: "চলমান প্রজেক্ট" },
     { href: "/donate", label: "দানের তহবিল", dropdown: "fund" },
+    { href: "/donate/regular", label: "নিয়মিত অনুদান" },
     { href: "/lifetime-donor", label: "আজীবন দাতা সদস্য" },
     { href: "/gellery", label: "গ্যালারি" },
     { href: "/blog", label: "ব্লগ" },

@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useForm, Controller } from "react-hook-form"
 import bkash from "@/assets/bkash.png"
 import sslcommerz from "@/assets/sslcommerz.png"
-import { useCreateBkashMutation } from "@/redux/features/payment/paymentApi"
+import { useCreateRecurringBkashMutation } from "@/redux/features/autopay/autopayApi"
 import {
     Dialog,
     DialogContent,
@@ -26,6 +26,12 @@ type FormValues = {
 }
 
 type AutopayMode = "daily" | "weekly" | "monthly"
+
+const FREQUENCY_MAP = {
+    daily: "DAILY",
+    weekly: "WEEKLY",
+    monthly: "CALENDAR_MONTH",
+} as const
 
 const PRESET_AMOUNTS_DAILY = [10, 20, 30, 50, 100] as const
 const PRESET_AMOUNTS_WEEKLY = [50, 100, 200, 300, 500] as const
@@ -70,7 +76,7 @@ export default function AutopayPage() {
         setValue("amount", defaultAmount.toString())
     }, [setValue])
 
-    const [bkashDonation, { isLoading }] = useCreateBkashMutation()
+    const [createRecurringBkash, { isLoading }] = useCreateRecurringBkashMutation()
 
     const data = {
         slug: "নিয়মিত-অনুদান",
@@ -144,23 +150,31 @@ export default function AutopayPage() {
             return
         }
         try {
+            if (formData.paymentMethod !== "bkash") {
+                alert("SSLCommerz নির্বাচিত! পেমেন্ট গেটওয়েতে রিডিরেক্ট করা হচ্ছে।")
+                return
+            }
+
             const mappedData = {
                 name: formData.name,
                 phone: formData.phone,
-                email: formData.email,
+                email: formData.email || undefined,
                 amount: Number(formData.amount),
-                donationType: "regular",
-                autopayMode: autopayMode,
-                method: formData.paymentMethod === "bkash" ? ("bkash" as const) : ("sslcommerz" as const),
+                frequency: FREQUENCY_MAP[autopayMode],
                 ...(donateForOther && formData.donorName ? { donorName: formData.donorName } : {}),
             }
 
-            if (formData.paymentMethod === "bkash") {
-                const response = await bkashDonation(mappedData).unwrap()
-                window.location.href = response.data.url
-            } else {
-                alert("SSLCommerz নির্বাচিত! পেমেন্ট গেটওয়েতে রিডিরেক্ট করা হচ্ছে।")
+            const response = await createRecurringBkash(mappedData).unwrap()
+            const redirectUrl =
+                response.data?.url ||
+                response.data?.bkash?.redirectURL ||
+                response.data?.bkash?.redirectUrl
+
+            if (!redirectUrl) {
+                throw new Error("Redirect URL not found in response")
             }
+
+            window.location.href = redirectUrl
         } catch (error) {
             console.error(error)
             alert("দান ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")

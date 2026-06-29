@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import Image, { StaticImageData } from "next/image"
-import DonationType from "@/assets/donateTypeImg/donate.jpg"
 import SSRLoadMoreData from "@/components/SSRLoadMoreData"
 import { apiUrl } from "@/config/constants"
 import { InfoSection } from "@/components/donationType/InfoSection"
@@ -52,42 +51,43 @@ export default function DonationTypesPage({ searchParams }: GalleryPageProps) {
             defaultLimit={8}
           >
             {(donationTypes) => {
-              if (!donationTypes || donationTypes.length === 0) {
-                return (
-                  <div className="text-center py-10 text-gray-500">
-                    No data available
-                  </div>
-                );
-              }
+              const hasFunds = donationTypes && donationTypes.length > 0
 
               return (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                  {/* <div
-                    className={`rounded-xl  h-full transform transition  hover:shadow-sm cursor-pointer border flex flex-col`}
-                  >
-                    <div className="flex items-start justify-between mb-6">
-                      <Image
-                        className="w-full h-[250px] rounded-t-sm"
-                        src={regulardonateImg} alt="নিয়মিত অনুদান" width={500} height={300}
-                      />
-                      <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1 text-black" />
-                    </div>
-
-                    <div className="px-6 pb-6 flex flex-col flex-1 justify-between">
-                      <div>
-                        <h3 className="text-2xl font-bold mb-3">নিয়মিত অনুদান</h3>
-                        <p className=" leading-relaxed flex-grow">নিয়মিত অনুদান ফাউন্ডেশনকে টিকিয়ে রাখতে সবচেয়ে বেশি সাহায্য করে।</p>
-
+                  <Link href="/donate/regular" className="group">
+                    <div className="rounded-xl h-full transform transition hover:shadow-sm cursor-pointer border flex flex-col">
+                      <div className="flex items-start justify-between mb-6">
+                        <Image
+                          className="w-full h-[250px] rounded-t-sm"
+                          src={regulardonateImg}
+                          alt="নিয়মিত অনুদান"
+                          width={500}
+                          height={300}
+                        />
+                        <ArrowRight className="w-6 h-6 opacity-0 group-hover:opacity-100 transition transform group-hover:translate-x-1 text-black" />
                       </div>
-                      <Link href="/donate/regular">
+
+                      <div className="px-6 pb-6 flex flex-col flex-1 justify-between">
+                        <div>
+                          <h3 className="text-2xl font-bold mb-3">নিয়মিত অনুদান</h3>
+                          <p className="leading-relaxed flex-grow">
+                            নিয়মিত অনুদান ফাউন্ডেশনকে টিকিয়ে রাখতে সবচেয়ে বেশি সাহায্য করে।
+                          </p>
+                        </div>
                         <button className="mt-6 text-xl bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-primary/90 transition w-full">
                           দান করুন
                         </button>
-                      </Link>
+                      </div>
                     </div>
-                  </div> */}
+                  </Link>
 
-                  {donationTypes.map((type) => (
+                  {!hasFunds ? (
+                    <div className="text-center py-10 text-gray-500 md:col-span-2">
+                      No data available
+                    </div>
+                  ) : (
+                    donationTypes.map((type) => (
                     <Link key={type._id} href={`/donate/${type.slug}`} className="group">
                       <div
                         className={`rounded-xl  h-full transform transition  hover:shadow-sm cursor-pointer border flex flex-col`}
@@ -115,7 +115,8 @@ export default function DonationTypesPage({ searchParams }: GalleryPageProps) {
                         </div>
                       </div>
                     </Link>
-                  ))}
+                    ))
+                  )}
                 </div>
               );
             }}
