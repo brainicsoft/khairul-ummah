@@ -6,13 +6,21 @@ import { CheckCircle, XCircle } from "lucide-react"
 export default function PaymentStatusPage() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const paymentId = searchParams.get("val_id")
-  const trxID = searchParams.get("tran_id")
+  const type = searchParams.get("type")
+  const isRecurring = type === "recurring"
+  const paymentId =
+    searchParams.get("paymentId") ||
+    searchParams.get("val_id") ||
+    searchParams.get("subscriptionRequestId")
+  const trxID =
+    searchParams.get("trxID") ||
+    searchParams.get("tran_id") ||
+    searchParams.get("subscriptionRequestId")
   const amount = searchParams.get("amount")
   const status = searchParams.get("status") || "success"
   const message = searchParams.get("message") || ""
 
-  const handleGoHome = () => router.push("/donate")
+  const handleGoHome = () => router.push(isRecurring ? "/donate/regular" : "/donate")
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background to-muted px-4 py-12">
@@ -36,20 +44,29 @@ export default function PaymentStatusPage() {
               status === "success" ? "text-green-700" : "text-red-700"
             )}
           >
-            {status === "success" ? "Payment Successful ✅" : "Payment Failed ❌"}
+            {status === "success"
+              ? isRecurring
+                ? "Recurring Donation Activated ✅"
+                : "Payment Successful ✅"
+              : "Payment Failed ❌"}
           </h1>
         </div>
 
         <p className="text-foreground/80 text-sm md:text-base max-w-sm">
           {status === "success"
-            ? "ধন্যবাদ! আপনার দান সফল হয়েছে এবং আমাদের কার্যক্রমে গুরুত্বপূর্ণ অবদান রাখছে।"
+            ? isRecurring
+              ? "ধন্যবাদ! আপনার নিয়মিত অনুদান সফলভাবে সক্রিয় হয়েছে।"
+              : "ধন্যবাদ! আপনার দান সফল হয়েছে এবং আমাদের কার্যক্রমে গুরুত্বপূর্ণ অবদান রাখছে।"
             : message || "আপনার পেমেন্ট ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।"}
         </p>
 
         {status === "success" && (
           <div className="bg-white w-full rounded-xl shadow-inner p-6 text-left space-y-3 border border-border">
             <p>
-              <span className="font-semibold">Payment ID:</span> {paymentId}
+              <span className="font-semibold">
+                {isRecurring ? "Subscription ID:" : "Payment ID:"}
+              </span>{" "}
+              {paymentId}
             </p>
             <p>
               <span className="font-semibold">Transaction ID:</span> {trxID}

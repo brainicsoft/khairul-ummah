@@ -1,19 +1,187 @@
 import { createBkashSubscription, getBkashSubscriptionFromBkashById } from '../paymentGetway/recurring/recurring.bkash';
 import { Autopay } from './autopay.model';
 import { buildBkashAutopayRequestData } from '../paymentGetway/recurring/recurring.bkash.utils';
-import { baseUrl } from '../../config';
+import { CustomError } from '../../errors/CustomError';
+
+const getSubscriptionRequestId = (query: Record<string, unknown>) => {
+  const raw =
+    query.subscriptionRequestId ||
+    query.subscriptionRequestID ||
+    query.requestId ||
+    query.requestID;
+
+  return typeof raw === 'string' ? raw.trim() : '';
+};
+
+const isFailureStatus = (status?: string) => {
+  if (!status) return false;
+  const normalized = status.toLowerCase();
+  return ['failure', 'failed', 'cancel', 'cancelled', 'canceled'].includes(
+    normalized,
+  );
+};
+
+const isSuccessStatus = (status?: string) => {
+  if (!status) return false;
+  const normalized = status.toLowerCase();
+  return ['success', 'succeeded', 'active', 'activated'].includes(normalized);
+};
+
+const findAutopayRecord = async (
+  query: Record<string, unknown>,
+  requestId: string,
+) => {
+  if (requestId) {
+    const byRequestId = await Autopay.findOne({ subscriptionId: requestId });
+    if (byRequestId) return byRequestId;
+  }
+
+  const reference =
+    typeof query.reference === 'string' ? query.reference.trim() : '';
+
+  if (reference) {
+    return Autopay.findOne({ subscriptionReference: reference });
+  }
+
+  return null;
+};
+
+export const getRecurringAmountQueryService = async (
+  query: Record<string, unknown>,
+) => {
+  const requestId = getSubscriptionRequestId(query);
+
+  if (!requestId) {
+    throw new CustomError(400, 'subscriptionRequestId is required');
+  }
+
+  const autopay = await Autopay.findOne({ subscriptionId: requestId });
+
+  if (!autopay) {
+    throw new CustomError(404, 'Subscription not found');
+  }
+
+  return {
+    amount: autopay.amount,
+    firstPaymentAmount: autopay.amount,
+    currency: 'BDT',
+  };
+};
+
+export const verifyBkashRecurringCallbackService = async (
+  query: Record<string, unknown>,
+) => {
+  const requestId = getSubscriptionRequestId(query);
+  const status =
+    typeof query.status === 'string'
+      ? query.status
+      : typeof query.subscriptionStatus === 'string'
+        ? query.subscriptionStatus
+        : undefined;
+
+  if (!requestId) {
+    return {
+      success: false,
+      message: 'Subscription request ID missing in callback URL',
+    };
+  }
+
+  const autopay = await findAutopayRecord(query, requestId);
+
+  if (!autopay) {
+    return {
+      success: false,
+      message: 'Subscription not found',
+      requestId,
+    };
+  }
+
+  const resolvedRequestId = autopay.subscriptionId || requestId;
+
+  if (isFailureStatus(status)) {
+    await Autopay.findByIdAndUpdate(autopay._id, { status: 'failed' });
+    return {
+      success: false,
+      message: 'Subscription failed or cancelled',
+      requestId: resolvedRequestId,
+      amount: autopay.amount,
+    };
+  }
+
+  if (isSuccessStatus(status)) {
+    await Autopay.findByIdAndUpdate(autopay._id, {
+      status: 'activated',
+      gatewayResponse: { callback: query },
+    });
+
+    return {
+      success: true,
+      message: 'Recurring subscription activated',
+      requestId: resolvedRequestId,
+      amount: autopay.amount,
+      trxID: resolvedRequestId,
+    };
+  }
+
+  try {
+    const bkashResult = await getBkashSubscriptionFromBkashById(resolvedRequestId);
+    const bkashData = bkashResult?.data?.data ?? bkashResult?.data ?? bkashResult;
+    const bkashStatus = String(
+      bkashData?.subscriptionStatus || bkashData?.status || '',
+    ).toUpperCase();
+    const isActivated =
+      bkashStatus === 'ACTIVE' ||
+      bkashStatus === 'ACTIVATED' ||
+      bkashStatus === 'SUCCEEDED' ||
+      bkashData?.statusCode === '0000';
+
+    if (isActivated) {
+      await Autopay.findByIdAndUpdate(autopay._id, {
+        status: 'activated',
+        gatewayResponse: bkashData,
+      });
+
+      return {
+        success: true,
+        message: 'Recurring subscription activated',
+        requestId: resolvedRequestId,
+        amount: autopay.amount,
+        trxID: resolvedRequestId,
+      };
+    }
+
+    await Autopay.findByIdAndUpdate(autopay._id, {
+      status: 'failed',
+      gatewayResponse: bkashData,
+    });
+
+    return {
+      success: false,
+      message: 'Subscription activation failed',
+      requestId: resolvedRequestId,
+      amount: autopay.amount,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || 'Subscription verification failed',
+      requestId: resolvedRequestId,
+      amount: autopay.amount,
+    };
+  }
+};
 
 export const createAutopay = async (payload: any) => {
-  const { recordData } = buildBkashAutopayRequestData(payload, baseUrl);
+  const { requestBody, recordData } = buildBkashAutopayRequestData(payload);
   const autopayRecord = await Autopay.create(recordData);
 
   try {
-    const bkashResponse = await createBkashSubscription(payload);
+    const bkashResponse = await createBkashSubscription(payload, requestBody);
 
     // Update record with gateway response and identifiers if present
     const update: any = {
       gatewayResponse: bkashResponse,
-      status: 'activated',
+      status: 'initiated',
     };
 
     if (bkashResponse.subscriptionRequestId) {

@@ -5,14 +5,17 @@ import {
   buildBkashAutopayRequestData,
 } from './recurring.bkash.utils';
 import {
-  baseUrl,
   bkashKey,
   bkashRecurringUrl,
   bkashSecret,
 } from '../../../config';
 
-export const createBkashSubscription = async (payload: any) => {
-  const { requestBody: body } = buildBkashAutopayRequestData(payload, baseUrl);
+export const createBkashSubscription = async (
+  payload: any,
+  requestBody?: Record<string, unknown>,
+) => {
+  const body =
+    requestBody || buildBkashAutopayRequestData(payload).requestBody;
 
   const urlPath = `/api/subscription`;
   const requestUrl = `${bkashRecurringUrl.replace(/\/$/, '')}${urlPath}`;

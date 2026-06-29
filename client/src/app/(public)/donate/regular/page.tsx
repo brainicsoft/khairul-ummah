@@ -2,9 +2,8 @@
 import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useForm, Controller } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import bkash from "@/assets/bkash.png"
-import sslcommerz from "@/assets/sslcommerz.png"
 import { useCreateRecurringBkashMutation } from "@/redux/features/autopay/autopayApi"
 import {
     Dialog,
@@ -22,7 +21,6 @@ type FormValues = {
     phone: string
     email: string
     donorName: string
-    paymentMethod: "bkash" | "sslCommerz"
 }
 
 type AutopayMode = "daily" | "weekly" | "monthly"
@@ -48,7 +46,6 @@ export default function AutopayPage() {
     const {
         register,
         handleSubmit,
-        control,
         watch,
         setValue,
         formState: { errors },
@@ -60,7 +57,6 @@ export default function AutopayPage() {
             phone: "",
             email: "",
             donorName: "",
-            paymentMethod: "bkash",
         },
     })
 
@@ -90,7 +86,7 @@ export default function AutopayPage() {
             "সম্প্রদায়ের বৃহত্তর উন্নয়ন",
         ],
         hadith: "আল্লাহর কাছে সর্বাধিক প্রিয় আমল হলো, যা সদাসর্বদা নিয়মিত করা হয়, যদিও তা অল্প হয়। (সহীহ বুখারী, হাদীস ৬৪৬৪)",
-        infoText: "অনেকে নিয়মিত দান করতে চান, কিন্তু মনে থাকে না বলে দান করা হয়ে ওঠে না। এখন থেকে বিকাশ-নগদ এবং ভিসা-মাস্টারকার্ড ব্যবহারকারীরা আস-সুন্নাহ ফাউন্ডেশনের ওয়েবসাইট থেকে স্বয়ংক্রিয় পদ্ধতি চালু করে নিয়মিত দান করতে পারবেন। দৈনিক কিংবা মাসিক অপশন সিলেক্ট করে টাকার পরিমাণ সেট করে দিন। আপনার ভুলে গেলেও আপনার নির্ধারিত সময়ে নির্ধারিত পরিমাণ টাকা ফাউন্ডেশনের অ্যাকাউন্টে জমা হবে। চাইলে এই পদ্ধতিটি যেকোনো সময় বন্ধও করতে পারবেন।",
+        infoText: "অনেকে নিয়মিত দান করতে চান, কিন্তু মনে থাকে না বলে দান করা হয়ে ওঠে না। এখন থেকে বিকাশ ব্যবহারকারীরা ওয়েবসাইট থেকে স্বয়ংক্রিয় পদ্ধতি চালু করে নিয়মিত দান করতে পারবেন। দৈনিক, সাপ্তাহিক কিংবা মাসিক অপশন সিলেক্ট করে টাকার পরিমাণ সেট করে দিন। আপনার ভুলে গেলেও আপনার নির্ধারিত সময়ে নির্ধারিত পরিমাণ টাকা ফাউন্ডেশনের অ্যাকাউন্টে জমা হবে। চাইলে এই পদ্ধতিটি যেকোনো সময় বন্ধও করতে পারবেন।",
     }
 
     const handlePresetClick = useCallback((amount: number) => {
@@ -150,11 +146,6 @@ export default function AutopayPage() {
             return
         }
         try {
-            if (formData.paymentMethod !== "bkash") {
-                alert("SSLCommerz নির্বাচিত! পেমেন্ট গেটওয়েতে রিডিরেক্ট করা হচ্ছে।")
-                return
-            }
-
             const mappedData = {
                 name: formData.name,
                 phone: formData.phone,
@@ -384,39 +375,18 @@ export default function AutopayPage() {
                                         </div>
                                     )}
 
-                                    {/* Payment Method */}
+                                    {/* Payment Method — bKash only */}
                                     <div>
                                         <h3 className="text-sm font-semibold text-gray-700 mb-3">পেমেন্ট পদ্ধতি</h3>
-                                        <Controller
-                                            control={control}
-                                            name="paymentMethod"
-                                            render={({ field }) => (
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    {[
-                                                        { id: "bkash" as const, logo: bkash, name: "বিকাশ" },
-                                                        { id: "sslCommerz" as const, logo: sslcommerz, name: "সিএসএল কমার্জ" },
-                                                    ].map((method) => (
-                                                        <div
-                                                            key={method.id}
-                                                            onClick={() => field.onChange(method.id)}
-                                                            className={`flex items-center justify-center p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                                                                field.value === method.id
-                                                                    ? "border-primary bg-emerald-50 shadow-sm"
-                                                                    : "border-gray-200 bg-white hover:border-gray-300"
-                                                            }`}
-                                                        >
-                                                            <Image
-                                                                src={method.logo || "/placeholder.svg"}
-                                                                alt={method.id}
-                                                                width={120}
-                                                                height={40}
-                                                                className="object-contain h-[35px] w-auto"
-                                                            />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        />
+                                        <div className="flex items-center justify-center rounded-xl border-2 border-primary bg-emerald-50 p-3">
+                                            <Image
+                                                src={bkash}
+                                                alt="bKash"
+                                                width={120}
+                                                height={40}
+                                                className="object-contain h-[35px] w-auto"
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Summary strip */}
@@ -497,7 +467,7 @@ export default function AutopayPage() {
                             <h4 className="font-bold text-gray-900">২. স্বয়ংক্রিয় পেমেন্ট</h4>
                             <ul className="list-disc list-inside space-y-1 text-gray-600 ml-2">
                                 <li>
-                                    আপনার নির্বাচিত পেমেন্ট পদ্ধতি (বিকাশ/এসএসএলকমার্জ) অনুযায়ী প্রতিটি নির্ধারিত সময়ে স্বয়ংক্রিয়ভাবে
+                                    আপনার বিকাশ অ্যাকাউন্ট থেকে প্রতিটি নির্ধারিত সময়ে স্বয়ংক্রিয়ভাবে
                                     পেমেন্ট প্রক্রিয়া হবে।
                                 </li>
                                 <li>পেমেন্ট সফল না হলে পুনরায় চেষ্টা করা হতে পারে।</li>

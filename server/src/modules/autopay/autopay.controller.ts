@@ -1,7 +1,13 @@
 import type { RequestHandler } from 'express';
 import { sendResponse } from '../../utils/sendResponse';
 import { catchAsync } from '../../utils/catchAsync';
-import { createAutopay, getAutopayByRequestId } from './autopay.service';
+import {
+  createAutopay,
+  getAutopayByRequestId,
+  getRecurringAmountQueryService,
+  verifyBkashRecurringCallbackService,
+} from './autopay.service';
+import { frontendUrl } from '../../config';
 
 export const createAutopayController: RequestHandler = catchAsync(
   async (req, res) => {
@@ -33,6 +39,51 @@ export const getAutopayByIdController: RequestHandler = catchAsync(
     });
   },
 );
+
+export const getRecurringAmountQueryController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const result = await getRecurringAmountQueryService({
+      ...req.query,
+      ...req.body,
+    });
+
+    sendResponse(res, {
+      status: 200,
+      success: true,
+      message: 'Subscription amount fetched',
+      data: result,
+    });
+  },
+);
+
+export const verifyBkashRecurringCallbackController: RequestHandler =
+  catchAsync(async (req, res) => {
+    const result = await verifyBkashRecurringCallbackService(req.query);
+    const redirectUrl = new URL(`${frontendUrl}/payment-status`);
+
+    redirectUrl.searchParams.append('type', 'recurring');
+
+    if (result.success) {
+      redirectUrl.searchParams.append('status', 'success');
+      redirectUrl.searchParams.append(
+        'subscriptionRequestId',
+        result.requestId || '',
+      );
+      redirectUrl.searchParams.append('trxID', result.trxID || result.requestId || '');
+      redirectUrl.searchParams.append('amount', String(result.amount || 0));
+    } else {
+      redirectUrl.searchParams.append('status', 'failed');
+      redirectUrl.searchParams.append('message', result.message);
+      if (result.requestId) {
+        redirectUrl.searchParams.append(
+          'subscriptionRequestId',
+          result.requestId,
+        );
+      }
+    }
+
+    return res.redirect(redirectUrl.toString());
+  });
 
 // export const extendAutopayController: RequestHandler = catchAsync(async (req, res) => {
 //   const result = await extendAutopay(req.body);

@@ -3,6 +3,8 @@ import { requestValidator } from '../../middlewares/requestValidator';
 import {
   createAutopayController,
   getAutopayByIdController,
+  getRecurringAmountQueryController,
+  verifyBkashRecurringCallbackController,
 } from './autopay.controller';
 import { autopayValidationSchema } from './autopay.validation';
 
@@ -13,6 +15,9 @@ autopayRoutes.post(
   requestValidator(autopayValidationSchema),
   createAutopayController,
 );
+autopayRoutes.get('/bkash/callback', verifyBkashRecurringCallbackController);
+autopayRoutes.get('/bkash/amount-query', getRecurringAmountQueryController);
+autopayRoutes.post('/bkash/amount-query', getRecurringAmountQueryController);
 // Query Subscription & Payment after successful callback
 autopayRoutes.get('/bkash/request-id/:requestId', getAutopayByIdController);
 

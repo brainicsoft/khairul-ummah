@@ -1,6 +1,7 @@
 import { CustomError } from '../../../errors/CustomError';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
+import { bkashCallbackBaseUrl } from '../../../config';
 
 export const validateAbsoluteUrl = (value: string, fieldName: string) => {
   try {
@@ -56,7 +57,7 @@ export const generateBkashAutopayHeaders = (
   return headers;
 };
 
-export const buildBkashAutopayRequestData = (payload: any, baseUrl: string) => {
+export const buildBkashAutopayRequestData = (payload: any) => {
   const {
     amount,
     amountQueryUrl,
@@ -75,16 +76,17 @@ export const buildBkashAutopayRequestData = (payload: any, baseUrl: string) => {
     throw new CustomError(400, 'Invalid amount for autopay subscription');
   }
 
-  const resolvedRedirectUrl = `${baseUrl.replace(/\/$/, '')}/api/v1/payment/verify`;
+  const subscriptionRequestId = `KUF-SB${uuidv4().replace(/-/g, '').slice(0, 12)}`;
+  const callbackBase = `${bkashCallbackBaseUrl.replace(/\/$/, '')}/api/v1/autopay/bkash`;
+  const resolvedRedirectUrl = `${callbackBase}/callback?subscriptionRequestId=${encodeURIComponent(subscriptionRequestId)}`;
   const resolvedAmountQueryUrl =
     typeof amountQueryUrl === 'string' && amountQueryUrl.trim()
       ? amountQueryUrl.trim()
-      : resolvedRedirectUrl;
+      : `${callbackBase}/amount-query`;
 
   validateAbsoluteUrl(resolvedRedirectUrl, 'redirectUrl');
   validateAbsoluteUrl(resolvedAmountQueryUrl, 'amountQueryUrl');
 
-  const subscriptionRequestId = `KUF-SB${uuidv4().replace(/-/g, '').slice(0, 12)}`;
   const resolvedStartDate = startDate || moment().format('YYYY-MM-DD');
   const resolvedExpiryDate =
     expiryDate || moment().add(1, 'year').format('YYYY-MM-DD');

@@ -36,10 +36,12 @@ export const verifyBkashController: RequestHandler = catchAsync(
 
     if (result.success) {
       const redirectUrl = new URL(`${frontendUrl}/payment-status`);
-      redirectUrl.searchParams.append(
-        'paymentId',
-        req.query.paymentID as string,
-      );
+      if (req.query.paymentID) {
+        redirectUrl.searchParams.append(
+          'paymentId',
+          req.query.paymentID as string,
+        );
+      }
       redirectUrl.searchParams.append('trxID', result.trxID);
       redirectUrl.searchParams.append(
         'amount',
@@ -49,10 +51,12 @@ export const verifyBkashController: RequestHandler = catchAsync(
       return res.redirect(redirectUrl.toString());
     } else {
       const redirectUrl = new URL(`${frontendUrl}/payment-status`);
-      redirectUrl.searchParams.append(
-        'paymentId',
-        req.query.paymentID as string,
-      );
+      if (req.query.paymentID) {
+        redirectUrl.searchParams.append(
+          'paymentId',
+          req.query.paymentID as string,
+        );
+      }
       redirectUrl.searchParams.append('status', 'failed');
       redirectUrl.searchParams.append('message', result.message);
 

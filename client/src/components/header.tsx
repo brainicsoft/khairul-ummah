@@ -26,11 +26,14 @@ export function Header() {
     setIsMenuOpen(false)
   }, [pathname])
 
-  const fundSubMenu = donationTypes.map((type: any) => ({
-    id: type._id,
-    href: `/donate/${type.slug}`,
-    label: type.title || type.slug,
-  }))
+  const fundSubMenu = [
+    { id: "regular-donation", href: "/donate/regular", label: "নিয়মিত অনুদান" },
+    ...donationTypes.map((type: any) => ({
+      id: type._id,
+      href: `/donate/${type.slug}`,
+      label: type.title || type.slug,
+    })),
+  ]
 
   const aboutSubMenu = [
     { href: "/about/advisors", label: "উপদেষ্টা মন্ডলী" },

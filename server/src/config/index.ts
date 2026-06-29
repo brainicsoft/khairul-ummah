@@ -1,8 +1,13 @@
 import 'dotenv/config';
 
 export const NODE_ENV = process.env.NODE_ENV;
-export const baseUrl = process.env.BASE_URL || 'http://localhost:8080';
-export const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+export const baseUrl = (process.env.BASE_URL || 'http://localhost:8080').trim();
+export const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').trim();
+/** bKash recurring redirect/amount-query must use a public HTTPS URL */
+export const bkashCallbackBaseUrl = (
+  process.env.BKASH_CALLBACK_BASE_URL ||
+  'https://api.khairulummahfoundation.org'
+).trim();
 export const port = process.env.PORT || 8080;
 // for Database Connection
 export const mongoUrl: string = process.env.mongoDB_URI || '';
