@@ -85,7 +85,7 @@ export function Header() {
       </div>
 
       {/* Navbar — sticky at top while scrolling */}
-      <header className="sticky top-0 z-50 w-full shrink-0 bg-white shadow-sm">
+      <header className="sticky top-0 z-50 w-full shrink-0 overflow-visible bg-white shadow-sm">
         <div className="container mx-auto flex items-center justify-between border-b border-border px-2 py-2 sm:py-3">
         <Link href="/">
           <Image
@@ -99,7 +99,7 @@ export function Header() {
         </Link>
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <nav className="relative hidden min-w-0 flex-1 items-center justify-end overflow-x-auto overflow-y-visible [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden lg:flex">
+          <nav className="relative hidden min-w-0 flex-1 items-center justify-end gap-0.5 overflow-visible lg:flex">
             {navLinks.map((link) => {
               const hasDropdown = !!link.dropdown
               const isOpen =
@@ -108,7 +108,7 @@ export function Header() {
               return hasDropdown ? (
                 <div
                   key={link.href}
-                  className="relative"
+                  className="group relative shrink-0"
                   onMouseEnter={() => {
                     if (clickDropdown !== link.dropdown) setHoverDropdown(link.dropdown!)
                   }}
@@ -127,13 +127,18 @@ export function Header() {
                     </Link>
                     <button
                       type="button"
+                      className="p-1"
                       onClick={(e) => {
                         e.preventDefault()
                         setClickDropdown(
                           clickDropdown === link.dropdown ? null : link.dropdown!
                         )
+                        setHoverDropdown(
+                          clickDropdown === link.dropdown ? null : link.dropdown!
+                        )
                       }}
                       aria-label="মেনু খুলুন"
+                      aria-expanded={isOpen}
                     >
                       <ChevronDown
                         className={`h-4 w-4 transition ${isOpen ? "rotate-180" : ""}`}
@@ -142,21 +147,23 @@ export function Header() {
                   </div>
 
                   <div
-                    className={`absolute left-0 mt-1 w-56 rounded-xl border border-border bg-white py-1 shadow-lg transition ${
+                    className={`absolute left-0 top-full z-[60] pt-1 transition ${
                       isOpen
                         ? "visible translate-y-0 opacity-100"
-                        : "invisible -translate-y-1 opacity-0"
+                        : "invisible -translate-y-1 opacity-0 pointer-events-none"
                     }`}
                   >
-                    {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-4 py-2.5 text-sm text-foreground hover:bg-primary hover:text-primary-foreground"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    <div className="w-56 rounded-xl border border-border bg-white py-1 shadow-lg">
+                      {(link.dropdown === "fund" ? fundSubMenu : aboutSubMenu).map((item) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className="block px-4 py-2.5 text-sm text-foreground hover:bg-primary hover:text-primary-foreground"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : (
