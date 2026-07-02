@@ -44,6 +44,7 @@ const menuItems = [
   { name: "blogs-management", href: "/secure/admin/blogs", icon: FileText },
   { name: "Gallery", href: "/secure/admin/gellery", icon: ImageIcon },
   { name: "Donations", href: "/secure/admin/donation-record", icon: DollarSign },
+  { name: "Autopay", href: "/secure/admin/autopay", icon: Calendar },
   { name: "massages", href: "/secure/admin/masseges", icon:NotebookIcon },
   { name: "Lifetime-Donor", href: "/secure/admin/lifetimeDonor", icon:User },
   // { name: "Reports", href: "/secure/admin/reports", icon: BarChart3 },

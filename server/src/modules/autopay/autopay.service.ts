@@ -4,7 +4,17 @@ import { buildBkashAutopayRequestData } from '../paymentGetway/recurring/recurri
 import { CustomError } from '../../errors/CustomError';
 import { ensureDonorFromPayment } from '../../utils/ensureDonorUser';
 import { normalizePhone } from '../../utils/normalizePhone';
-import { recordAutopayCharge } from './autopayCharge.service';
+import { getAutopayCharges, recordAutopayCharge } from './autopayCharge.service';
+
+const toRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
+
+const pickString = (...values: unknown[]) => {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return '';
+};
 
 const syncDonorAfterRecurring = async (autopay: any) => {
   if (!autopay?.phone) return;
@@ -51,6 +61,66 @@ const getSubscriptionRequestId = (query: Record<string, unknown>) => {
     query.requestID;
 
   return typeof raw === 'string' ? raw.trim() : '';
+};
+
+const getWebhookPayloadInfo = (payload: Record<string, unknown>) => {
+  const data = toRecord(payload.data);
+  const event = toRecord(payload.event);
+  const body = toRecord(payload.body);
+  const subscription = toRecord(payload.subscription);
+
+  const requestId = pickString(
+    payload.subscriptionRequestId,
+    payload.subscriptionRequestID,
+    payload.requestId,
+    payload.requestID,
+    payload.subscriptionId,
+    data.subscriptionRequestId,
+    data.subscriptionRequestID,
+    data.requestId,
+    data.requestID,
+    data.subscriptionId,
+    event.subscriptionRequestId,
+    event.subscriptionId,
+    body.subscriptionRequestId,
+    body.subscriptionId,
+    subscription.subscriptionRequestId,
+    subscription.subscriptionId,
+  );
+
+  const status = pickString(
+    payload.status,
+    payload.subscriptionStatus,
+    payload.eventType,
+    data.status,
+    data.subscriptionStatus,
+    event.status,
+    event.subscriptionStatus,
+    event.type,
+    body.status,
+    body.subscriptionStatus,
+    subscription.status,
+    subscription.subscriptionStatus,
+  );
+
+  const trxID = pickString(
+    payload.trxID,
+    payload.trxId,
+    payload.transactionId,
+    payload.paymentId,
+    data.trxID,
+    data.trxId,
+    data.transactionId,
+    data.paymentId,
+    event.trxID,
+    event.trxId,
+    event.transactionId,
+    body.trxID,
+    body.trxId,
+    body.transactionId,
+  );
+
+  return { requestId, status, trxID };
 };
 
 const isFailureStatus = (status?: string) => {
@@ -248,10 +318,166 @@ export const createAutopay = async (payload: any) => {
   }
 };
 
+export const processBkashRecurringWebhookService = async (
+  payload: Record<string, unknown>,
+) => {
+  const { requestId, status, trxID } = getWebhookPayloadInfo(payload);
+
+  if (!requestId) {
+    return {
+      accepted: false,
+      message: 'Missing subscription request id in webhook payload',
+    };
+  }
+
+  const autopay = await findAutopayRecord(payload, requestId);
+
+  if (!autopay) {
+    return {
+      accepted: false,
+      message: 'Subscription not found for webhook request id',
+      requestId,
+    };
+  }
+
+  const resolvedRequestId = autopay.subscriptionId || requestId;
+  const normalizedStatus = status.toLowerCase();
+
+  if (isFailureStatus(normalizedStatus)) {
+    await Autopay.findByIdAndUpdate(autopay._id, {
+      status: 'failed',
+      gatewayResponse: {
+        webhook: payload,
+      },
+    });
+
+    return {
+      accepted: true,
+      updated: true,
+      requestId: resolvedRequestId,
+      status: 'failed',
+      message: 'Webhook processed: subscription marked failed',
+    };
+  }
+
+  if (isSuccessStatus(normalizedStatus)) {
+    await markSubscriptionActivated(autopay, resolvedRequestId, {
+      webhook: payload,
+    });
+
+    if (trxID && trxID !== resolvedRequestId) {
+      await recordAutopayCharge({
+        autopayId: String(autopay._id),
+        subscriptionId: resolvedRequestId,
+        amount: autopay.amount,
+        trxID,
+        chargeType: 'recurring',
+        gatewayResponse: { webhook: payload },
+      });
+    }
+
+    return {
+      accepted: true,
+      updated: true,
+      requestId: resolvedRequestId,
+      status: 'activated',
+      message: 'Webhook processed: subscription marked active',
+    };
+  }
+
+  return {
+    accepted: true,
+    updated: false,
+    requestId: resolvedRequestId,
+    status: normalizedStatus || 'unknown',
+    message: 'Webhook accepted but no state change was applied',
+  };
+};
+
 export const getAutopayByRequestId = async (requestId: string) => {
   const result = await getBkashSubscriptionFromBkashById(requestId); // optional: fetch latest data from bKash for this subscription
   // const result = await Autopay.findOne({ subscriptionId: requestId });
   return result;
+};
+
+export const getAdminAutopaySubscriptionsService = async (
+  query: Record<string, unknown>,
+) => {
+  const page = Number(query.page || 1);
+  const limit = Number(query.limit || 20);
+  const skip = (page - 1) * limit;
+
+  const search = typeof query.searchTerm === 'string' ? query.searchTerm.trim() : '';
+  const status = typeof query.status === 'string' ? query.status.trim() : '';
+
+  const filter: Record<string, unknown> = {};
+  if (status) filter.status = status;
+  if (search) {
+    filter.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { phone: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+      { subscriptionId: { $regex: search, $options: 'i' } },
+      { subscriptionReference: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  const [result, total] = await Promise.all([
+    Autopay.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    Autopay.countDocuments(filter),
+  ]);
+
+  return {
+    result,
+    meta: {
+      page,
+      limit,
+      total,
+      totalPage: Math.ceil(total / limit),
+    },
+  };
+};
+
+export const updateAutopayStatusByAdminService = async (
+  id: string,
+  status: string,
+) => {
+  const allowedStatuses = ['initiated', 'activated', 'failed', 'deactive', 'expired'];
+  if (!allowedStatuses.includes(status)) {
+    throw new CustomError(400, 'Invalid status');
+  }
+
+  const existing = await Autopay.findById(id);
+  if (!existing) {
+    throw new CustomError(404, 'Subscription not found');
+  }
+
+  const updated = await Autopay.findByIdAndUpdate(
+    id,
+    {
+      status,
+      gatewayResponse: {
+        ...(typeof existing.gatewayResponse === 'object' ? existing.gatewayResponse : {}),
+        adminStatusUpdatedAt: new Date().toISOString(),
+      },
+    },
+    { new: true },
+  );
+
+  return updated;
+};
+
+export const getAdminAutopaySubscriptionDetailService = async (id: string) => {
+  const subscription = await Autopay.findById(id).lean();
+  if (!subscription) {
+    throw new CustomError(404, 'Subscription not found');
+  }
+
+  const payments = await getAutopayCharges(id);
+  return {
+    subscription,
+    payments,
+  };
 };
 
 // export const extendAutopay = async (payload: any) => {

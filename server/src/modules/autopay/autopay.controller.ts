@@ -3,11 +3,15 @@ import { sendResponse } from '../../utils/sendResponse';
 import { catchAsync } from '../../utils/catchAsync';
 import {
   createAutopay,
+  getAdminAutopaySubscriptionDetailService,
+  getAdminAutopaySubscriptionsService,
   getAutopayByRequestId,
   getRecurringAmountQueryService,
+  processBkashRecurringWebhookService,
+  updateAutopayStatusByAdminService,
   verifyBkashRecurringCallbackService,
 } from './autopay.service';
-import { frontendUrl } from '../../config';
+import { bkashRecurringWebhookToken, frontendUrl } from '../../config';
 
 export const createAutopayController: RequestHandler = catchAsync(
   async (req, res) => {
@@ -84,6 +88,75 @@ export const verifyBkashRecurringCallbackController: RequestHandler =
 
     return res.redirect(redirectUrl.toString());
   });
+
+export const bkashRecurringWebhookController: RequestHandler = catchAsync(
+  async (req, res) => {
+    if (bkashRecurringWebhookToken) {
+      const incomingToken =
+        req.headers['x-webhook-token'] || req.headers['x-bkash-webhook-token'];
+
+      if (
+        typeof incomingToken !== 'string' ||
+        incomingToken !== bkashRecurringWebhookToken
+      ) {
+        return sendResponse(res, {
+          status: 401,
+          success: false,
+          message: 'Unauthorized webhook token',
+          data: null,
+        });
+      }
+    }
+
+    const result = await processBkashRecurringWebhookService(req.body || {});
+
+    sendResponse(res, {
+      status: 200,
+      success: result.accepted,
+      message: result.message,
+      data: result,
+    });
+  },
+);
+
+export const getAdminAutopaySubscriptionsController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const { result, meta } = await getAdminAutopaySubscriptionsService(req.query);
+    sendResponse(res, {
+      status: 200,
+      success: true,
+      message: 'Autopay subscriptions fetched successfully',
+      data: result,
+      meta,
+    });
+  },
+);
+
+export const getAdminAutopaySubscriptionDetailController: RequestHandler =
+  catchAsync(async (req, res) => {
+    const result = await getAdminAutopaySubscriptionDetailService(req.params.id);
+    sendResponse(res, {
+      status: 200,
+      success: true,
+      message: 'Autopay subscription detail fetched successfully',
+      data: result,
+    });
+  });
+
+export const updateAutopayStatusByAdminController: RequestHandler = catchAsync(
+  async (req, res) => {
+    const status =
+      typeof req.body?.status === 'string' ? req.body.status.trim().toLowerCase() : '';
+    const result = await updateAutopayStatusByAdminService(req.params.id, status);
+
+    sendResponse(res, {
+      status: 200,
+      success: true,
+      message: 'Autopay subscription status updated',
+      data: result,
+    });
+  },
+);
 
 // export const extendAutopayController: RequestHandler = catchAsync(async (req, res) => {
 //   const result = await extendAutopay(req.body);

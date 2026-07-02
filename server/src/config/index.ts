@@ -60,6 +60,8 @@ export const bkashUrl: string = process.env.BKASH_API_URL || '';
 export const bkashRecurringUrl: string =
   process.env.BKASH_RECURRING_URL ||
   'https://gateway.sbrecurring.pay.bka.sh/gateway';
+export const bkashRecurringWebhookToken: string =
+  process.env.BKASH_RECURRING_WEBHOOK_TOKEN || '';
 
 // ssl commerz
 
