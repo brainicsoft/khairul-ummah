@@ -235,7 +235,7 @@ export const refreshTokenService = async (token: string) => {
   let user = userId ? await User.findById(userId) : null;
 
   if (!user && email) {
-    user = await User.isUserExists({ email });
+    user = await User.findOne({ email });
   }
 
   if (!user) {
