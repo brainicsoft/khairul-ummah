@@ -2,6 +2,7 @@ import { CustomError } from '../../../errors/CustomError';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { bkashCallbackBaseUrl } from '../../../config';
+import { normalizePhone } from '../../../utils/normalizePhone';
 
 export const validateAbsoluteUrl = (value: string, fieldName: string) => {
   try {
@@ -119,7 +120,7 @@ export const buildBkashAutopayRequestData = (payload: any) => {
     recordData: {
       name: payload.name,
       email: payload.email,
-      phone: payload.phone,
+      phone: normalizePhone(payload.phone),
       amount,
       frequency,
       paymentType: body.paymentType,

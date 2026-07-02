@@ -26,12 +26,11 @@ const auth = (...requiredRoles: IUserRole[]) => {
       const decoded = jwt.verify(token, access_token) as JwtPayload;
       const { role, email, userId } = decoded;
 
-      const userPayload = {
-        _id: userId,
-        email: email,
-      };
-      // checking if the user is exist
-      const user = await User.isUserExists(userPayload);
+      let user = userId ? await User.findById(userId) : null;
+
+      if (!user && email) {
+        user = await User.findOne({ email });
+      }
 
       if (!user) {
         throw new CustomError(httpStatus.NOT_FOUND, 'This user is not found !');

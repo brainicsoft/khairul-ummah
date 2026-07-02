@@ -18,6 +18,10 @@ const PaymentSchema = new Schema<IPayment>(
     phone: {
       type: String,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
 
     amount: {
       type: Number,

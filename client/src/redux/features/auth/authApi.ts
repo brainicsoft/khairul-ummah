@@ -54,7 +54,10 @@ export const {
       transformErrorResponse: (response: any) => response?.data, // adjust for data if error
     }),
 
-    checkPhone: query<{ exists: boolean; phone: string }, string>({
+    checkPhone: query<
+      { exists: boolean; phone: string; needsPassword?: boolean },
+      string
+    >({
       query: (phone) => ({
         url: `/auth/check-phone?phone=${encodeURIComponent(phone)}`,
       }),

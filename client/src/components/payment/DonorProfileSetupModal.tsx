@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -16,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useDonorRegisterMutation } from "@/redux/features/auth/authApi";
 import { useAppDispatch } from "@/redux/hooks";
 import { setAuthData } from "@/redux/features/auth/authSlice";
+import { setAuthToken } from "@/lib/authToken";
 import {
   clearPendingDonorProfile,
   type PendingDonorProfile,
@@ -68,12 +68,7 @@ export default function DonorProfileSetupModal({
       }).unwrap();
 
       if (response?.token) {
-        localStorage.setItem("access_token", response.token);
-        Cookies.set("auth_token", response.token, {
-          path: "/",
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "lax",
-        });
+        setAuthToken(response.token);
         dispatch(setAuthData(response));
       }
 

@@ -23,6 +23,8 @@ import {
   handleSslFail,
   handleSslCancel,
 } from '../paymentGetway/sslcommerz.service';
+import { ensureDonorFromPayment } from '../../utils/ensureDonorUser';
+import { normalizePhone } from '../../utils/normalizePhone';
 import type { IPayment } from './payment.interface';
 import Payment from './payment.model';
 
@@ -79,10 +81,14 @@ const handleBkashPayment = async (payload: any) => {
     throw new CustomError(500, 'bKash Payment ID missing in response');
   }
 
+  const normalizedPhone = payload.phone
+    ? normalizePhone(payload.phone)
+    : payload.phone;
+
   const payment = await Payment.create({
     name: payload.name,
     email: payload.email,
-    phone: payload.phone,
+    phone: normalizedPhone,
     amount: payload.amount,
     donationType: payload.donationType,
     donorMessage: payload.donorMessage,
@@ -166,14 +172,30 @@ export const verifyBkashPaymentService = async (query: any) => {
   );
 
   if (data.statusCode === '0000') {
-    await Payment.findOneAndUpdate(
+    const updatedPayment = await Payment.findOneAndUpdate(
       { paymentId: paymentID, status: { $ne: 'success' } },
       {
         status: 'success',
         trxID: data.trxID,
         amount: data.amount,
       },
+      { new: true },
     );
+
+    if (updatedPayment?.phone) {
+      const user = await ensureDonorFromPayment({
+        name: updatedPayment.name,
+        phone: updatedPayment.phone,
+        email: updatedPayment.email,
+      });
+
+      if (user) {
+        await Payment.findByIdAndUpdate(updatedPayment._id, {
+          userId: user._id,
+          phone: normalizePhone(updatedPayment.phone),
+        });
+      }
+    }
 
     return {
       success: true,

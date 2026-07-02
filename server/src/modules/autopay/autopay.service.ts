@@ -2,6 +2,46 @@ import { createBkashSubscription, getBkashSubscriptionFromBkashById } from '../p
 import { Autopay } from './autopay.model';
 import { buildBkashAutopayRequestData } from '../paymentGetway/recurring/recurring.bkash.utils';
 import { CustomError } from '../../errors/CustomError';
+import { ensureDonorFromPayment } from '../../utils/ensureDonorUser';
+import { normalizePhone } from '../../utils/normalizePhone';
+import { recordAutopayCharge } from './autopayCharge.service';
+
+const syncDonorAfterRecurring = async (autopay: any) => {
+  if (!autopay?.phone) return;
+
+  const user = await ensureDonorFromPayment({
+    name: autopay.name,
+    phone: autopay.phone,
+    email: autopay.email,
+  });
+
+  if (user) {
+    await Autopay.findByIdAndUpdate(autopay._id, {
+      userId: user._id,
+      phone: normalizePhone(autopay.phone),
+    });
+  }
+};
+
+const markSubscriptionActivated = async (
+  autopay: any,
+  resolvedRequestId: string,
+  gatewayResponse: unknown,
+) => {
+  await Autopay.findByIdAndUpdate(autopay._id, {
+    status: 'activated',
+    gatewayResponse,
+  });
+  await syncDonorAfterRecurring(autopay);
+  await recordAutopayCharge({
+    autopayId: String(autopay._id),
+    subscriptionId: resolvedRequestId,
+    amount: autopay.amount,
+    trxID: resolvedRequestId,
+    chargeType: 'first_payment',
+    gatewayResponse,
+  });
+};
 
 const getSubscriptionRequestId = (query: Record<string, unknown>) => {
   const raw =
@@ -109,10 +149,7 @@ export const verifyBkashRecurringCallbackService = async (
   }
 
   if (isSuccessStatus(status)) {
-    await Autopay.findByIdAndUpdate(autopay._id, {
-      status: 'activated',
-      gatewayResponse: { callback: query },
-    });
+    await markSubscriptionActivated(autopay, resolvedRequestId, { callback: query });
 
     return {
       success: true,
@@ -136,10 +173,7 @@ export const verifyBkashRecurringCallbackService = async (
       bkashData?.statusCode === '0000';
 
     if (isActivated) {
-      await Autopay.findByIdAndUpdate(autopay._id, {
-        status: 'activated',
-        gatewayResponse: bkashData,
-      });
+      await markSubscriptionActivated(autopay, resolvedRequestId, bkashData);
 
       return {
         success: true,

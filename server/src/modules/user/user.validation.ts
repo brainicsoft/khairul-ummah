@@ -1,5 +1,12 @@
 import { z } from 'zod';
 
+export const updateMyProfileValidation = z.object({
+  body: z.object({
+    name: z.string().min(1, 'Name is required').optional(),
+    email: z.string().email('Invalid email address').optional(),
+  }),
+});
+
 export const updateUserValidation = z.object({
   body: z.object({
     name: z.string().optional(),

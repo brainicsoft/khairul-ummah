@@ -1,5 +1,7 @@
 import axios from 'axios';
 import Payment from '../payment/payment.model';
+import { ensureDonorFromPayment } from '../../utils/ensureDonorUser';
+import { normalizePhone } from '../../utils/normalizePhone';
 import {
   baseUrl,
   SSL_API_URL,
@@ -84,11 +86,11 @@ export const createSslcommerzPayment = async (
     const payment = await Payment.create({
       name,
       email,
-      phone,
+      phone: normalizePhone(phone),
       amount,
       donationType,
       donorMessage,
-      paymentId: tran_id, // Store transaction ID as paymentId
+      paymentId: tran_id,
       status: 'pending',
       method: 'sslcommerz',
     });
@@ -125,7 +127,7 @@ export const validateSslcommerzPayment = async (
 
     // Update payment status based on validation
     if (response.data.status === 'VALIDATED') {
-      await Payment.findOneAndUpdate(
+      const updatedPayment = await Payment.findOneAndUpdate(
         { paymentId: tran_id },
         {
           status: 'success',
@@ -135,6 +137,21 @@ export const validateSslcommerzPayment = async (
         },
         { new: true },
       );
+
+      if (updatedPayment?.phone) {
+        const user = await ensureDonorFromPayment({
+          name: updatedPayment.name,
+          phone: updatedPayment.phone,
+          email: updatedPayment.email,
+        });
+
+        if (user) {
+          await Payment.findByIdAndUpdate(updatedPayment._id, {
+            userId: user._id,
+            phone: normalizePhone(updatedPayment.phone),
+          });
+        }
+      }
 
       console.log('[v0] Payment marked as SUCCESS');
       return { success: true, message: 'Payment validated successfully' };
@@ -181,6 +198,21 @@ export const handleSslSuccess = async (tran_id: string): Promise<any> => {
   console.log('payment', payment);
   if (!payment) {
     return { success: false, message: 'Payment record not found' };
+  }
+
+  if (payment.status === 'success' && payment.phone) {
+    const user = await ensureDonorFromPayment({
+      name: payment.name,
+      phone: payment.phone,
+      email: payment.email,
+    });
+
+    if (user && !payment.userId) {
+      await Payment.findByIdAndUpdate(payment._id, {
+        userId: user._id,
+        phone: normalizePhone(payment.phone),
+      });
+    }
   }
 
   return {

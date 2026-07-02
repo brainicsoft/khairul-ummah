@@ -8,10 +8,11 @@ export interface IUser {
   email: string;
   phone?: string;
   password?: string | null;
+  profileCompleted?: boolean;
   role: 'user' | 'admin' | 'subadmin';
   isDeleted: boolean;
   code: number;
-  googleId: string;
+  googleId?: string | null;
   avatar?: string;
 }
 export interface IUserMethod {

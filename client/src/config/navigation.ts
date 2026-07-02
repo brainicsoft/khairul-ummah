@@ -16,6 +16,7 @@ export const mainNavLinks: NavLink[] = [
   { href: "/gellery", label: "গ্যালারি" },
   { href: "/blog", label: "ব্লগ" },
   { href: "/volunteer", label: "স্বেচ্ছাসেবক নিবন্ধন" },
+  { href: "/user/donations", label: "আমার অনুদান" },
   { href: "/contact", label: "যোগাযোগ" },
 ]
 

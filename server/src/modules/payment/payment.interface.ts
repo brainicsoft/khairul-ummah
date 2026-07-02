@@ -2,6 +2,7 @@ export interface IPayment extends Document {
   name: string;
   email: string;
   phone?: string;
+  userId?: string;
   amount: number;
   trxID: string;
   paymentId?: string;

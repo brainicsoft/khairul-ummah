@@ -3,6 +3,7 @@ export interface IAutopay {
   name: string;
   phone: string;
   email?: string;
+  userId?: string;
 
   // Gateway / metadata
   amount?: number;

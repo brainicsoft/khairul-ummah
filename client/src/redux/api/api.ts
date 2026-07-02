@@ -7,14 +7,18 @@ import {
 import { apiUrl } from "@/config/constants";
 import Cookies from "js-cookie";
 import { setAuthData, setLoading } from "../features/auth/authSlice";
+import { setAuthToken } from "@/lib/authToken";
 
 // Define the base API
 const baseQuery = fetchBaseQuery({
   baseUrl: `${apiUrl}`,
   credentials: "include" as const,
   prepareHeaders: (headers) => {
-    // const accessToken =Cookie.get;
-    const accessToken = Cookies.get("auth_token");
+    const accessToken =
+      Cookies.get("auth_token") ||
+      (typeof window !== "undefined"
+        ? localStorage.getItem("access_token")
+        : null);
     if (accessToken) {
       headers.set("Authorization", `Bearer ${accessToken}`);
     }
@@ -36,6 +40,7 @@ const baseQueryWithRefreshToken: BaseQueryFn = async (args, api, options) => {
         const data = await response.json();
 
         if (data?.token) {
+          setAuthToken(data.token);
           result = await baseQuery(args, api, options);
         }
       } catch (err) {
@@ -59,7 +64,7 @@ export const {
 } = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
-  tagTypes: ["info","fundingRound","company",'savelist'],
+  tagTypes: ["info","fundingRound","company",'savelist', "MyDonations"],
   endpoints: ({ query }) => ({
     getUser: query<object, void>({
       query: () => ({

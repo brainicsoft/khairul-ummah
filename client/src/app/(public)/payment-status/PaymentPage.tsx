@@ -45,7 +45,7 @@ export default function PaymentStatusPage() {
       .then((result) => {
         if (cancelled) return
 
-        if (!result?.exists) {
+        if (!result?.exists || result?.needsPassword) {
           setPendingDonor(pending)
           setShowProfileModal(true)
         } else {

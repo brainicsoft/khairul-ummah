@@ -13,6 +13,10 @@ const autopaySchema = new Schema<IAutopay>(
       type: String,
       required: true,
     },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     email: {
       type: String,
     },

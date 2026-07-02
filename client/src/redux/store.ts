@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { configureStore } from "@reduxjs/toolkit";
 import { authMiddleware, endpoints, reducer, reducerPath } from "./api/api";
+import "@/redux/features/user/userApi";
+import "@/redux/features/auth/authApi";
 
 
 

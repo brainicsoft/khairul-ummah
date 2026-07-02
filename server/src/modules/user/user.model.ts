@@ -25,6 +25,10 @@ const userSchema = new Schema<IUser, IUserModel>(
       sparse: true,
       trim: true,
     },
+    profileCompleted: {
+      type: Boolean,
+      default: false,
+    },
     googleId: {
       type: String,
       default: null,

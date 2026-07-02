@@ -64,6 +64,7 @@ export const checkPhoneExistsService = async (phone: string) => {
   return {
     exists: !!user,
     phone: normalized,
+    needsPassword: user ? !user.profileCompleted : false,
   };
 };
 
@@ -81,6 +82,43 @@ export const createDonorProfileService = async (payload: {
 
   const existingByPhone = await User.findOne({ phone: normalized });
   if (existingByPhone) {
+    if (!existingByPhone.profileCompleted) {
+      existingByPhone.password = payload.password;
+      existingByPhone.profileCompleted = true;
+      if (payload.name?.trim()) {
+        existingByPhone.name = payload.name.trim();
+      }
+      if (
+        payload.email?.trim() &&
+        !payload.email.includes('@donor.kuf.org.bd')
+      ) {
+        existingByPhone.email = payload.email.trim();
+      }
+      await existingByPhone.save();
+
+      const jwtPayload: TJwtPayload = {
+        userId: (existingByPhone as any)._id,
+        email: existingByPhone.email,
+        name: existingByPhone.name,
+        role: existingByPhone.role,
+        username: existingByPhone.username,
+      };
+
+      const accessToken = genarateToken(
+        jwtPayload,
+        access_token,
+        access_token_expiry,
+      );
+      const refreshToken = genarateToken(
+        jwtPayload,
+        refresh_token,
+        refresh_token_expiry,
+      );
+
+      const { password, ...rest } = existingByPhone.toObject();
+      return { accessToken, refreshToken, rest };
+    }
+
     throw new CustomError(httpStatus.CONFLICT, 'Phone already registered');
   }
 
@@ -98,6 +136,7 @@ export const createDonorProfileService = async (payload: {
     email,
     phone: normalized,
     password: payload.password,
+    profileCompleted: true,
     role: 'user',
   });
 
@@ -191,8 +230,13 @@ export const loginService = async (payload: ILogin) => {
 export const refreshTokenService = async (token: string) => {
   const decoded = jwt.verify(token, refresh_token) as JwtPayload;
 
-  const { email } = decoded;
-  const user = await User.isUserExists(email);
+  const { email, userId } = decoded;
+
+  let user = userId ? await User.findById(userId) : null;
+
+  if (!user && email) {
+    user = await User.isUserExists({ email });
+  }
 
   if (!user) {
     throw new CustomError(httpStatus.NOT_FOUND, 'This user is not found !');
