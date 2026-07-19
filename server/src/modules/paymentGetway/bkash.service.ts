@@ -6,9 +6,13 @@ import moment from 'moment';
 import {
   baseUrl,
   bkashKey,
+  bkashPass,
+  bkashRecurringKey,
+  bkashRecurringSecret,
+  bkashRecurringUrl,
   bkashSecret,
   bkashUrl,
-  bkashRecurringUrl,
+  bkashUser,
 } from '../../config';
 import { CustomError } from '../../errors/CustomError';
 import { generateBkashAutopayHeaders } from './recurring/recurring.bkash.utils';
@@ -18,7 +22,7 @@ let idToken: string | null = null;
 let refreshToken: string | null = null;
 
 /**
- * Generate new bKash ID Token
+ * Generate new bKash ID Token (Regular Checkout / PGW)
  */
 export const generateIdToken = async (): Promise<string | null> => {
   try {
@@ -30,7 +34,7 @@ export const generateIdToken = async (): Promise<string | null> => {
     );
 
     const { data } = await axios.post(
-      `${process.env.BKASH_API_URL}/checkout/token/grant`,
+      `${bkashUrl}/checkout/token/grant`,
       {
         app_key: bkashKey,
         app_secret: bkashSecret,
@@ -39,8 +43,8 @@ export const generateIdToken = async (): Promise<string | null> => {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          username: process.env.BKASH_USER,
-          password: process.env.BKASH_PASS,
+          username: bkashUser,
+          password: bkashPass,
         },
       },
     );
@@ -76,8 +80,8 @@ export const refreshBkashToken = async (): Promise<string | null> => {
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
-          username: process.env.BKASH_USER,
-          password: process.env.BKASH_PASS,
+          username: bkashUser,
+          password: bkashPass,
         },
       },
     );
@@ -163,8 +167,8 @@ export const refundBkashPayment = async (payload: any) => {
     'POST',
     urlPath,
     payload,
-    bkashKey,
-    bkashSecret,
+    bkashRecurringKey,
+    bkashRecurringSecret,
     bkashRecurringUrl,
   );
 
@@ -199,8 +203,8 @@ export const listBkashSubscriptions = async (
     'GET',
     urlPath,
     {},
-    bkashKey,
-    bkashSecret,
+    bkashRecurringKey,
+    bkashRecurringSecret,
     bkashRecurringUrl,
   );
   Object.assign(headers, headersExtra);

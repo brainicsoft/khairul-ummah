@@ -50,16 +50,32 @@ export const contactNotifyEmails: string[] = (
   .map((email) => email.trim())
   .filter(Boolean);
 
-// for payment
+// Regular Checkout (PGW / Tokenized) — one-time donations
 export const bkashUser: string = process.env.BKASH_USER || '';
 export const bkashPass: string = process.env.BKASH_PASS || '';
 export const bkashKey: string = process.env.BKASH_API_KEY || '';
-export const bkashSecret: string = process.env.BKASH_APP_SECRECT || '';
-export const bkashUrl: string = process.env.BKASH_API_URL || '';
-// recurring gateway (subscriptions)
-export const bkashRecurringUrl: string =
+export const bkashSecret: string =
+  process.env.BKASH_APP_SECRECT || process.env.BKASH_APP_SECRET || '';
+export const bkashUrl: string = (process.env.BKASH_API_URL || '').replace(
+  /\/$/,
+  '',
+);
+
+// Recurring / Autopay gateway — separate credentials from Regular Checkout
+export const bkashRecurringUrl: string = (
   process.env.BKASH_RECURRING_URL ||
-  'https://gateway.sbrecurring.pay.bka.sh/gateway';
+  'https://gateway.sbrecurring.pay.bka.sh/gateway'
+).replace(/\/$/, '');
+export const bkashRecurringKey: string =
+  process.env.BKASH_RECURRING_API_KEY || '';
+export const bkashRecurringSecret: string =
+  process.env.BKASH_RECURRING_APP_SECRECT ||
+  process.env.BKASH_RECURRING_APP_SECRET ||
+  '';
+export const bkashRecurringUser: string =
+  process.env.BKASH_RECURRING_USER || '';
+export const bkashRecurringPass: string =
+  process.env.BKASH_RECURRING_PASS || '';
 export const bkashRecurringWebhookToken: string =
   process.env.BKASH_RECURRING_WEBHOOK_TOKEN || '';
 

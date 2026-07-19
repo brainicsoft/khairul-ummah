@@ -5,9 +5,9 @@ import {
   buildBkashAutopayRequestData,
 } from './recurring.bkash.utils';
 import {
-  bkashKey,
+  bkashRecurringKey,
+  bkashRecurringSecret,
   bkashRecurringUrl,
-  bkashSecret,
 } from '../../../config';
 
 export const createBkashSubscription = async (
@@ -25,8 +25,8 @@ export const createBkashSubscription = async (
     'POST',
     pathToSign,
     body,
-    bkashKey,
-    bkashSecret,
+    bkashRecurringKey,
+    bkashRecurringSecret,
     bkashRecurringUrl,
   );
 
@@ -82,17 +82,17 @@ export const getBkashSubscriptionFromBkashById = async (id: string) => {
     'GET',
     urlPath,
     {},
-    bkashKey,
-    bkashSecret,
+    bkashRecurringKey,
+    bkashRecurringSecret,
     bkashRecurringUrl,
   );
-  const fullurl =`${bkashRecurringUrl}${urlPath}`;
-  console.log(fullurl)
+  const fullurl = `${bkashRecurringUrl}${urlPath}`;
+  console.log(fullurl);
   try {
-    const data  = await axios.get(fullurl, {
+    const data = await axios.get(fullurl, {
       headers,
     });
-    console.log(data)
+    console.log(data);
     return data;
   } catch (error: any) {
     throw new CustomError(
